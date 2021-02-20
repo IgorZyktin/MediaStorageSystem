@@ -3,11 +3,15 @@
 """Container for any media type.
 """
 import json
+from datetime import datetime
 from pathlib import Path
 from typing import Optional, List, Dict, Any
 
 from common import utils_filesystem
 from register import analyze, settings
+
+# FIXME
+total = 0
 
 
 class Media:
@@ -21,7 +25,7 @@ class Media:
         """
         self.uuid = uuid
         self.path = path
-        self.tags = set(tags) if tags else set()
+        self.tags = tags or []
         self.parameters = parameters if parameters else dict()
 
         self.original_filename = utils_filesystem.get_filename(self.path)
@@ -32,7 +36,7 @@ class Media:
         self.media_type = 'unknown'
         self.description = ''
         self.content = None
-        self.unique_filename = self.uuid + '___' + self.original_filename
+        self.unique_filename = self.name + '___' + self.uuid + '.' + self.ext
 
     def __repr__(self) -> str:
         """Return textual representation.
@@ -55,10 +59,19 @@ class Media:
         """
         # TODO - what about thumbnails and previews for video and audio?
         parts = Path(self.path).parts
-        sub_parts = parts[2:-1]
+
+        sub_parts = []
+        started = False
+        for element in parts:
+            if element == 'new_content':
+                started = True
+            elif not started:
+                continue
+            else:
+                sub_parts.append(element)
+        sub_parts = sub_parts[:-1]
 
         content_path = utils_filesystem.join(settings.ROOT_PATH,
-                                             'images',
                                              *sub_parts,
                                              self.unique_filename)
 
@@ -71,18 +84,32 @@ class Media:
                                              'previews',
                                              *sub_parts,
                                              self.unique_filename)
+        global total
+        total += 1
+
+        comment = """please note that this book came to me with random filenames; pages 2, 33, 112 and 113 are kindof guesses
+""".strip()
+
         return {
             'uuid': self.uuid,
             'description': self.description,
             'original_filename': self.original_filename,
             'original_name': self.name,
             'media_type': self.media_type,
-            'content_path': content_path,
-            'thumbnail_path': thumbnail_path,
-            'preview_path': preview_path,
+            'content_path': cut_root(content_path),
+            'thumbnail_path': cut_root(thumbnail_path),
+            'preview_path': cut_root(preview_path),
             'ext': self.ext,
-            'tags': sorted(self.tags),
+            'tags': self.tags,
             'parameters': self.parameters,
+            'registered_at': str(datetime.now().date()),
+            'registered_by': 'Igor Zyktin___Nicord',
+            'meta': {
+                'series': 'bgc',
+                'sub_series': 'b-club special',
+                'ordering': total,
+                'comment': comment,
+            },
         }
 
     def register(self) -> None:
@@ -97,6 +124,8 @@ class Media:
             json.dump(metainfo, file)
 
         thumbnail_path = metainfo['thumbnail_path']
+        thumbnail_path = thumbnail_path[5:]
+        thumbnail_path = utils_filesystem.join(settings.ROOT_PATH, thumbnail_path)
         utils_filesystem.ensure_folder_exists(thumbnail_path)
         if thumbnail_path:
             new = self.content.copy()
@@ -104,6 +133,8 @@ class Media:
             new.save(thumbnail_path)
 
         preview_path = metainfo['preview_path']
+        preview_path = preview_path[5:]
+        preview_path = utils_filesystem.join(settings.ROOT_PATH, preview_path)
         utils_filesystem.ensure_folder_exists(preview_path)
         if preview_path:
             new = self.content.copy()
@@ -111,9 +142,12 @@ class Media:
             new.save(preview_path)
 
         content_path = metainfo['content_path']
+        content_path = content_path[5:]
+        content_path = utils_filesystem.join(settings.ROOT_PATH, content_path)
         utils_filesystem.ensure_folder_exists(content_path)
         if content_path:
             self.content.save(content_path)
+        print(self.path)
 
     def delete_source_file(self) -> None:
         """Delete original file using path.
@@ -121,3 +155,17 @@ class Media:
         # FIXME
         if '_mice' not in self.path:
             utils_filesystem.delete(self.path)
+            # print(self.path)
+
+
+def cut_root(path) -> str:
+    parts = list(Path(path).parts)
+    final_parts = []
+    started = False
+    for element in parts:
+        if element == 'root':
+            started = True
+        elif not started:
+            continue
+        final_parts.append(element)
+    return utils_filesystem.join(*final_parts)
