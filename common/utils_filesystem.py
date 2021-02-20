@@ -3,6 +3,7 @@
 """Special utils created to work with filesystem.
 """
 import os
+from pathlib import Path
 from typing import Set, List, Generator, Optional, Collection, Tuple
 
 
@@ -74,3 +75,26 @@ def get_filename(path: str) -> str:
     """
     _, tail = os.path.split(path)
     return tail
+
+
+def ensure_folder_exists(path: str) -> Optional[str]:
+    """Create all subsequent sub paths for given path.
+    """
+    path = Path(path)
+    parts = list(path.parts)
+    current_path = None
+
+    for part in parts:
+        if '___' in part:
+            continue
+
+        if current_path is None:
+            current_path = part
+        else:
+            current_path = join(current_path, part)
+
+        if not os.path.exists(current_path):
+            os.mkdir(current_path)
+            print(f'New folder created: {current_path}')
+
+    return current_path

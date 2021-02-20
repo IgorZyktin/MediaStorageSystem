@@ -3,6 +3,7 @@
 """Container for any media type.
 """
 import json
+from pathlib import Path
 from typing import Optional, List, Dict, Any
 
 from common import utils_filesystem
@@ -53,11 +54,22 @@ class Media:
         """Get metainfo for this media.
         """
         # TODO - what about thumbnails and previews for video and audio?
+        parts = Path(self.path).parts
+        sub_parts = parts[2:-1]
+
+        content_path = utils_filesystem.join(settings.ROOT_PATH,
+                                             'images',
+                                             *sub_parts,
+                                             self.unique_filename)
+
         thumbnail_path = utils_filesystem.join(settings.ROOT_PATH,
                                                'thumbnails',
+                                               *sub_parts,
                                                self.unique_filename)
+
         preview_path = utils_filesystem.join(settings.ROOT_PATH,
                                              'previews',
+                                             *sub_parts,
                                              self.unique_filename)
         return {
             'uuid': self.uuid,
@@ -65,6 +77,7 @@ class Media:
             'original_filename': self.original_filename,
             'original_name': self.name,
             'media_type': self.media_type,
+            'content_path': content_path,
             'thumbnail_path': thumbnail_path,
             'preview_path': preview_path,
             'ext': self.ext,
@@ -83,21 +96,28 @@ class Media:
         with open(metainfo_path, mode='w') as file:
             json.dump(metainfo, file)
 
-        thumbnail_path = utils_filesystem.join(settings.ROOT_PATH,
-                                               'thumbnails',
-                                               self.unique_filename)
-        new = self.content.copy()
-        new.thumbnail(settings.THUMBNAIL_SIZE)
-        new.save(thumbnail_path)
+        thumbnail_path = metainfo['thumbnail_path']
+        utils_filesystem.ensure_folder_exists(thumbnail_path)
+        if thumbnail_path:
+            new = self.content.copy()
+            new.thumbnail(settings.THUMBNAIL_SIZE)
+            new.save(thumbnail_path)
 
-        preview_path = utils_filesystem.join(settings.ROOT_PATH,
-                                             'previews',
-                                             self.unique_filename)
-        new = self.content.copy()
-        new.thumbnail(settings.PREVIEW_SIZE)
-        new.save(preview_path)
+        preview_path = metainfo['preview_path']
+        utils_filesystem.ensure_folder_exists(preview_path)
+        if preview_path:
+            new = self.content.copy()
+            new.thumbnail(settings.PREVIEW_SIZE)
+            new.save(preview_path)
+
+        content_path = metainfo['content_path']
+        utils_filesystem.ensure_folder_exists(content_path)
+        if content_path:
+            self.content.save(content_path)
 
     def delete_source_file(self) -> None:
         """Delete original file using path.
         """
-        utils_filesystem.delete(self.path)
+        # FIXME
+        if '_mice' not in self.path:
+            utils_filesystem.delete(self.path)

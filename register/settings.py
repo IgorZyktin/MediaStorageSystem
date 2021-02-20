@@ -3,7 +3,8 @@
 """Script settings.
 """
 
-ROOT_PATH = 'root'
+# ROOT_PATH = 'root'
+ROOT_PATH = 'D:\\BGC_ARCHIVE\\root'
 
 SUPPORTED_EXTENSIONS = [
     'jpg',
