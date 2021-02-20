@@ -1,0 +1,97 @@
+:root {
+    --my_color: #5b85a2;
+    --my_color_active: #77a2b5;
+    --my_color_pale: #3a4b56;
+    --my_color_bright: #e59880;
+    --min_width: 800px;
+    --max_width: 1500px;
+}
+
+html, body {
+    background-color: #171819;
+    height: 100%;
+    font-size: 16pt;
+    font-family: Tahoma, Verdana, Segoe, sans-serif;
+    padding: 10px;
+    color: var(--my_color);
+}
+
+h1, h2, h3 {
+    text-align: center;
+    margin: 5px;
+}
+
+input, select {
+    height: 1.8em;
+    margin: 10px 20px 10px 10px;
+}
+
+.header_query {
+    display: flex;
+    flex-direction: row;
+    max-width: var(--max_width);
+    margin-left: auto;
+    margin-right: auto;
+}
+
+input {
+    width: 100%;
+    font-size: 16pt;
+    padding: 5px;
+    margin: 10px 10px 10px 0;
+    display: inline-block;
+}
+
+.btn {
+    background-color: var(--my_color_pale);
+    user-select: none;
+    text-decoration: none;
+    padding: 3px;
+    display: block;
+    text-align: center;
+    width: auto;
+    color: var(--my_color);
+    margin-top: 10px;
+    margin-bottom: 10px;
+    border: 1px solid var(--my_color_active);
+}
+
+.active {
+
+}
+
+.active:hover {
+    color: var(--my_color_active);
+    background-color: var(--my_color_pale);
+}
+
+.active:active {
+    color: black;
+    background-color: var(--my_color_bright);
+}
+
+hr {
+    border: 0;
+    height: 1px;
+    background-image: linear-gradient(to right, rgba(0, 0, 0, 0), rgba(117, 116, 116, 0.75), rgba(0, 0, 0, 0));
+}
+
+.content {
+    display: flex;
+    align-items: stretch;
+    flex-wrap: wrap;
+    justify-content: space-evenly;
+}
+
+.envelope, .btn {
+    overflow: hidden;
+    box-shadow: 0 0 6px -1px rgb(31 31 31);
+    border: 1px solid #272727;
+    background-color: #1b1c1d;
+}
+
+.envelope {
+    display: flex;
+    align-items: center;
+    margin: 3px;
+}

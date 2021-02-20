@@ -1,0 +1,8 @@
+{% extends "index.html" %}
+{% block content %}
+    {% for image in images %}
+        <div class="envelope">
+            <a href="{{ image.preview }}"><img src="{{ image.path }}"/></a>
+        </div>
+    {% endfor %}
+{% endblock %}

@@ -2,9 +2,10 @@
 
 """Special utils created to work with filesystem.
 """
+import json
 import os
 from pathlib import Path
-from typing import Set, List, Generator, Optional, Collection, Tuple
+from typing import Set, List, Generator, Optional, Collection, Tuple, Dict, Any
 
 
 def gen_known_uids(root_path: str, base_type: str = 'json') -> Set[str]:
@@ -98,3 +99,21 @@ def ensure_folder_exists(path: str) -> Optional[str]:
             print(f'New folder created: {current_path}')
 
     return current_path
+
+
+def get_all_metainfo(root_path: str) -> Dict[str, Any]:
+    """Load all metainfo content from HDD.
+    """
+    path = join(root_path, 'metainfo')
+    filenames = os.listdir(path)
+
+    metainfo = {}
+    for filename in filenames:
+        if filename.endswith('.json'):
+            with open(join(path, filename),
+                      mode='r', encoding='utf-8') as file:
+                content = json.load(file)
+                uuid = content['uuid']
+                metainfo[uuid] = content
+
+    return metainfo

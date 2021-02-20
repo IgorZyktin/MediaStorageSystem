@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link type="text/css" href="/static/styles.css" rel="stylesheet">
+    <script src="/static/scripts.js"></script>
+    <title>{{ title }}</title>
+</head>
+<body>
+
+<form method="post" action="/">
+    <div class="header_query">
+        <a href="/">Home</a>
+        <label for="query"></label><input id="query" name="query" type="search">
+        <input type="submit" class="btn active" value="Search"/>
+    </div>
+</form>
+
+<hr>
+
+<div class="content">
+    {% block content %}{% endblock %}
+</div>
+
+</body>
+</html>
