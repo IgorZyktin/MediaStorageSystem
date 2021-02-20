@@ -39,14 +39,18 @@ def index():
             url = '/'
         return redirect(url)
 
-    query = request.args
+    query = request.args.get('q', '')
     finder = search_engine.build_query(query)
-    images = search_engine.select_images(app.metainfo, finder,
+    found, images = search_engine.select_images(app.metainfo, finder,
                                          settings.IMAGES_AT_ONCE)
 
     context = {
         'title': 'Index',
         'images': images,
+        'total': len(app.metainfo),
+        'found': found,
+        # 'query': finder.get_query(),
+        'query': query,
 
     }
     return render_template('content.html', **context)
@@ -56,6 +60,7 @@ def index():
 def preview(uuid: str):
     context = {
         'title': 'Index',
+        'total': len(app.metainfo),
         'uuid': uuid,
         'preview': app.metainfo[uuid]['preview_path'].replace('\\', '/'),
         'content': app.metainfo[uuid]['content_path'].replace('\\', '/'),

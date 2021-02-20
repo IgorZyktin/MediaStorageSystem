@@ -8,13 +8,21 @@
 </head>
 <body>
 
-<form method="post" action="/">
-    <div class="header_query">
-        <a href="/">Home</a>
-        <label for="query"></label><input id="query" name="query" type="search">
-        <input type="submit" class="btn active" value="Search"/>
-    </div>
-</form>
+<div class="flex_vertical">
+    <span>Total records in catalogue: {{ total }}</span>
+    <form method="post" action="/">
+        <div class="header_query">
+            <div><a href="/"><img class="icon" src="/static/home-24px.svg"
+                                  alt="Redirect to the starting page"/></a>
+            </div>
+            <label for="query">What to search<input id="query" name="query"
+                                                    type="search"
+                                                    value="{{ query }}"></label>
+            <input type="submit" class="btn active" value="Search"/>
+        </div>
+    </form>
+    <span>Records found: {{ found }}</span>
+</div>
 
 <hr>
 

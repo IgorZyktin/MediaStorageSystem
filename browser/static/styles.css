@@ -5,6 +5,7 @@
     --my_color_bright: #e59880;
     --min_width: 800px;
     --max_width: 1500px;
+    --radius: 5px;
 }
 
 html, body {
@@ -94,4 +95,26 @@ hr {
     display: flex;
     align-items: center;
     margin: 3px;
+}
+
+.icon {
+    width: 2em;
+    height: 2em;
+    background-color: var(--my_color_pale);
+    border-radius: var(--radius);
+}
+
+.flex_horizontal {
+    display: flex;
+    flex-direction: row;
+    margin-left: auto;
+    margin-right: auto;
+        align-items: stretch;
+    flex-wrap: wrap;
+    justify-content: space-evenly;
+}
+
+.flex_vertical {
+    display: flex;
+    flex-direction: column;
 }

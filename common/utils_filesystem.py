@@ -116,4 +116,8 @@ def get_all_metainfo(root_path: str) -> Dict[str, Any]:
                 uuid = content['uuid']
                 metainfo[uuid] = content
 
+                # FIXME
+                # if len(metainfo) > 10:
+                #     break
+
     return metainfo
