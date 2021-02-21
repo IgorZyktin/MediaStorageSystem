@@ -2,7 +2,11 @@
 
 """Script settings.
 """
+import os
 
-# ROOT_PATH = 'root'
-ROOT_PATH = 'D:\\BGC_ARCHIVE\\root'
+# paths
+BASE_PATH = 'D:\\BGC_ARCHIVE\\'
+ROOT_PATH = os.path.join(BASE_PATH, 'root')
+
 IMAGES_AT_ONCE = 100
+IMAGES_PER_PAGE = 50

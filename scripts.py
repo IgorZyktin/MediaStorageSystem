@@ -92,7 +92,7 @@ def fix_one_key():
         with open(filename, mode='r', encoding='utf-8') as file:
             content = file.read()
 
-        content = content.replace("content", "content_info")
+        content = content.replace("content_info_path", "content_path")
 
         with open(filename, mode='w', encoding='utf-8') as file:
             file.write(content)

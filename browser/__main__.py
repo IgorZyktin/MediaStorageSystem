@@ -8,17 +8,8 @@ from flask import Flask, render_template, request, redirect, \
 from browser import settings, search_engine
 from common import utils_filesystem
 
-
-def create_app():
-    """Make instance of application.
-    """
-    app_ = Flask(__name__)
-    metainfo = utils_filesystem.get_all_metainfo(settings.ROOT_PATH)
-    app_.metainfo = metainfo
-    return app_
-
-
-app = create_app()
+app = Flask(__name__)
+metainfo = utils_filesystem.get_all_metainfo(settings.ROOT_PATH)
 
 
 @app.route('/root/<path:filename>')
@@ -41,13 +32,13 @@ def index():
 
     query = request.args.get('q', '')
     finder = search_engine.build_query(query)
-    found, images = search_engine.select_images(app.metainfo, finder,
+    found, images = search_engine.select_images(metainfo, finder,
                                          settings.IMAGES_AT_ONCE)
 
     context = {
         'title': 'Index',
         'images': images,
-        'total': len(app.metainfo),
+        'total': len(metainfo),
         'found': found,
         # 'query': finder.get_query(),
         'query': query,
@@ -60,10 +51,10 @@ def index():
 def preview(uuid: str):
     context = {
         'title': 'Index',
-        'total': len(app.metainfo),
+        'total': len(metainfo),
         'uuid': uuid,
-        'preview': app.metainfo[uuid]['preview_path'].replace('\\', '/'),
-        'content': app.metainfo[uuid]['content_path'].replace('\\', '/'),
+        'preview': metainfo[uuid].content_info.preview_path.replace('\\', '/'),
+        'content': metainfo[uuid].content_info.content_path.replace('\\', '/'),
     }
     return render_template('preview.html', **context)
 

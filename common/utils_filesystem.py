@@ -7,6 +7,8 @@ import os
 from pathlib import Path
 from typing import Set, List, Generator, Optional, Collection, Tuple, Dict, Any
 
+from common.metarecord_class import Metarecord
+
 
 def gen_known_uids(root_path: str, base_type: str = 'json') -> Set[str]:
     """Get set all all known UUIDs.
@@ -101,20 +103,20 @@ def ensure_folder_exists(path: str) -> Optional[str]:
     return current_path
 
 
-def get_all_metainfo(root_path: str) -> Dict[str, Any]:
+def get_all_metainfo(root_path: str) -> Dict[str, Metarecord]:
     """Load all metainfo content from HDD.
     """
-    path = join(root_path, 'metainfo')
-    filenames = os.listdir(path)
+    metainfo_path = join(root_path, 'metainfo')
+    filenames = os.listdir(metainfo_path)
 
     metainfo = {}
     for filename in filenames:
         if filename.endswith('.json'):
-            with open(join(path, filename),
-                      mode='r', encoding='utf-8') as file:
+            path = join(metainfo_path, filename)
+            with open(path, mode='r', encoding='utf-8') as file:
                 content = json.load(file)
-                uuid = content['uuid']
-                metainfo[uuid] = content
+                metarecord = Metarecord(**content)
+                metainfo[metarecord.uuid] = metarecord
 
                 # FIXME
                 # if len(metainfo) > 10:

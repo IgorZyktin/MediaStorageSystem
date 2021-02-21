@@ -51,9 +51,7 @@ def select_images(metainfo: dict, finder, amount):
         chosen = [(x, metainfo[x]) for x in uuids]
     else:
         for uuid, meta in metainfo.items():
-            tags = {*meta['tags'],
-                    meta['meta']['series'],
-                    meta['meta']['sub_series']}
+            tags = meta.extended_tags_set
 
             if (finder.and_ & tags == finder.and_ or not finder.and_) \
                     and (not finder.not_ & tags or not finder.not_) \
@@ -62,16 +60,16 @@ def select_images(metainfo: dict, finder, amount):
 
     def s(x):
         return (
-            x[1]['meta'].get('series'),
-            x[1]['meta'].get('sub_series'),
-            x[1]['meta'].get('ordering'),
+            x[1].meta.series,
+            x[1].meta.sub_series,
+            x[1].meta.ordering,
         )
 
     chosen.sort(key=s)
     objs = []
     for uuid, meta in chosen[:amount]:
         objs.append({
-            'path': meta['thumbnail_path'].replace('\\', '/'),
+            'path': meta.content_info.thumbnail_path.replace('\\', '/'),
             'preview': f'/preview/{uuid}',
         })
     return len(chosen), objs
