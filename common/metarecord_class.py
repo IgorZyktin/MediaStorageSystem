@@ -4,8 +4,8 @@
 
 Example of JSON form:
 {
-    "uuid": "008a2494-a6a4-4d63-886d-9e050f7a0d4a"
-    "content": {
+    "uuid": "008a2494-a6a4-4d63-886d-9e050f7a0d4a",
+    "content_info": {
         "content_path": "root\\images\\magazines\\...",
         "preview_path": "root\\previews\\images\\magazines\\...",
         "thumbnail_path": "root\\thumbnails\\images\\magazines\\...",
@@ -17,12 +17,12 @@ Example of JSON form:
     },
     "meta": {
         "series": "bgc",
-        "sub_series": "b-club special"
+        "sub_series": "b-club special",
         "ordering": 132,
         "comment": "please note that this book ...",
     },
     "parameters": {
-        "width": 2484
+        "width": 2484,
         "height": 3471,
         "resolution_mp": 8.62,
         "media_type": "static_image",
@@ -36,112 +36,16 @@ Example of JSON form:
     "tags": [],
 }
 """
-from copy import deepcopy
 from functools import cached_property
-from typing import List, Dict, Union, Set
+from typing import List, Set
 
 from common import synonims
+from common.metarecord_helpers import *
+from common.type_hints import JSON
 
-JSON = Dict[str, Union[int, float, str, dict, list, None]]
-
-
-class Serializable:
-    """Base class that gives dict conversion ability.
-    """
-
-    def to_dict(self) -> JSON:
-        """Convert instance to dict including attributes.
-        """
-        output = {}
-
-        for key, value in self.__dict__.items():
-            if key == 'kwargs':
-                # You must specifically describe
-                # attribute for it to be serializable
-                continue
-
-            if isinstance(value, type(self)):
-                # our attribute is another serializeable object
-                output[key] = value.to_dict()
-            else:
-                output[key] = deepcopy(value)
-
-        return output
-
-
-class ContentInfo(Serializable):
-    """Helper class for content description.
-    """
-
-    def __init__(self, content_path: str, preview_path: str,
-                 thumbnail_path: str, **kwargs) -> None:
-        """Initialize instance.
-        """
-        self.content_path = content_path
-        self.preview_path = preview_path
-        self.thumbnail_path = thumbnail_path
-        self.kwargs = kwargs
-
-
-class FileInfo(Serializable):
-    """Helper class for file description.
-    """
-
-    def __init__(self, ext: str, original_name: str,
-                 original_filename: str, **kwargs) -> None:
-        """Initialize instance.
-        """
-        self.ext = ext
-        self.original_name = original_name
-        self.original_filename = original_filename
-        self.kwargs = kwargs
-
-
-class Meta(Serializable):
-    """Helper class with meta information about the file.
-    """
-
-    def __init__(self, series: str, sub_series: str, ordering: int,
-                 comment: str, **kwargs) -> None:
-        """Initialize instance.
-        """
-        self.series = series
-        self.sub_series = sub_series
-        self.ordering = ordering
-        self.comment = comment
-        self.kwargs = kwargs
-
-
-class Parameters(Serializable):
-    """Helper class with specific file parameters.
-
-    These parameters will be used in search queries.
-    """
-
-    def __init__(self, width: int, height: int, resolution_mp: float,
-                 media_type: str, size: int, **kwargs) -> None:
-        """Initialize instance.
-        """
-        self.width = width
-        self.height = height
-        self.resolution_mp = resolution_mp
-        self.media_type = media_type
-        self.size = size
-        self.kwargs = kwargs
-
-
-class Registration(Serializable):
-    """Helper class with information about adding to the archive.
-    """
-
-    def __init__(self, registered_at: str, registered_by_username: str,
-                 registered_by_nickname: str, **kwargs) -> None:
-        """Initialize instance.
-        """
-        self.registered_at = registered_at
-        self.registered_by_username = registered_by_username
-        self.registered_by_nickname = registered_by_nickname
-        self.kwargs = kwargs
+__all__ = [
+    'Metarecord',
+]
 
 
 class Metarecord(Serializable):

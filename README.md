@@ -1,2 +1,3 @@
 # MediaStorageSystem
-System for saving media content with tags
+
+System for saving media content with tags.

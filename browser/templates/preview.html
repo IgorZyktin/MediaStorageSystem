@@ -1,6 +1,37 @@
 {% extends "index.html" %}
 {% block content %}
-    <h3>{{ uuid }}</h3>
+    <h3>Media ID: {{ metarecord.uuid }}</h3>
     <br>
-    <a href="/{{ content }}"><img src="/{{ preview }}"/></a>
+    <table>
+        <tr>
+            <td>
+                <a href="/{{ metarecord.content_info.url_path('content_path') }}">
+                    <img src="/{{ metarecord.content_info.url_path('preview_path') }}"
+                         alt="preview version of the content"/>
+                </a>
+            </td>
+            <td>
+                <h3>Information</h3>
+                <ul>
+                    <li>Original filename: {{ metarecord.file_info.original_filename }}</li>
+                    <li>Series: {{ metarecord.meta.series }}</li>
+                    <li>Sub series: {{ metarecord.meta.sub_series }}</li>
+                    <li>Ordering: {{ metarecord.meta.ordering }}</li>
+                    <li>Comment: {{ metarecord.meta.comment }}</li>
+
+                    <li>Width: {{ metarecord.parameters.width }}</li>
+                    <li>Height: {{ metarecord.parameters.height }}</li>
+                    <li>Resolution_mp: {{ metarecord.parameters.resolution_mp }}</li>
+                    <li>Media type: {{ metarecord.parameters.media_type }}</li>
+                    <li>Size: {{ metarecord.parameters.size }}</li>
+
+                    <li>Registered at: {{ metarecord.registration.registered_at }}</li>
+                    <li>Registered by nickname: {{ metarecord.registration.registered_by_nickname }}</li>
+
+                    <li>Tags: {{ metarecord.tags }}</li>
+                </ul>
+
+            </td>
+        </tr>
+    </table>
 {% endblock %}

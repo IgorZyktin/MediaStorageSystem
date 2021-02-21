@@ -1,8 +1,44 @@
 {% extends "index.html" %}
 {% block content %}
-    {% for image in images %}
-        <div class="envelope">
-            <a href="{{ image.preview }}"><img src="{{ image.path }}"/></a>
+
+    <span class="small">Total records in catalogue: {{ total_records_num }}</span>
+    <br>
+    <span class="small">Records found: {{ found_records_num }}</span>
+
+    {% if paginator.num_pages > 1 %}
+        <div class="pages">
+            {% if paginator.has_previous %}
+                <a href="{{ rewrite_query_for_paging(query, 1) }}">First</a>
+                <a href="{{ rewrite_query_for_paging(query, paginator.previous_page_number) }}">Previous</a>
+            {% endif %}
+
+            {% for is_dummy, is_current, page in paginator.iterate_over_pages() %}
+                {% if is_dummy %}
+                    <a class="inactive_page">...</a>
+                {% elif is_current %}
+                    <a href="{{ rewrite_query_for_paging(query, page) }}"
+                       class="current_page">{{ page }}</a>
+                {% else %}
+                    <a href="{{ rewrite_query_for_paging(query, page) }}">{{ page }}</a>
+                {% endif %}
+            {% endfor %}
+
+            {% if paginator.has_next %}
+                <a href="{{ rewrite_query_for_paging(query, paginator.next_page_number) }}">Next</a>
+                <a href="{{ rewrite_query_for_paging(query, paginator.num_pages) }}">Last</a>
+            {% endif %}
         </div>
-    {% endfor %}
+    {% endif %}
+
+    <div class="content">
+        {% for metarecord in paginator %}
+            <div class="envelope">
+                <a href="/preview/{{ metarecord.uuid }}">
+                    <img src="{{ metarecord.content_info.url_path('thumbnail_path') }}"
+                         alt="{{ metarecord.file_info.original_name }}"/>
+                </a>
+            </div>
+        {% endfor %}
+    </div>
+
 {% endblock %}

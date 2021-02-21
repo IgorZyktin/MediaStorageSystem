@@ -2,22 +2,14 @@
 
 """Special utils created to work with filesystem.
 """
-import json
 import os
+from collections import defaultdict
 from pathlib import Path
-from typing import Set, List, Generator, Optional, Collection, Tuple, Dict, Any
+from typing import List, Generator, Optional, Collection, Tuple, Dict
+
+import ujson as ujson
 
 from common.metarecord_class import Metarecord
-
-
-def gen_known_uids(root_path: str, base_type: str = 'json') -> Set[str]:
-    """Get set all all known UUIDs.
-    """
-    filenames = os.listdir(join(root_path, 'metainfo'))
-    return {
-        x
-        for x in iterate_over_filenames(filenames, extensions=[base_type])
-    }
 
 
 def split_extension(filename: str) -> Tuple[str, Optional[str]]:
@@ -34,7 +26,7 @@ def split_extension(filename: str) -> Tuple[str, Optional[str]]:
 def iterate_over_filenames(sequence: List[str],
                            extensions: Optional[Collection[str]] = None
                            ) -> Generator[str, None, None]:
-    """Yield filename or None if extension is not what we're looking for.
+    """Yield filename or None if this extension is not what we're looking for.
     """
     extensions = set(extensions) if extensions else set()
 
@@ -103,23 +95,38 @@ def ensure_folder_exists(path: str) -> Optional[str]:
     return current_path
 
 
-def get_all_metainfo(root_path: str) -> Dict[str, Metarecord]:
-    """Load all metainfo content from HDD.
+def get_metarecords(*locations: str, limit: int = -1) -> Dict[str, Metarecord]:
+    """Load all metainfo as instances of Metarecord.
     """
-    metainfo_path = join(root_path, 'metainfo')
-    filenames = os.listdir(metainfo_path)
+    combined_metainfo = defaultdict(dict)
 
+    for location in locations:
+        for uuid, content in load_raw_metainfo(location).items():
+            combined_metainfo[uuid].update(content)
+
+            if 0 < limit <= len(combined_metainfo):
+                break
+
+    clean_metainfo = {}
+
+    for uuid, content in combined_metainfo.items():
+        clean_metainfo[uuid] = Metarecord(**content)
+
+    return clean_metainfo
+
+
+def load_raw_metainfo(folder: str, file_type: str = 'json') -> Dict[str, dict]:
+    """Load metarecords as dicts from given folder.
+    """
+    filenames = os.listdir(folder)
     metainfo = {}
-    for filename in filenames:
-        if filename.endswith('.json'):
-            path = join(metainfo_path, filename)
-            with open(path, mode='r', encoding='utf-8') as file:
-                content = json.load(file)
-                metarecord = Metarecord(**content)
-                metainfo[metarecord.uuid] = metarecord
 
-                # FIXME
-                # if len(metainfo) > 10:
-                #     break
+    for filename in filenames:
+        if filename.endswith(file_type):
+            path = join(folder, filename)
+            with open(path, mode='r', encoding='utf-8') as file:
+                content = ujson.load(file)
+                uuid = content['uuid']
+                metainfo[uuid] = content
 
     return metainfo

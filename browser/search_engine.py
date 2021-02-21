@@ -1,7 +1,14 @@
 import random
 import re
 
-pat = re.compile(r'(\sAND\s|\sOR\s|\sNOT\s)')
+OPERATORS = {
+    'AND',
+    'OR',
+    'NOT',
+}
+
+string = '|'.join(r'\s+{}\s+'.format(x) for x in OPERATORS)
+pat = re.compile('(' + string + ')')
 
 
 class Finder:
@@ -23,53 +30,58 @@ def grouped(iterable, n):
     return zip(*[iter(iterable)] * n)
 
 
-def build_query(raw_query: str) -> Finder:
+def make_searching_machine(raw_query: str) -> Finder:
     parts = pat.split(raw_query)
     parts = [x.strip() for x in parts if x.strip()]
     finder = Finder()
     if not parts:
         return finder
-    if parts[0] not in ['AND', 'OR', 'NOT']:
+
+    if parts[0] not in OPERATORS:
         parts.insert(0, 'OR')
 
     for operator, operand in grouped(parts, 2):
-        if operator == 'OR':
+        if operator == 'OR' or operand == '?':
             finder.or_.add(operand)
-        elif operator == 'AND':
+        elif operator == 'AND' or operator == '+':
             finder.and_.add(operand)
-        elif operator == 'NOT':
+        elif operator == 'NOT' or operator == '-':
             finder.not_.add(operand)
 
     return finder
 
 
-def select_images(metainfo: dict, finder, amount):
-    chosen = []
+def s(x):
+    return (
+        x[1].meta.series,
+        x[1].meta.sub_series,
+        x[1].meta.ordering,
+    )
 
-    if not finder.and_ and not finder.or_ and not finder.not_:
-        uuids = random.sample(metainfo.keys(), min(amount, len(metainfo)))
-        chosen = [(x, metainfo[x]) for x in uuids]
-    else:
-        for uuid, meta in metainfo.items():
-            tags = meta.extended_tags_set
 
-            if (finder.and_ & tags == finder.and_ or not finder.and_) \
-                    and (not finder.not_ & tags or not finder.not_) \
-                    and (finder.or_ & tags or not finder.or_):
-                chosen.append((uuid, meta))
-
-    def s(x):
-        return (
-            x[1].meta.series,
-            x[1].meta.sub_series,
-            x[1].meta.ordering,
-        )
+def select_random_images(metainfo: dict, items_per_page):
+    uuids = random.sample(metainfo.keys(), min(items_per_page, len(metainfo)))
+    chosen = [(x, metainfo[x]) for x in uuids]
 
     chosen.sort(key=s)
-    objs = []
-    for uuid, meta in chosen[:amount]:
-        objs.append({
-            'path': meta.content_info.thumbnail_path.replace('\\', '/'),
-            'preview': f'/preview/{uuid}',
-        })
-    return len(chosen), objs
+
+    return [x[1] for x in chosen]
+
+
+def select_images(metainfo: dict, searching_machine):
+    chosen = []
+
+    for uuid, meta in metainfo.items():
+        tags = meta.extended_tags_set
+
+        if (
+                searching_machine.and_ & tags == searching_machine.and_ or not searching_machine.and_) \
+                and (
+                not searching_machine.not_ & tags or not searching_machine.not_) \
+                and (
+                searching_machine.or_ & tags or not searching_machine.or_):
+            chosen.append((uuid, meta))
+
+    chosen.sort(key=s)
+
+    return [x[1] for x in chosen]

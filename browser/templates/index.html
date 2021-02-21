@@ -3,32 +3,31 @@
 <head>
     <meta charset="UTF-8">
     <link type="text/css" href="/static/styles.css" rel="stylesheet">
-    <script src="/static/scripts.js"></script>
+{#    <script src="/static/scripts.js"></script>#}
     <title>{{ title }}</title>
 </head>
 <body>
+<span class="small">Version: {{ version }}</span>
 
 <div class="flex_vertical">
-    <span>Total records in catalogue: {{ total }}</span>
     <form method="post" action="/">
-        <div class="header_query">
-            <div><a href="/"><img class="icon" src="/static/home-24px.svg"
-                                  alt="Redirect to the starting page"/></a>
-            </div>
-            <label for="query">What to search<input id="query" name="query"
-                                                    type="search"
-                                                    value="{{ query }}"></label>
-            <input type="submit" class="btn active" value="Search"/>
+        <div class="query">
+            <input type="submit" class="btn active" name="clear"
+                   value="Home"/>
+            <label for="query">
+                <input id="query" name="query"
+                       type="search"
+                       value="{{ query }}" style="width: 800px;">
+            </label>
+            <input type="submit" class="btn active" name="search"
+                   value="Search"/>
         </div>
     </form>
-    <span>Records found: {{ found }}</span>
 </div>
 
 <hr>
 
-<div class="content">
-    {% block content %}{% endblock %}
-</div>
+{% block content %}{% endblock %}
 
 </body>
 </html>

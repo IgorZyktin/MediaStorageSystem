@@ -3,6 +3,7 @@
     --my_color_active: #77a2b5;
     --my_color_pale: #3a4b56;
     --my_color_bright: #e59880;
+    --my_color_dark: #253139;
     --min_width: 800px;
     --max_width: 1500px;
     --radius: 5px;
@@ -24,22 +25,21 @@ h1, h2, h3 {
 
 input, select {
     height: 1.8em;
-    margin: 10px 20px 10px 10px;
 }
 
-.header_query {
+.query {
     display: flex;
     flex-direction: row;
     max-width: var(--max_width);
     margin-left: auto;
     margin-right: auto;
+    justify-content: center;
 }
 
 input {
-    width: 100%;
     font-size: 16pt;
     padding: 5px;
-    margin: 10px 10px 10px 0;
+    margin: 10px;
     display: inline-block;
 }
 
@@ -55,6 +55,7 @@ input {
     margin-top: 10px;
     margin-bottom: 10px;
     border: 1px solid var(--my_color_active);
+    max-width: 100px;
 }
 
 .active {
@@ -109,7 +110,7 @@ hr {
     flex-direction: row;
     margin-left: auto;
     margin-right: auto;
-        align-items: stretch;
+    align-items: stretch;
     flex-wrap: wrap;
     justify-content: space-evenly;
 }
@@ -117,4 +118,36 @@ hr {
 .flex_vertical {
     display: flex;
     flex-direction: column;
+}
+
+.pages {
+    width: 100%;
+    max-width: var(--max_width);
+    display: flex;
+    flex-direction: row;
+    margin-left: auto;
+    margin-right: auto;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.pages a {
+    color: var(--my_color);
+    background-color: var(--my_color_pale);
+    border-radius: var(--radius);
+    padding: 5px 15px;
+    margin: 5px;
+    text-decoration: none;
+}
+
+.current_page {
+    background-color: violet !important;
+}
+
+.inactive_page {
+    background-color: var(--my_color_dark) !important;
+}
+
+.small {
+    font-size: 12pt;
 }

@@ -6,6 +6,10 @@ from typing import Set
 
 SYNONYMS = [
     {
+      '__testing',
+      '__another_testing',
+    },
+    {
         'bgc',
         'bgc2032',
         'bgcrisis',
