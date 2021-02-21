@@ -26,6 +26,7 @@ Example of JSON form:
         "height": 3471,
         "resolution_mp": 8.62,
         "media_type": "static_image",
+        "size": 564556,
     },
     "registration": {
         "registered_at": "2021-02-20",
@@ -49,7 +50,7 @@ class Serializable:
     """
 
     def to_dict(self) -> JSON:
-        """Convert instance to dict recursively.
+        """Convert instance to dict including attributes.
         """
         output = {}
 
@@ -118,13 +119,14 @@ class Parameters(Serializable):
     """
 
     def __init__(self, width: int, height: int, resolution_mp: float,
-                 media_type: str, **kwargs) -> None:
+                 media_type: str, size: int, **kwargs) -> None:
         """Initialize instance.
         """
         self.width = width
         self.height = height
         self.resolution_mp = resolution_mp
         self.media_type = media_type
+        self.size = size
         self.kwargs = kwargs
 
 
@@ -133,12 +135,13 @@ class Registration(Serializable):
     """
 
     def __init__(self, registered_at: str, registered_by_username: str,
-                 registered_by_nickname: str) -> None:
+                 registered_by_nickname: str, **kwargs) -> None:
         """Initialize instance.
         """
         self.registered_at = registered_at
         self.registered_by_username = registered_by_username
         self.registered_by_nickname = registered_by_nickname
+        self.kwargs = kwargs
 
 
 class Metarecord(Serializable):
@@ -151,7 +154,7 @@ class Metarecord(Serializable):
         """Initialize instance.
         """
         self.uuid = uuid
-        self.content = ContentInfo(**content_info)
+        self.content_info = ContentInfo(**content_info)
         self.file_info = FileInfo(**file_info)
         self.meta = Meta(**meta)
         self.parameters = Parameters(**parameters)
@@ -166,7 +169,7 @@ class Metarecord(Serializable):
                 f'<uuid={self.uuid}, {self.file_info.original_filename!r}>')
 
     @property
-    def unique_name(self) -> str:
+    def unique_filename(self) -> str:
         """Return base filename with uuid added.
         """
         return (f'{self.file_info.original_name}'
