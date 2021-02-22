@@ -1,6 +1,5 @@
 # MediaStorageSystem
 
----
 System for saving media content with tags.
 
 Initial idea was to build a system in which you could 
@@ -17,7 +16,7 @@ be no duplicates at the end".
 - [Browser](browser/README.md)
     
     Allows you to browse what's inside the archive. 
-    Built as a web app and planned to be deployable as a web server is future.
+    Built as a web app and planned to be deployable as a web server in the future.
 
 
 - [Register](register/README.md)
