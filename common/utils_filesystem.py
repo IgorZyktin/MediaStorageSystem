@@ -9,7 +9,7 @@ from typing import List, Generator, Optional, Collection, Tuple, Dict
 
 import json
 
-from common.metarecord_class import Metarecord
+from common.metarecord_class import Metarecord, Metainfo
 
 
 def split_extension(filename: str) -> Tuple[str, Optional[str]]:
@@ -95,7 +95,7 @@ def ensure_folder_exists(path: str) -> Optional[str]:
     return current_path
 
 
-def get_metarecords(*locations: str, limit: int = -1) -> Dict[str, Metarecord]:
+def get_metarecords(*locations: str, limit: int = -1) -> Metainfo:
     """Load all metainfo as instances of Metarecord.
     """
     combined_metainfo = defaultdict(dict)
@@ -118,6 +118,9 @@ def get_metarecords(*locations: str, limit: int = -1) -> Dict[str, Metarecord]:
 def load_raw_metainfo(folder: str, file_type: str = 'json') -> Dict[str, dict]:
     """Load metarecords as dicts from given folder.
     """
+    if not os.path.exists(folder):
+        return {}
+
     filenames = os.listdir(folder)
     metainfo = {}
 

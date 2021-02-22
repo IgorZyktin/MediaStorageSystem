@@ -3,26 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <link type="text/css" href="/static/styles.css" rel="stylesheet">
-{#    <script src="/static/scripts.js"></script>#}
+    {#    <script src="/static/scripts.js"></script>#}
     <title>{{ title }}</title>
 </head>
 <body>
-<span class="small">Version: {{ version }}</span>
 
 <div class="flex_vertical">
     <form method="post" action="/">
         <div class="query">
-            <input type="submit" class="btn active" name="clear"
-                   value="Home"/>
+            <a href="/" class="btn active">Clear</a>
             <label for="query">
                 <input id="query" name="query"
                        type="search"
                        value="{{ query }}" style="width: 800px;">
             </label>
-            <input type="submit" class="btn active" name="search"
-                   value="Search"/>
-            <input type="submit" class="btn active" name="tags"
-                   value="Tags"/>
+            <input type="submit" class="btn active" name="search" value="Search"/>
+            <a href="/tags" class="btn active">Tags</a>
         </div>
     </form>
 </div>

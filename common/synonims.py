@@ -5,28 +5,22 @@
 from typing import Set
 
 SYNONYMS = [
-    {
-      '__testing',
-      '__another_testing',
-    },
-    {
-        'bgc',
-        'bgc2032',
-        'bgcrisis',
-        'bublegum crisis',
-        'bubblegum crisis classic'
-    },
-    {
-        'bgcrash',
-        'bubblegum crash',
-        'bubblegum crash!',
-        'bgc2033'
-    },
-    {
-        'bgc2040',
-        'bubblegum crisis 2040',
-        'bubblegum crisis tokyo 2040',
-    }
+    {'__testing', '__another_testing'},
+
+    {'bgc', 'bgc2032', 'bgcrisis',
+     'bubblegum crisis', 'bubblegum crisis classic'},
+
+    {'bgcrash', 'bubblegum crash', 'bubblegum crash!', 'bgc2033'},
+
+    {'bgc2040', 'bubblegum crisis 2040', 'bubblegum crisis tokyo 2040'},
+
+    {'nene', 'nene romanova', 'romanova'},
+
+    {'priss', 'priss asagiri', 'priss s. asagiri', 'asagiri'},
+
+    {'linna', 'linna yamazaki', 'yamazaki'},
+
+    {'sylia', 'sylia stingray', 'stingray'},
 ]
 
 

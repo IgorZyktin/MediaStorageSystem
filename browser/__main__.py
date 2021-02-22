@@ -2,7 +2,6 @@
 
 """Main file.
 """
-from collections import defaultdict
 
 from flask import Flask, render_template, request, send_from_directory, abort
 
@@ -16,13 +15,16 @@ metainfo = utils_filesystem.get_metarecords(
     settings.LOCAL_CHANGES_PATH,
     limit=settings.METARECORD_LOAD_LIMIT,
 )
-TOTAL = len(metainfo)
-TAGS_CACHE = []
+TAG_STATS = utils_browser.calculate_stats_for_tags(metainfo)
+TOTAL = utils_text.sep_digits(len(metainfo))
 
 
 @app.route('/root/<path:filename>')
 def serve_static(filename: str):
     """Serve static files from main storage.
+
+    Contents of the main storage are served through this function.
+    It's not about static css or js files.
     """
     return send_from_directory(settings.ROOT_PATH, filename, conditional=True)
 
@@ -36,11 +38,10 @@ def index():
         return utils_browser.add_query(request)
 
     query = request.args.get('q', '')
-    page = int(request.args.get('page', 1))
+    current_page = int(request.args.get('page', 1))
 
     if query:
         searching_machine = search_engine.make_searching_machine(query)
-
         chosen_metarecords = search_engine.select_images(
             metainfo=metainfo,
             searching_machine=searching_machine,
@@ -53,16 +54,15 @@ def index():
 
     paginator = Paginator(
         sequence=chosen_metarecords,
-        current_page=page,
+        current_page=current_page,
         items_per_page=settings.ITEMS_PER_PAGE,
     )
 
     context = {
-        'version': settings.VERSION,
-        'title': 'Starting page',
+        'title': 'Index',
         'paginator': paginator,
         'total_records_num': TOTAL,
-        'found_records_num': len(paginator),
+        'found_records_num': utils_text.sep_digits(len(paginator)),
         'query': query,
         'rewrite_query_for_paging': utils_browser.rewrite_query_for_paging,
     }
@@ -79,7 +79,6 @@ def preview(uuid: str):
         abort(404)
 
     context = {
-        'version': settings.VERSION,
         'title': f'Preview for {uuid}',
         'metarecord': metarecord,
         'byte_count_to_text': utils_text.byte_count_to_text
@@ -89,26 +88,14 @@ def preview(uuid: str):
 
 @app.route('/tags')
 def tags():
-    """Enlist all available tags.
+    """Enlist all available tags with their frequencies.
     """
-    if not TAGS_CACHE:
-        raw_tags = defaultdict(int)
-        for each in metainfo.values():
-            for tag in each.extended_tags_set:
-                raw_tags[tag] += 1
-
-        for tag, times in raw_tags.items():
-            TAGS_CACHE.append((tag, times))
-
-        TAGS_CACHE.sort(key=lambda x: x[1], reverse=True)
-
     context = {
-        'version': settings.VERSION,
         'title': 'All tags',
-        'tags': TAGS_CACHE,
+        'tags': TAG_STATS,
     }
     return render_template('tags.html', **context)
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=settings.DEBUG)

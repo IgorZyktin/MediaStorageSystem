@@ -49,7 +49,7 @@ Example of JSON form:
 }
 """
 from functools import cached_property
-from typing import List, Set
+from typing import List, Set, Dict, Tuple
 
 from common import synonims
 from common.metarecord_helpers import *
@@ -57,6 +57,8 @@ from common.type_hints import JSON
 
 __all__ = [
     'Metarecord',
+    'Metainfo',
+    'Pair',
 ]
 
 
@@ -103,9 +105,14 @@ class Metarecord(Serializable):
         """Return tags of the record and anything tag-like.
         """
         extended_tags = {
-            *self.tags_set,
+            *(tag.lower() for tag in self.tags_set),
             self.meta.series,
             self.meta.sub_series,
         }
+        # TODO - what if I would like not to use synonyms?
         synonims.extend_tags_with_synonyms(extended_tags)
         return extended_tags
+
+
+Metainfo = Dict[str, Metarecord]
+Pair = Tuple[str, Metarecord]
