@@ -7,7 +7,8 @@ import os
 VERSION = '001 - 20201-02-20'
 
 # paths
-BASE_PATH = 'D:\\BGC_ARCHIVE\\'
+BASE_PATH = '.'
+# BASE_PATH = 'D:\\BGC_ARCHIVE\\'
 ROOT_PATH = os.path.join(BASE_PATH, 'root')
 METAINFO_PATH = os.path.join(ROOT_PATH, 'metainfo')
 LOCAL_CHANGES_PATH = os.path.join(ROOT_PATH, 'local_changes')

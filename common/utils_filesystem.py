@@ -7,7 +7,7 @@ from collections import defaultdict
 from pathlib import Path
 from typing import List, Generator, Optional, Collection, Tuple, Dict
 
-import ujson as ujson
+import json
 
 from common.metarecord_class import Metarecord
 
@@ -125,7 +125,7 @@ def load_raw_metainfo(folder: str, file_type: str = 'json') -> Dict[str, dict]:
         if filename.endswith(file_type):
             path = join(folder, filename)
             with open(path, mode='r', encoding='utf-8') as file:
-                content = ujson.load(file)
+                content = json.load(file)
                 uuid = content['uuid']
                 metainfo[uuid] = content
 
