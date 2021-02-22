@@ -3,6 +3,7 @@
 """Helper classes, created to construct metarecord class.
 """
 from copy import deepcopy
+from typing import List
 
 from common.type_hints import JSON
 
@@ -13,6 +14,7 @@ __all__ = [
     'Meta',
     'Parameters',
     'Registration',
+    'Origin',
 ]
 
 
@@ -80,19 +82,19 @@ class Meta(Serializable):
     """
 
     def __init__(self, series: str, sub_series: str, ordering: int,
-                 comment: str, **kwargs) -> None:
+                 comment: str, group_id: str, group_uuids: List[str],
+                 next_record: str, previous_record: str, **kwargs) -> None:
         """Initialize instance.
         """
         self.series = series
         self.sub_series = sub_series
         self.ordering = ordering
         self.comment = comment
+        self.group_id = group_id
+        self.group_uuids = group_uuids
+        self.next_record = next_record
+        self.previous_record = previous_record
         self.kwargs = kwargs
-
-        # TODO - additional fields
-        #  next - next file in group
-        #  previous - previous file in group
-        #  related - all other files in group
 
 
 class Parameters(Serializable):
@@ -124,4 +126,18 @@ class Registration(Serializable):
         self.registered_at = registered_at
         self.registered_by_username = registered_by_username
         self.registered_by_nickname = registered_by_nickname
+        self.kwargs = kwargs
+
+
+class Origin(Serializable):
+    """Helper class with information about author.
+    """
+
+    def __init__(self, author: str, url: str,
+                 profile: str, **kwargs) -> None:
+        """Initialize instance.
+        """
+        self.author = author
+        self.url = url
+        self.profile = profile
         self.kwargs = kwargs

@@ -151,3 +151,31 @@ hr {
 .small {
     font-size: 12pt;
 }
+
+.preview_block {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-content: center;
+}
+
+.preview_block div {
+    margin: 20px;
+}
+
+.preview_table {
+    border-collapse: collapse;
+}
+
+.preview_table, td, th {
+    border: 1px solid var(--my_color_pale);
+}
+
+td, th {
+    padding: 5px;
+    min-width: 250px;
+}
+
+th {
+    background-color: var(--my_color_dark);
+}

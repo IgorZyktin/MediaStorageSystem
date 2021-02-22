@@ -40,48 +40,42 @@ def fix_tags():
 def fix_structure():
     folder = 'D:\\BGC_ARCHIVE\\root\\metainfo'
 
+    targets = []
     for filename in iterate_on_files(folder):
-        print(filename)
         with open(filename, mode='r', encoding='utf-8') as file:
             old_content = json.load(file)
 
-        file_path = os.path.join('D:\\BGC_ARCHIVE\\', old_content['content_path'])
-        size = os.path.getsize(file_path)
+        if old_content['meta']['group_id'] == 'bgcrash b-club special':
+            targets.append((filename, old_content))
 
-        new_content = {
-            'uuid': old_content['uuid'],
-            'content': {
-                'content_path': old_content['content_path'],
-                'preview_path': old_content['preview_path'],
-                'thumbnail_path': old_content['thumbnail_path'],
-            },
-            'file_info': {
-                'original_filename': old_content['original_filename'],
-                'original_name': old_content['original_name'],
-                'ext': old_content['ext'],
-            },
-            'meta': {
-                'series': old_content['meta']['series'],
-                'sub_series': old_content['meta']['sub_series'],
-                'ordering': old_content['meta']['ordering'],
-                'comment': old_content['meta'].get('comment'),
-            },
-            'parameters': {
-                'width': old_content['parameters']['width'],
-                'height': old_content['parameters']['height'],
-                'resolution_mp': old_content['parameters']['resolution_mp'],
-                'media_type': old_content['media_type'],
-                'size': size,
-            },
-            'registration': {
-                'registered_at': old_content['registered_at'],
-                'registered_by_username': old_content['registered_by'].split('___')[0],
-                'registered_by_nickname': old_content['registered_by'].split('___')[-1],
-            },
-            'tags': old_content['tags'],
-        }
+    targets.sort(key=lambda x: x[1]['meta']['ordering'])
+
+    uuids = [x[1]['uuid'] for x in targets]
+
+    for i in range(len(targets)):
+        current = targets[i][1]
+
+        assert current['uuid'] == uuids[i]
+
+        current['meta']['group_uuids'] = uuids
+
+        if i == 0:
+            current['meta']['previous'] = ''
+            current['meta']['next'] = uuids[1]
+
+        elif i == len(targets) - 1:
+            current['meta']['previous'] = uuids[-2]
+            current['meta']['next'] = ''
+
+        else:
+            current['meta']['previous'] = uuids[i - 1]
+            current['meta']['next'] = uuids[i + 1]
+
+    for filename, content in targets:
+        print(filename)
+
         with open(filename, mode='w', encoding='utf-8') as file:
-            json.dump(new_content, file, ensure_ascii=False, indent=4)
+            json.dump(content, file, ensure_ascii=False, indent=4)
 
 
 def fix_one_key():
@@ -92,7 +86,8 @@ def fix_one_key():
         with open(filename, mode='r', encoding='utf-8') as file:
             content = file.read()
 
-        content = content.replace("content_info_path", "content_path")
+        content = content.replace('"next"', '"next_record"')
+        content = content.replace('"previous"', '"previous_record"')
 
         with open(filename, mode='w', encoding='utf-8') as file:
             file.write(content)

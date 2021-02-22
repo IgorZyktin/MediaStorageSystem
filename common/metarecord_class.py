@@ -20,6 +20,13 @@ Example of JSON form:
         "sub_series": "b-club special",
         "ordering": 132,
         "comment": "please note that this book ...",
+        "group_id": "bgc b-club special",
+        "group_uuids": [
+            "aa11a638-b369-45b8-9743-f67a33e40b45",
+            "8f2e8475-3972-491b-b93d-f8a794392030",
+        ],
+        "next_record": "135668be-64c6-4254-80c7-bde5a56a3501",
+        "previous_record": "0db7c6b0-957b-408b-930d-eb9825af78e3"
     },
     "parameters": {
         "width": 2484,
@@ -32,6 +39,11 @@ Example of JSON form:
         "registered_at": "2021-02-20",
         "registered_by_username": "Igor Zyktin",
         "registered_by_nickname": "Nicord",
+    },
+    "origin": {
+        "author": "Somebody",
+        "url": "https://...",
+        "profile": "https://..."
     },
     "tags": [],
 }
@@ -54,7 +66,7 @@ class Metarecord(Serializable):
 
     def __init__(self, uuid: str, content_info: JSON, file_info: JSON,
                  meta: JSON, parameters: JSON, registration: JSON,
-                 tags: List[str], **kwargs) -> None:
+                 origin: JSON, tags: List[str], **kwargs) -> None:
         """Initialize instance.
         """
         self.uuid = uuid
@@ -63,6 +75,7 @@ class Metarecord(Serializable):
         self.meta = Meta(**meta)
         self.parameters = Parameters(**parameters)
         self.registration = Registration(**registration)
+        self.origin = Origin(**origin)
         self.tags = tags
         self.kwargs = kwargs
 

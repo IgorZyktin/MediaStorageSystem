@@ -5,8 +5,6 @@
 import math
 from typing import Sequence, Tuple, Generator
 
-PAGINATION_WINDOW = 5
-
 
 class Paginator:
     """Helper class created to handle pagination.
@@ -76,6 +74,14 @@ class Paginator:
         # FIXME
         for i in range(1, self.num_pages + 1):
             yield False, i == self.current_page, i
+
+        # TODO - as it is supposed to look
+        #  when amount of pages is small
+        #  [First] [Previous] [1] [_2_] [3] [4] [5]
+        #  when there are lots of pages
+        #  [First] [Previous] [1] [_2_] [3] [...] [55] [56] [57] [...] [108]
+        #  that sliding windows are actually more complicated that I've
+        #  thought at first
 
         # if self.num_pages <= PAGINATION_WINDOW * 3:
         # else:

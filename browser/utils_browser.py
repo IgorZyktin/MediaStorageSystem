@@ -13,6 +13,9 @@ def add_query(request):
     if 'clear' in request.form:
         return redirect(url)
 
+    if 'tags' in request.form:
+        return redirect('/tags')
+
     raw_query = request.form.get('query')
     if raw_query:
         url += 'search?q=' + raw_query
