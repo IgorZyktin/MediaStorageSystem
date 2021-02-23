@@ -113,7 +113,7 @@ def select_random_images(metainfo: Metainfo,
     return get_sorted_metainfo_records(chosen_pais)
 
 
-def select_images(metainfo: Metainfo, searching_machine, synonyms: dict):
+def select_images(metainfo: Metainfo, searching_machine):
     """Return all metarecords, that match to a given query.
     """
     chosen_pais = []
@@ -123,7 +123,7 @@ def select_images(metainfo: Metainfo, searching_machine, synonyms: dict):
     not_ = searching_machine.not_
 
     for uuid, meta in metainfo.items():
-        tags = meta.get_extended_tags_set(synonyms)
+        tags = meta.extended_tags_with_synonyms
 
         # condition for and - all words must be present
         # condition for or - at least one word must be present

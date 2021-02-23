@@ -10,7 +10,7 @@ from werkzeug.utils import redirect
 from common.metarecord_class import Metainfo
 
 
-def add_query(request):
+def add_query_to_path(request):
     """Get query from form and add it to path.
     """
     url = '/'
@@ -25,6 +25,7 @@ def add_query(request):
 def rewrite_query_for_paging(query: str, target_page: int) -> str:
     """Change query to generate different page.
     """
+    # TODO - this will stop working when search filtering will be introduced :(
     return '/search?q=' + query + f'&page={target_page}'
 
 
@@ -45,3 +46,22 @@ def calculate_stats_for_tags(metainfo: Metainfo,
     stats.sort(key=lambda x: x[1], reverse=reverse)
 
     return stats
+
+
+def extend_tags_with_synonyms(given_tags: Set[str],
+                              given_synonyms: Dict[str, List[str]]
+                              ) -> Set[str]:
+    """Mutate given tags by adding synonyms to them.
+    """
+    sets = [set(x) for x in given_synonyms.values()]
+
+    resulting_tags = set()
+
+    for tag in list(given_tags):
+        resulting_tags.add(tag)
+
+        for entry in sets:
+            if tag in entry:
+                resulting_tags.update(entry)
+
+    return resulting_tags

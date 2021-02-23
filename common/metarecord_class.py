@@ -80,7 +80,7 @@ class Metarecord(Serializable):
         self.tags = tags
         self.kwargs = kwargs
 
-        self._extended_tags_set_cache = set()
+        self._extended_tags_with_synonyms = set()
 
     def __repr__(self) -> str:
         """Return textual representation.
@@ -101,38 +101,27 @@ class Metarecord(Serializable):
         """
         return set(self.tags)
 
-    def get_extended_tags_set(self,
-                              synonyms: Dict[str, List[str]]) -> Set[str]:
+    @cached_property
+    def extended_tags_set(self) -> Set[str]:
         """Return tags of the record and anything tag-like.
         """
-        if self._extended_tags_set_cache:
-            return self._extended_tags_set_cache
-
-        extended_tags = {
+        return {
             *(tag.lower() for tag in self.tags_set),
             self.meta.series,
             self.meta.sub_series,
         }
-        # TODO - what if I would like not to use synonyms?
-        extend_tags_with_synonyms(
-            extended_tags,
-            synonyms
-        )
-        self._extended_tags_set_cache = extended_tags
 
-        return extended_tags
+    @property
+    def extended_tags_with_synonyms(self) -> Set[str]:
+        """Store tags of the record and anything tag-like.
+        """
+        return self._extended_tags_with_synonyms
 
-
-def extend_tags_with_synonyms(given_tags: Set[str],
-                              given_synonyms: Dict[str, List[str]]) -> None:
-    """Mutate given tags by adding synonyms to them.
-    """
-    sets = [set(x) for x in given_synonyms.values()]
-
-    for tag in list(given_tags):
-        for entry in sets:
-            if tag in entry:
-                given_tags.update(entry)
+    @extended_tags_with_synonyms.setter
+    def extended_tags_with_synonyms(self, new_tags: Set[str]) -> None:
+        """Store tags of the record and anything tag-like.
+        """
+        self._extended_tags_with_synonyms = new_tags
 
 
 Metainfo = Dict[str, Metarecord]

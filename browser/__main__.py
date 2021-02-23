@@ -23,6 +23,13 @@ TOTAL_TAGS = utils_text.sep_digits(len(TAG_STATS))
 TOTAL_BYTES = sum(x.parameters.size for x in metainfo.values())
 TOTAL_SIZE = utils_text.byte_count_to_text(TOTAL_BYTES)
 
+for record in metainfo.values():
+    new_tags = utils_browser.extend_tags_with_synonyms(
+        given_tags=record.extended_tags_set,
+        given_synonyms=SYNONYMS,
+    )
+    record.extended_tags_with_synonyms = new_tags
+
 
 @app.route('/root/<path:filename>')
 def serve_static(filename: str):
@@ -40,7 +47,7 @@ def index():
     """Main page of the script.
     """
     if request.method == 'POST':
-        return utils_browser.add_query(request)
+        return utils_browser.add_query_to_path(request)
 
     query = request.args.get('q', '')
     current_page = int(request.args.get('page', 1))
@@ -51,7 +58,6 @@ def index():
         chosen_metarecords = search_engine.select_images(
             metainfo=metainfo,
             searching_machine=searching_machine,
-            synonyms=SYNONYMS,
         )
     else:
         chosen_metarecords = search_engine.select_random_images(
