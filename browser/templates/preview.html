@@ -1,7 +1,5 @@
 {% extends "index.html" %}
 {% block content %}
-    <h3>Media ID: {{ metarecord.uuid }}</h3>
-    <br>
     <div class="preview_block">
 
         <div>
@@ -92,28 +90,28 @@
                     <td colspan="2">
                         <ol>
                             {% for tag in metarecord.tags %}
-                                <li>{{ tag }}</li>
+                                <li><a href="/search?q={{ tag }}">{{ tag }}</a></li>
                             {% endfor %}
                         </ol>
                     </td>
                 </tr>
 
                 {% if metarecord.origin.author %}
-                <tr>
-                    <th colspan="2">Origin</th>
-                </tr>
-                <tr>
-                    <td>Url</td>
-                    <td>{{ metarecord.origin.url }}</td>
-                </tr>
-                <tr>
-                    <td>Author</td>
-                    <td>{{ metarecord.origin.author }}</td>
-                </tr>
-                <tr>
-                    <td>Profile</td>
-                    <td>{{ metarecord.origin.profile }}</td>
-                </tr>
+                    <tr>
+                        <th colspan="2">Origin</th>
+                    </tr>
+                    <tr>
+                        <td>Url</td>
+                        <td>{{ metarecord.origin.url }}</td>
+                    </tr>
+                    <tr>
+                        <td>Author</td>
+                        <td>{{ metarecord.origin.author }}</td>
+                    </tr>
+                    <tr>
+                        <td>Profile</td>
+                        <td>{{ metarecord.origin.profile }}</td>
+                    </tr>
                 {% endif %}
 
             </table>

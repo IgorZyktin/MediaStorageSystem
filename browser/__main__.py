@@ -71,12 +71,15 @@ def index():
         items_per_page=settings.ITEMS_PER_PAGE,
     )
 
+    records = utils_text.sep_digits(len(paginator))
+    duration = '{:0.4f}'.format(time.perf_counter() - start)
+    note = f'{records} records found in {duration} seconds'
+
     context = {
-        'title': 'Index',
+        'title': 'MSS',
         'paginator': paginator,
-        'found_records_num': utils_text.sep_digits(len(paginator)),
-        'duration': '{:0.4f}'.format(time.perf_counter() - start),
         'query': query,
+        'note': note,
         'rewrite_query_for_paging': utils_browser.rewrite_query_for_paging,
     }
     return render_template('content.html', **context)
@@ -91,9 +94,17 @@ def preview(uuid: str):
     if metarecord is None:
         abort(404)
 
+    group_id = metarecord.meta.group_id
+    if group_id:
+        note = f'This file seem to be part of something called "{group_id}"'
+    else:
+        note = ''
+
     context = {
-        'title': f'Preview for {uuid}',
+        'title': 'MSS',
         'metarecord': metarecord,
+        'query': uuid,
+        'note': note,
         'byte_count_to_text': utils_text.byte_count_to_text
     }
     return render_template('preview.html', **context)
@@ -104,9 +115,9 @@ def show_tags():
     """Enlist all available tags with their frequencies.
     """
     context = {
-        'title': 'All tags',
+        'title': 'MSS',
         'tags': TAG_STATS,
-        'total_records_num': TOTAL,
+        'note': f'Total records in catalogue: {TOTAL}',
         'total_tags_num': TOTAL_TAGS,
         'total_size': TOTAL_SIZE,
     }
@@ -118,8 +129,8 @@ def show_help():
     """Show description page.
     """
     context = {
-        'title': 'Help',
-        'version': settings.VERSION,
+        'title': 'MSS',
+        'note': f'Current version of the browser: {settings.VERSION}',
     }
     return render_template('help.html', **context)
 

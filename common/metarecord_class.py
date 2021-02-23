@@ -106,6 +106,7 @@ class Metarecord(Serializable):
         """Return tags of the record and anything tag-like.
         """
         return {
+            self.uuid,
             *(tag.lower() for tag in self.tags_set),
             self.meta.series,
             self.meta.sub_series,
