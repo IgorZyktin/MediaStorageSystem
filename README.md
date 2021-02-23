@@ -24,7 +24,7 @@ be no duplicates at the end".
     Allows you to upload new content to the archive. 
     Supposed to check for duplicates before inserting.
   
-### Installation of components
+### Placement of components
 
 All gathered media files are supposed to be packed into a 
 single zip file and be shipped this way. No program components 
@@ -50,7 +50,11 @@ your_media_folder
 │   │   ├── ...
 │   │   ├── ...
 │   ├── ...
-├── browser.exe (or folder with python code)
-├── register.exe (or folder with python code)
+├── mss_browser_vX.X (or folder with python code)
+├── mss_register_vX.X.exe (or folder with python code)
 ├── other scripts or their compiled binaries
 ```
+
+### Installation
+
+You can download pre-built windows binary [here](https://github.com/IgorZyktin/MediaStorageSystem/blob/main/mss_browser_v1.1.zip):
