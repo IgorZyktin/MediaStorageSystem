@@ -4,7 +4,7 @@
 """
 import os
 
-VERSION = '1.0'
+VERSION = '1.1'
 
 # paths
 # BASE_PATH = '.'

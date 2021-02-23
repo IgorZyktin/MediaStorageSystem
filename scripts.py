@@ -86,8 +86,8 @@ def fix_one_key():
         with open(filename, mode='r', encoding='utf-8') as file:
             content = file.read()
 
-        content = content.replace('"next"', '"next_record"')
-        content = content.replace('"previous"', '"previous_record"')
+        content = content.replace('"Igor Zyktin"', '""')
+        content = content.replace('"Nicord"', '""')
 
         with open(filename, mode='w', encoding='utf-8') as file:
             file.write(content)
