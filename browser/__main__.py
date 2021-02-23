@@ -136,4 +136,16 @@ def show_help():
 
 
 if __name__ == '__main__':
+    if settings.APP_CONFIG == 'production':
+        import threading
+
+
+        def start():
+            import webbrowser
+            webbrowser.open_new_tab('http://127.0.0.1:5000')
+
+
+        new_thread = threading.Timer(2.0, start)
+        new_thread.start()
+
     app.run(debug=settings.DEBUG)

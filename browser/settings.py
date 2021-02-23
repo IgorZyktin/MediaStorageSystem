@@ -6,9 +6,16 @@ import os
 
 VERSION = '1.1'
 
-# paths
-# BASE_PATH = '.'
-BASE_PATH = 'D:\\BGC_ARCHIVE\\'
+APP_CONFIG = 'development'
+# APP_CONFIG = 'production'
+
+if APP_CONFIG == 'development':
+    BASE_PATH = 'D:\\BGC_ARCHIVE\\'
+    DEBUG = True
+else:
+    BASE_PATH = '.'
+    DEBUG = False
+
 ROOT_PATH = os.path.join(BASE_PATH, 'root')
 METAINFO_PATH = os.path.join(ROOT_PATH, 'metainfo')
 LOCAL_CHANGES_PATH = os.path.join(ROOT_PATH, 'local_changes')
@@ -20,4 +27,3 @@ IMAGES_PATH = os.path.join(ROOT_PATH, 'images')
 METARECORD_LOAD_LIMIT = -1  # -1 for no limit
 
 ITEMS_PER_PAGE = 50
-DEBUG = True
