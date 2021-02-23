@@ -1,0 +1,42 @@
+{% extends "index.html" %}
+{% block content %}
+    <h1>Help</h1>
+    <p>Current version of the browser: {{ version }}</p>
+
+    <h3>Search engine</h3>
+    <p>You can use keywords to perform search. Words are: AND, OR and NOT.
+        Exactly uppercase. Search is not working for spelling mistakes.
+        Your request must match the tags exactly. Anything except keywords are
+        converted to lowercase during processing.</p>
+
+    <p>Meanings are:</p>
+    <ul>
+        <li>AND - record is included in search results only if text after this
+            keyword is present in at least one tag. If not - record is not
+            included, no matter what all the rest conditions say.
+        </li>
+
+        <li>OR - record is included in search results only if text after this
+            keyword is present in at least one tag, but it is not
+            final decision. Some other condition may add record to the results.
+        </li>
+
+        <li>NOT - record is excluded from the search results if text after
+            this keyword is found in any tag.
+        </li>
+    </ul>
+
+    <p>Query will be split into series of pairs keyword+text.
+        If your request does not start from keyword, system with automatically
+        add OR at the start. So "cats AND dogs NOT frogs" will be turned
+        into "OR cats AND dogs NOT frogs". As a result, human readable form
+        of this request is: "show me all records, that specifically have
+        tag 'dogs' and optionally have tag 'cats', but definitely do
+        not have tag 'frogs'".</p>
+
+    <p>Don't think of query as of logical rule. Each keyword is treated
+        separately. You can't use queries like "cats AND NOT dogs".</p>
+    <br>
+    <br>
+    <br>
+{% endblock %}

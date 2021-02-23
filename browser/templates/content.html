@@ -1,9 +1,7 @@
 {% extends "index.html" %}
 {% block content %}
 
-    <span class="small">Total records in catalogue: {{ total_records_num }}</span>
-    <br>
-    <span class="small">Records found: {{ found_records_num }}</span>
+    <span class="small">{{ found_records_num }} records found in {{ duration }} seconds</span>
 
     {% if paginator.num_pages > 1 %}
         <div class="pages">
@@ -33,7 +31,7 @@
     <div class="content">
         {% for metarecord in paginator %}
             <div class="envelope">
-                <a href="/preview/{{ metarecord.uuid }}">
+                <a href="{{ url_for('preview', uuid=metarecord.uuid) }}">
                     <img src="{{ metarecord.content_info.url_path('thumbnail_path') }}"
                          alt="{{ metarecord.file_info.original_name }}"/>
                 </a>

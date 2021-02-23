@@ -51,7 +51,6 @@ Example of JSON form:
 from functools import cached_property
 from typing import List, Set, Dict, Tuple
 
-from common import synonims
 from common.metarecord_helpers import *
 from common.type_hints import JSON
 
@@ -81,6 +80,8 @@ class Metarecord(Serializable):
         self.tags = tags
         self.kwargs = kwargs
 
+        self._extended_tags_set_cache = set()
+
     def __repr__(self) -> str:
         """Return textual representation.
         """
@@ -100,18 +101,38 @@ class Metarecord(Serializable):
         """
         return set(self.tags)
 
-    @cached_property
-    def extended_tags_set(self) -> Set[str]:
+    def get_extended_tags_set(self,
+                              synonyms: Dict[str, List[str]]) -> Set[str]:
         """Return tags of the record and anything tag-like.
         """
+        if self._extended_tags_set_cache:
+            return self._extended_tags_set_cache
+
         extended_tags = {
             *(tag.lower() for tag in self.tags_set),
             self.meta.series,
             self.meta.sub_series,
         }
         # TODO - what if I would like not to use synonyms?
-        synonims.extend_tags_with_synonyms(extended_tags)
+        extend_tags_with_synonyms(
+            extended_tags,
+            synonyms
+        )
+        self._extended_tags_set_cache = extended_tags
+
         return extended_tags
+
+
+def extend_tags_with_synonyms(given_tags: Set[str],
+                              given_synonyms: Dict[str, List[str]]) -> None:
+    """Mutate given tags by adding synonyms to them.
+    """
+    sets = [set(x) for x in given_synonyms.values()]
+
+    for tag in list(given_tags):
+        for entry in sets:
+            if tag in entry:
+                given_tags.update(entry)
 
 
 Metainfo = Dict[str, Metarecord]

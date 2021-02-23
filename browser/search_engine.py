@@ -14,7 +14,7 @@ class SearchingMachine:
     """Helper class that stores query parameters.
     """
     operators = {'AND', 'OR', 'NOT'}
-    string = '|'.join(r'\s+{}\s+'.format(x) for x in operators)
+    string = '|'.join(r'{}'.format(x) for x in operators)
     pattern = re.compile('(' + string + ')')
 
     def __init__(self,
@@ -113,7 +113,7 @@ def select_random_images(metainfo: Metainfo,
     return get_sorted_metainfo_records(chosen_pais)
 
 
-def select_images(metainfo: Metainfo, searching_machine):
+def select_images(metainfo: Metainfo, searching_machine, synonyms: dict):
     """Return all metarecords, that match to a given query.
     """
     chosen_pais = []
@@ -123,17 +123,17 @@ def select_images(metainfo: Metainfo, searching_machine):
     not_ = searching_machine.not_
 
     for uuid, meta in metainfo.items():
-        tags = meta.extended_tags_set
+        tags = meta.get_extended_tags_set(synonyms)
 
         # condition for and - all words must be present
         # condition for or - at least one word must be present
         # condition for not - no words must be present
         # skipped if predicate is empty
-        if all((
-            any((and_ & tags == and_, len(and_) == 0)),
-            any((or_ & tags, len(or_) == 0)),
-            any((not (not_ & tags), len(not_) == 0)),
-        )):
+        cond_and_ = any((and_ & tags == and_, len(and_) == 0))
+        cond_or_ = any((or_ & tags, len(or_) == 0))
+        cond_not_ = any((not (not_ & tags), len(not_) == 0))
+
+        if all((cond_and_, cond_or_, cond_not_)):
             chosen_pais.append((uuid, meta))
 
     return get_sorted_metainfo_records(chosen_pais)

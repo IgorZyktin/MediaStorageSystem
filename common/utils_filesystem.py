@@ -4,6 +4,7 @@
 """
 import os
 from collections import defaultdict
+from functools import lru_cache
 from pathlib import Path
 from typing import List, Generator, Optional, Collection, Tuple, Dict
 
@@ -133,3 +134,19 @@ def load_raw_metainfo(folder: str, file_type: str = 'json') -> Dict[str, dict]:
                 metainfo[uuid] = content
 
     return metainfo
+
+
+@lru_cache
+def load_synonyms(folder: str, filename: str = 'synonyms.json'
+                  ) -> Dict[str, List[str]]:
+    """Load synonyms for the search machine.
+    """
+    path = join(folder, filename)
+
+    if not os.path.exists(path):
+        return {}
+
+    with open(path, mode='r', encoding='utf-8') as file:
+        content = json.load(file)
+
+    return content

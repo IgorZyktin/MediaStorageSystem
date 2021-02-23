@@ -28,7 +28,7 @@ class Serializable:
         output = {}
 
         for key, value in self.__dict__.items():
-            if key == 'kwargs':
+            if key == 'kwargs' or key.startswith('_'):
                 # You must specifically describe
                 # attribute for it to be serializable
                 continue

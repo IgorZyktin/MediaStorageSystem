@@ -1,5 +1,11 @@
 {% extends "index.html" %}
 {% block content %}
+    <span class="small">Total records in catalogue: {{ total_records_num }}</span>
+    <br>
+    <span class="small">Total tags in catalogue: {{ total_tags_num }}</span>
+    <br>
+    <span class="small">Total size of the archive: {{ total_size }}</span>
+    <br>
     <div class="content">
         <ol>
             {% for tag, times in tags %}
