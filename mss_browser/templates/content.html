@@ -1,8 +1,7 @@
 {% extends "index.html" %}
 {% block content %}
 
-
-
+{% macro pagination(paginator, rewrite_query_for_paging, query) %}
     {% if paginator.num_pages > 1 %}
         <div class="pages">
             {% if paginator.has_previous %}
@@ -27,6 +26,9 @@
             {% endif %}
         </div>
     {% endif %}
+{% endmacro %}
+
+    {{ pagination(paginator, rewrite_query_for_paging, query) }}
 
     <div class="content">
         {% for metarecord in paginator %}
@@ -38,5 +40,7 @@
             </div>
         {% endfor %}
     </div>
+
+    {{ pagination(paginator, rewrite_query_for_paging, query) }}
 
 {% endblock %}

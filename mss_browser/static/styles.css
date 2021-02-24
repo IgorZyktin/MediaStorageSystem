@@ -169,3 +169,7 @@ a:active {
     margin-top: 5px;
     font-size: 12pt;
 }
+
+.comment_cell {
+    max-width: 1000px;
+}
