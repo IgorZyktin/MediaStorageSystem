@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link type="text/css" href="{{ url_for('static', filename='styles.css') }}"
+          rel="stylesheet">
+    {#    <script src="/static/scripts.js"></script>#}
+    <title>{{ title }}</title>
+</head>
+<body>
+
+<div class="flex_vertical">
+    <form method="post" action="/">
+        <div class="query_container">
+            <a href="{{ url_for('index') }}" class="cls_button">Clear</a>
+
+            <label for="query">
+                <input name="query"
+                       type="search"
+                       value="{{ query }}" class="query_input">
+            </label>
+
+            <input type="submit" class="cls_button" name="search"
+                   value="Search"/>
+            <a href="{{ url_for('show_tags') }}" class="cls_button">Tags</a>
+            <a href="{{ url_for('show_help') }}" class="cls_button">Help</a>
+            <span></span>
+            <span class="note">{{ note }}</span>
+        </div>
+    </form>
+</div>
+
+<hr>
+
+
+{% block content %}{% endblock %}
+
+</body>
+</html>

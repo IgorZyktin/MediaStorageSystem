@@ -4,7 +4,7 @@
 """
 import pytest
 
-from browser.utils_browser import extend_tags_with_synonyms
+from mss_browser.utils_browser import extend_tags_with_synonyms
 
 
 @pytest.fixture

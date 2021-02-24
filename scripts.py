@@ -3,7 +3,8 @@ import os
 
 from PIL import Image
 
-from register import settings
+from mss_register import settings
+from common import utils_filesystem
 
 
 def iterate_on_files(folder):
@@ -37,7 +38,7 @@ def fix_tags():
             json.dump(content, file, ensure_ascii=False, indent=4, sort_keys=True)
 
 
-def fix_structure():
+def tie_together():
     folder = 'D:\\BGC_ARCHIVE\\root\\metainfo'
 
     targets = []
@@ -45,7 +46,7 @@ def fix_structure():
         with open(filename, mode='r', encoding='utf-8') as file:
             old_content = json.load(file)
 
-        if old_content['meta']['group_id'] == 'bgcrash b-club special':
+        if old_content['meta']['group_id'] == 'kenichi sonoda garden party':
             targets.append((filename, old_content))
 
     targets.sort(key=lambda x: x[1]['meta']['ordering'])
@@ -60,16 +61,16 @@ def fix_structure():
         current['meta']['group_uuids'] = uuids
 
         if i == 0:
-            current['meta']['previous'] = ''
-            current['meta']['next'] = uuids[1]
+            current['meta']['previous_record'] = ''
+            current['meta']['next_record'] = uuids[1]
 
         elif i == len(targets) - 1:
-            current['meta']['previous'] = uuids[-2]
-            current['meta']['next'] = ''
+            current['meta']['previous_record'] = uuids[-2]
+            current['meta']['next_record'] = ''
 
         else:
-            current['meta']['previous'] = uuids[i - 1]
-            current['meta']['next'] = uuids[i + 1]
+            current['meta']['previous_record'] = uuids[i - 1]
+            current['meta']['next_record'] = uuids[i + 1]
 
     for filename, content in targets:
         print(filename)
@@ -93,5 +94,18 @@ def fix_one_key():
             file.write(content)
 
 
+def drop_by_key():
+    folder = 'D:\\BGC_ARCHIVE\\root\\metainfo'
+
+    for filename in iterate_on_files(folder):
+        with open(filename, mode='r', encoding='utf-8') as file:
+            content = json.load(file)
+
+        if content['meta']['group_id'] == 'kenichi sonoda artworks 1983-1997':
+            utils_filesystem.delete(filename)
+
+        print(filename)
+
+
 if __name__ == '__main__':
-    fix_one_key()
+    tie_together()

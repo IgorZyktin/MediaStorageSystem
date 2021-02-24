@@ -13,13 +13,13 @@ be no duplicates at the end".
 
 ### Components of the system
 
-- [Browser](browser/README.md)
+- [Browser](mss_browser/README.md)
     
     Allows you to browse what's inside the archive. 
     Built as a web app and planned to be deployable as a web server in the future.
 
 
-- [Register](register/README.md)
+- [Register](mss_register/README.md)
     
     Allows you to upload new content to the archive. 
     Supposed to check for duplicates before inserting.
