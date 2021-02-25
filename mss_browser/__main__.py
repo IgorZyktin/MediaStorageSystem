@@ -140,12 +140,12 @@ if __name__ == '__main__':
         import threading
 
 
-        def start():
+        def _start():
             import webbrowser
             webbrowser.open_new_tab('http://127.0.0.1:5000')
 
 
-        new_thread = threading.Timer(2.0, start)
+        new_thread = threading.Timer(2.0, _start)
         new_thread.start()
 
     app.run(debug=settings.DEBUG)
