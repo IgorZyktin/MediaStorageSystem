@@ -4,10 +4,10 @@
 """
 import os
 
-VERSION = '1.1'
+VERSION = '1.2'
 
-APP_CONFIG = 'development'
-# APP_CONFIG = 'production'
+# APP_CONFIG = 'development'
+APP_CONFIG = 'production'
 
 if APP_CONFIG == 'development':
     BASE_PATH = 'D:\\BGC_ARCHIVE\\'
