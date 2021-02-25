@@ -57,9 +57,8 @@ your_media_folder
 
 ### Installation
 
-You can download pre-built windows binary here:
-- [Version 1.2  <-- new](https://github.com/IgorZyktin/MediaStorageSystem/blob/main/mss_browser_v1.2.zip):
-  
+#### Browser
 
+- [Version 1.2  <-- new](https://github.com/IgorZyktin/MediaStorageSystem/blob/main/mss_browser_v1.2.zip):
 - [Version 1.1](https://github.com/IgorZyktin/MediaStorageSystem/blob/main/mss_browser_v1.1.zip):
 - [Version 1.0](https://github.com/IgorZyktin/MediaStorageSystem/blob/main/mss_browser_v1.0.zip):
