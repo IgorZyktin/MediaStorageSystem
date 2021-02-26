@@ -139,6 +139,18 @@ def select_images(metainfo: Metainfo, searching_machine):
     return get_sorted_metainfo_records(chosen_pais)
 
 
+def select_at_date(metainfo: Metainfo, target_date: str):
+    """Return all metarecords, that match to a given query.
+    """
+    chosen_pais = []
+
+    for uuid, meta in metainfo.items():
+        if meta.registration.registered_at == target_date:
+            chosen_pais.append((uuid, meta))
+
+    return get_sorted_metainfo_records(chosen_pais)
+
+
 def get_sorted_metainfo_records(pairs: List[Pair]) -> List[Metarecord]:
     """From given pairs of uuid+metarecord return sorted list of metarecords.
     """

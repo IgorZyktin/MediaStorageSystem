@@ -35,20 +35,20 @@
                     <td class="comment_cell">{{ metarecord.meta.comment }}</td>
                 </tr>
 
-                {% if metarecord.meta.next_record %}
-                    <tr>
-                        <td>Next</td>
-                        <td>
-                            <a href="/preview/{{ metarecord.meta.next_record }}">{{ metarecord.meta.next_record }}</a>
-                        </td>
-                    </tr>
-                {% endif %}
-
                 {% if metarecord.meta.previous_record %}
                     <tr>
                         <td>Previous</td>
                         <td>
                             <a href="/preview/{{ metarecord.meta.previous_record }}">{{ metarecord.meta.previous_record }}</a>
+                        </td>
+                    </tr>
+                {% endif %}
+
+                {% if metarecord.meta.next_record %}
+                    <tr>
+                        <td>Next</td>
+                        <td>
+                            <a href="/preview/{{ metarecord.meta.next_record }}">{{ metarecord.meta.next_record }}</a>
                         </td>
                     </tr>
                 {% endif %}

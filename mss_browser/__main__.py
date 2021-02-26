@@ -22,6 +22,8 @@ TOTAL = utils_text.sep_digits(len(metainfo))
 TOTAL_TAGS = utils_text.sep_digits(len(TAG_STATS))
 TOTAL_BYTES = sum(x.parameters.size for x in metainfo.values())
 TOTAL_SIZE = utils_text.byte_count_to_text(TOTAL_BYTES)
+MAX_DATE = max(x.registration.registered_at for x in metainfo.values())
+
 
 for record in metainfo.values():
     new_tags = utils_browser.extend_tags_with_synonyms(
@@ -135,17 +137,49 @@ def show_help():
     return render_template('help.html', **context)
 
 
+@app.route('/new')
+def show_newest_content():
+    """Show content added in recent release.
+    """
+    current_page = int(request.args.get('page', 1))
+
+    chosen_metarecords = search_engine.select_at_date(
+        metainfo=metainfo,
+        target_date=MAX_DATE,
+    )
+
+    paginator = Paginator(
+        sequence=chosen_metarecords,
+        current_page=current_page,
+        items_per_page=settings.ITEMS_PER_PAGE,
+    )
+
+    context = {
+        'title': 'MSS',
+        'paginator': paginator,
+        'query': '',
+        'note': f'Newest update: {MAX_DATE}',
+        'rewrite_query_for_paging': utils_browser.rewrite_query_for_paging,
+    }
+    return render_template('content.html', **context)
+
+
 if __name__ == '__main__':
+    host = settings.HOST
+    port = settings.PORT
+
     if settings.APP_CONFIG == 'production':
         import threading
 
 
         def _start():
             import webbrowser
-            webbrowser.open_new_tab('http://127.0.0.1:5000')
+            webbrowser.open_new_tab(f'http://{host}:{port}/')
 
 
         new_thread = threading.Timer(2.0, _start)
         new_thread.start()
 
-    app.run(debug=settings.DEBUG)
+    app.run(host=host,
+            port=port,
+            debug=settings.DEBUG)

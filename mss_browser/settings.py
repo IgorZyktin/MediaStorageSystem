@@ -6,8 +6,12 @@ import os
 
 VERSION = '1.2'
 
-# APP_CONFIG = 'development'
-APP_CONFIG = 'production'
+HOST = '192.168.1.64'
+PORT = 5000
+
+
+APP_CONFIG = 'development'
+# APP_CONFIG = 'production'
 
 if APP_CONFIG == 'development':
     BASE_PATH = 'D:\\BGC_ARCHIVE\\'

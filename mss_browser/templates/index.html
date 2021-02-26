@@ -12,7 +12,8 @@
 <div class="flex_vertical">
     <form method="post" action="/">
         <div class="query_container">
-            <a href="{{ url_for('index') }}" class="cls_button">Clear</a>
+            <a href="{{ url_for('show_newest_content') }}" class="cls_button">New</a>
+            <a href="{{ url_for('index') }}" class="cls_button">Home</a>
 
             <label for="query">
                 <input name="query"
@@ -24,6 +25,7 @@
                    value="Search"/>
             <a href="{{ url_for('show_tags') }}" class="cls_button">Tags</a>
             <a href="{{ url_for('show_help') }}" class="cls_button">Help</a>
+            <span></span>
             <span></span>
             <span class="note">{{ note }}</span>
         </div>

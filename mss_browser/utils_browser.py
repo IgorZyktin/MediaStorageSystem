@@ -26,6 +26,8 @@ def rewrite_query_for_paging(query: str, target_page: int) -> str:
     """Change query to generate different page.
     """
     # TODO - this will stop working when search filtering will be introduced :(
+    if not query and target_page:
+        return '/new?q=' + query + f'&page={target_page}'
     return '/search?q=' + query + f'&page={target_page}'
 
 
