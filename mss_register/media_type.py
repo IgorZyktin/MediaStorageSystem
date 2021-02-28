@@ -99,11 +99,11 @@ class UnregisteredMedia:
                 'ext': self.ext,
             },
             'meta': {
-                'series': 'kenichi sonoda',
-                'sub_series': 'garden party',
+                'series': 'blade runner',
+                'sub_series': '',
                 'ordering': total,
                 'comment': comment,
-                'group_id': 'kenichi sonoda garden party',
+                'group_id': 'blade runner sketchbook',
                 'group_uuids': [],
                 'next_record': '',
                 'previous_record': '',
@@ -115,11 +115,11 @@ class UnregisteredMedia:
                 "registered_by_nickname": "",
             },
             'origin': {
-                "author": "Kenichi Sonoda",
+                "author": "",
                 "url": "",
                 "profile": ""
             },
-            "tags": ['kenichi sonoda', 'artwork', 'artbook', 'garden party'],
+            "tags": ['blade runner', 'artwork', 'artbook', 'sketch', 'sketchbook'],
         }
 
 

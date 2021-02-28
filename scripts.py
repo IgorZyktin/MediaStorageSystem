@@ -39,14 +39,14 @@ def fix_tags():
 
 
 def tie_together():
-    folder = 'D:\\BGC_ARCHIVE\\root\\metainfo'
+    folder = 'D:\\BGC_ARCHIVE_\\root\\metainfo'
 
     targets = []
     for filename in iterate_on_files(folder):
         with open(filename, mode='r', encoding='utf-8') as file:
             old_content = json.load(file)
 
-        if old_content['meta']['group_id'] == 'kenichi sonoda garden party':
+        if old_content['meta']['group_id'] == 'blade runner sketchbook':
             targets.append((filename, old_content))
 
     targets.sort(key=lambda x: x[1]['meta']['ordering'])
