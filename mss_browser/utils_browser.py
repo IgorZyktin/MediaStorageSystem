@@ -2,12 +2,16 @@
 
 """Small helper functions for mss_browser.
 """
+from argparse import Namespace
 from collections import defaultdict
 from typing import List, Tuple, Set, Dict
 
 from werkzeug.utils import redirect
 
+from common import utils_filesystem
 from common.metarecord_class import Metainfo
+from core.class_meta_repository import MetaRepository
+from core.class_meta_serializer import DictSerializer
 
 
 def add_query_to_path(request):
@@ -67,3 +71,35 @@ def extend_tags_with_synonyms(given_tags: Set[str],
                 resulting_tags.update(entry)
 
     return resulting_tags
+
+
+def get_local_config(path: str, base_config: dict,
+                     filename: str = 'config.json') -> Namespace:
+    """Make configuration for the browser.
+    """
+    local_config = utils_filesystem.load_synonyms(path, filename)
+
+    config = {
+        **base_config,
+        **local_config,
+    }
+    return Namespace(**config)
+
+
+def make_repository(raw_metarecords: List[dict],
+                    synonyms: dict) -> MetaRepository:
+    """Build repository instance.
+    """
+    as_jsons = defaultdict(dict)
+    for raw_record in raw_metarecords:
+        uuid = raw_record['uuid']
+        as_jsons[uuid].update(raw_record)
+
+    repo = MetaRepository(synonyms=synonyms)
+    serializer = DictSerializer()
+
+    for record in as_jsons.values():
+        instance = serializer.from_source(**record)
+        repo.add_record(instance)
+
+    return repo

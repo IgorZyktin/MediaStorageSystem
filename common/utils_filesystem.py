@@ -54,6 +54,22 @@ def iterate_over_new_content(path: str,
                 yield join(sub_path, filename)
 
 
+def iterate_on_filenames_of_ext(*locations: str, extension: str = 'json'
+                                ) -> Generator[Tuple[str, str], None, None]:
+    """Iterate on all folders and yield paths and filenames of given ext.
+    """
+    for location in locations:
+        if not os.path.exists(location):
+            continue
+
+        for filename in os.listdir(location):
+
+            if not filename.endswith(extension):
+                continue
+
+            yield location, filename
+
+
 def join(*args) -> str:
     """Use os.path.join to create joined path.
     """
@@ -141,12 +157,36 @@ def load_synonyms(folder: str, filename: str = 'synonyms.json'
                   ) -> Dict[str, List[str]]:
     """Load synonyms for the search machine.
     """
-    path = join(folder, filename)
+    return load_json(folder, filename)
 
-    if not os.path.exists(path):
-        return {}
 
-    with open(path, mode='r', encoding='utf-8') as file:
-        content = json.load(file)
+def load_json(path: str, filename: str = '') -> dict:
+    """Generic JSON loader.
+    """
+    if filename:
+        path = join(path, filename)
+
+    try:
+        with open(path, mode='r', encoding='utf-8') as file:
+            content = json.load(file)
+    except FileNotFoundError:
+        content = {}
 
     return content
+
+
+def load_jsons(*locations: str, limit: int = -1) -> List[dict]:
+    """Load raw JSONs from given directories.
+    """
+    all_jsons = []
+
+    for path, filename in iterate_on_filenames_of_ext(*locations):
+        content = load_json(path, filename)
+
+        if content:
+            all_jsons.append(content)
+
+            if 0 < limit <= len(all_jsons):
+                break
+
+    return all_jsons

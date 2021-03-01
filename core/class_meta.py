@@ -20,6 +20,13 @@ class Meta(IMeta):
 
         self.__dict__.update(kwargs)
 
+        delta = set(self.__dict__.keys()) ^ set(IMeta.__annotations__.keys())
+        if delta:
+            attrs = ', '.join(sorted(delta))
+            raise AttributeError(
+                f'Metarecord instance has unmatched attributes: {attrs}'
+            )
+
     def __repr__(self) -> str:
         """Return textual representation.
         """

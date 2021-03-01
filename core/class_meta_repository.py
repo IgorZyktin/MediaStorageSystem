@@ -11,10 +11,11 @@ class MetaRepository:
     """Storage for metarecords.
     """
 
-    def __init__(self, *args: IMeta) -> None:
+    def __init__(self, *args: IMeta, synonyms: dict = None) -> None:
         """Initialize instance.
         """
         self._storage: Dict[str, IMeta] = {}
+        self._synonyms = synonyms or {}
 
         for arg in args:
             self.add_record(arg)
@@ -54,6 +55,8 @@ class MetaRepository:
 
         if instance is None:
             return instance
+
+        return None
 
     def get(self, uuid: str) -> Optional[IMeta]:
         """Return record or None if not present.

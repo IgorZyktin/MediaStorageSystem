@@ -3,8 +3,8 @@ import os
 
 from PIL import Image
 
-from mss_register import settings
 from common import utils_filesystem
+from mss_register import settings
 
 
 def iterate_on_files(folder):
@@ -35,7 +35,8 @@ def fix_tags():
             content = json.load(file)
 
         with open(filename, mode='w', encoding='utf-8') as file:
-            json.dump(content, file, ensure_ascii=False, indent=4, sort_keys=True)
+            json.dump(content, file, ensure_ascii=False, indent=4,
+                      sort_keys=True)
 
 
 def tie_together():
@@ -107,5 +108,9 @@ def drop_by_key():
         print(filename)
 
 
+def update_structure():
+    pass
+
+
 if __name__ == '__main__':
-    tie_together()
+    update_structure()

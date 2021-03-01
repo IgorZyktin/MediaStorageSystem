@@ -6,31 +6,41 @@ import time
 
 from flask import Flask, render_template, request, send_from_directory, abort
 
+from common import utils_filesystem, utils_text, utils_interaction
 from mss_browser import settings, search_engine, utils_browser
 from mss_browser.paginator_class import Paginator
-from common import utils_filesystem, utils_text
 
 app = Flask(__name__)
-metainfo = utils_filesystem.get_metarecords(
+jsons = utils_filesystem.load_jsons(
     settings.METAINFO_PATH,
     settings.LOCAL_CHANGES_PATH,
     limit=settings.METARECORD_LOAD_LIMIT,
 )
 SYNONYMS = utils_filesystem.load_synonyms(settings.ROOT_PATH)
-TAG_STATS = utils_browser.calculate_stats_for_tags(metainfo)
-TOTAL = utils_text.sep_digits(len(metainfo))
-TOTAL_TAGS = utils_text.sep_digits(len(TAG_STATS))
-TOTAL_BYTES = sum(x.parameters.size for x in metainfo.values())
-TOTAL_SIZE = utils_text.byte_count_to_text(TOTAL_BYTES)
-MAX_DATE = max(x.registration.registered_at for x in metainfo.values())
 
+REPO = utils_browser.make_repository(
+    raw_metarecords=jsons,
+    synonyms=SYNONYMS,
+)
 
-for record in metainfo.values():
-    new_tags = utils_browser.extend_tags_with_synonyms(
-        given_tags=record.extended_tags_set,
-        given_synonyms=SYNONYMS,
-    )
-    record.extended_tags_with_synonyms = new_tags
+# TAG_STATS = utils_browser.calculate_stats_for_tags(metainfo)
+# TOTAL = utils_text.sep_digits(len(metainfo))
+# TOTAL_TAGS = utils_text.sep_digits(len(TAG_STATS))
+# TOTAL_BYTES = sum(x.parameters.size for x in metainfo.values())
+# TOTAL_SIZE = utils_text.byte_count_to_text(TOTAL_BYTES)
+# MAX_DATE = max(x.registration.registered_at for x in metainfo.values())
+
+CONFIG = utils_browser.get_local_config(
+    path=settings.BASE_PATH,
+    base_config=settings.BASE_CONFIG,
+)
+
+# for record in metainfo.values():
+#     new_tags = utils_browser.extend_tags_with_synonyms(
+#         given_tags=record.extended_tags_set,
+#         given_synonyms=SYNONYMS,
+#     )
+#     record.extended_tags_with_synonyms = new_tags
 
 
 @app.route('/root/<path:filename>')
@@ -137,38 +147,15 @@ def show_help():
     return render_template('help.html', **context)
 
 
-@app.route('/new')
-def show_newest_content():
-    """Show content added in recent release.
-    """
-    current_page = int(request.args.get('page', 1))
-
-    chosen_metarecords = search_engine.select_at_date(
-        metainfo=metainfo,
-        target_date=MAX_DATE,
-    )
-
-    paginator = Paginator(
-        sequence=chosen_metarecords,
-        current_page=current_page,
-        items_per_page=settings.ITEMS_PER_PAGE,
-    )
-
-    context = {
-        'title': 'MSS',
-        'paginator': paginator,
-        'query': '',
-        'note': f'Newest update: {MAX_DATE}',
-        'rewrite_query_for_paging': utils_browser.rewrite_query_for_paging,
-    }
-    return render_template('content.html', **context)
-
-
 if __name__ == '__main__':
-    host = settings.HOST
+    if CONFIG.run_on_localhost:
+        host = utils_interaction.get_local_ip()
+    else:
+        host = settings.HOST
+
     port = settings.PORT
 
-    if settings.APP_CONFIG == 'production':
+    if CONFIG.app_config == 'production' and CONFIG.new_tab_on_start:
         import threading
 
 
@@ -180,6 +167,8 @@ if __name__ == '__main__':
         new_thread = threading.Timer(2.0, _start)
         new_thread.start()
 
-    app.run(host=host,
-            port=port,
-            debug=settings.DEBUG)
+    app.run(
+        host=host,
+        port=port,
+        debug=settings.DEBUG,
+    )
