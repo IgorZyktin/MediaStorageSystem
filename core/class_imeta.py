@@ -2,13 +2,17 @@
 
 """Metarecord interface.
 
-Used to declare all required fields and their types.
+Declares all required fields and their types.
+Not supposed to be instantiated directly.
 """
 from typing import List
 
 
 class IMeta:
     """Metarecord interface.
+
+    Declares all required fields and their types.
+    Not supposed to be instantiated directly.
     """
     uuid: str
 
@@ -42,7 +46,7 @@ class IMeta:
     media_type: str
 
     # information about origin
-    registered_at: str
+    registered_on: str
     registered_by_username: str
     registered_by_nickname: str
     author: str
@@ -50,9 +54,9 @@ class IMeta:
     origin_url: str
     comment: str
 
-    # tags as a simple sequence
-    tags: List[str]
-
     # identification info
     signature: str
     signature_type: str
+
+    # tags as a simple sequence
+    tags: List[str]

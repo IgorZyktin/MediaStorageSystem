@@ -4,10 +4,10 @@
 """
 from collections import defaultdict
 
-from core.class_meta_repository import MetaRepository
+from core.class_repository import Repository
 
 
-def calculate_statistics(repo: MetaRepository,
+def calculate_statistics(repo: Repository,
                          some_old_date: str = '1970-01-01',
                          some_new_date: str = '2040-01-01') -> dict:
     """Return statistics of this repository.

@@ -10,8 +10,8 @@ from werkzeug.utils import redirect
 
 from common import utils_filesystem
 from common.metarecord_class import Metainfo
-from core.class_meta_repository import MetaRepository
-from core.class_meta_serializer import DictSerializer
+from core.class_repository import Repository
+from core.class_serializer import DictSerializer
 
 
 def add_query_to_path(request):
@@ -87,7 +87,7 @@ def get_local_config(path: str, base_config: dict,
 
 
 def make_repository(raw_metarecords: List[dict],
-                    synonyms: dict) -> MetaRepository:
+                    synonyms: dict) -> Repository:
     """Build repository instance.
     """
     as_jsons = defaultdict(dict)
@@ -95,7 +95,7 @@ def make_repository(raw_metarecords: List[dict],
         uuid = raw_record['uuid']
         as_jsons[uuid].update(raw_record)
 
-    repo = MetaRepository(synonyms=synonyms)
+    repo = Repository(synonyms=synonyms)
     serializer = DictSerializer()
 
     for record in as_jsons.values():

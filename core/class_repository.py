@@ -7,7 +7,7 @@ from typing import Dict, Optional
 from core.class_imeta import IMeta
 
 
-class MetaRepository:
+class Repository:
     """Storage for metarecords.
     """
 

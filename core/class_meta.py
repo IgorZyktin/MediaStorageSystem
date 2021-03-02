@@ -1,13 +1,17 @@
 # -*- coding: utf-8 -*-
 
 """Metarecord implementation.
-"""
 
+Not supposed to be instantiated directly.
+"""
+from common import utils_common
 from core.class_imeta import IMeta
 
 
 class Meta(IMeta):
     """Metarecord implementation.
+
+    Not supposed to be instantiated directly.
     """
 
     def __init__(self, *args, **kwargs) -> None:
@@ -22,9 +26,16 @@ class Meta(IMeta):
 
         delta = set(self.__dict__.keys()) ^ set(IMeta.__annotations__.keys())
         if delta:
-            attrs = ', '.join(sorted(delta))
+            weights = {
+                attr: num
+                for num, attr in enumerate(IMeta.__annotations__.keys())
+            }
+            sorter = utils_common.make_weight_sorter(weights)
+            attrs = ', '.join(sorted(delta, key=sorter))
+
             raise AttributeError(
-                f'Metarecord instance has unmatched attributes: {attrs}'
+                f'{type(self).__name__} instance has '
+                f'unmatched attributes: {attrs}'
             )
 
     def __repr__(self) -> str:
@@ -32,5 +43,5 @@ class Meta(IMeta):
         """
         return (
             f'{type(self).__name__}'
-            f'<uuid={self.uuid}, {self.original_filename!r}>'
+            f'<uuid={self.uuid!r}, {self.original_filename!r}>'
         )
