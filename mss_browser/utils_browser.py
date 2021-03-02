@@ -10,7 +10,9 @@ from werkzeug.utils import redirect
 
 from common import utils_filesystem
 from common.metarecord_class import Metainfo
+from core.class_meta import Meta
 from core.class_repository import Repository
+from core.class_search_enhancer import SearchEnhancer
 from core.class_serializer import DictSerializer
 
 
@@ -95,11 +97,13 @@ def make_repository(raw_metarecords: List[dict],
         uuid = raw_record['uuid']
         as_jsons[uuid].update(raw_record)
 
-    repo = Repository(synonyms=synonyms)
-    serializer = DictSerializer()
+    repo = Repository()
+    serializer = DictSerializer(target_type=Meta)
+    enhancer = SearchEnhancer(synonyms=synonyms)
 
     for record in as_jsons.values():
         instance = serializer.from_source(**record)
-        repo.add_record(instance)
+        tags = enhancer.get_extended_tags(instance)
+        repo.add_record(instance, tags)
 
     return repo

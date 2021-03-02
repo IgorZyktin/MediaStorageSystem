@@ -8,6 +8,33 @@ from core.class_imeta import IMeta
 
 UNKNOWN = 'UNKNOWN'
 
+# image sizes
+TINY = 'TINY'
+SMALL = 'SMALL'
+MEAN = 'MEAN'
+BIG = 'BIG'
+HUGE = 'HUGE'
+IMAGE_SIZES = {TINY, SMALL, MEAN, BIG, HUGE}
+
+# duration types
+SHORT = 'SHORT'
+MID = 'MID'
+LONG = 'LONG'
+DURATION_TYPES = {SHORT, MID, LONG}
+
+# media types
+IMAGE = 'IMAGE'
+GIF = 'GIF'
+VIDEO = 'VIDEO'
+AUDIO = 'AUDIO'
+MEDIA_TYPES = {IMAGE, GIF, VIDEO, AUDIO}
+
+# search keywords
+DESC = 'DESC'
+SEARCH_KEYWORDS = {DESC}
+
+KEYWORDS = IMAGE_SIZES & DURATION_TYPES & MEDIA_TYPES & SEARCH_KEYWORDS
+
 
 class SearchEnhancer:
     """Class for search enhancement.

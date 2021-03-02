@@ -9,6 +9,7 @@ APP_CONFIG = 'development'
 
 if APP_CONFIG == 'development':
     BASE_PATH = 'D:\\BGC_ARCHIVE_\\'
+    BASE_PATH = 'D:\\_1\\'
     DEBUG = True
 else:
     BASE_PATH = '.'

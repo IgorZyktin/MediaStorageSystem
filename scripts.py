@@ -81,15 +81,14 @@ def tie_together():
 
 
 def fix_one_key():
-    folder = 'D:\\BGC_ARCHIVE\\root\\metainfo'
+    folder = 'D:\\PycharmProjects\\MediaStorageSystem\\root\\metainfo'
 
     for filename in iterate_on_files(folder):
         print(filename)
         with open(filename, mode='r', encoding='utf-8') as file:
             content = file.read()
 
-        content = content.replace('"Igor Zyktin"', '""')
-        content = content.replace('"Nicord"', '""')
+        content = content.replace('//', '/')
 
         with open(filename, mode='w', encoding='utf-8') as file:
             file.write(content)
@@ -109,7 +108,72 @@ def drop_by_key():
 
 
 def update_structure():
-    pass
+    folder = 'D:\\BGC_ARCHIVE\\root\\metainfo'
+
+    for filename in iterate_on_files(folder):
+        print(filename)
+        with open(filename, mode='r', encoding='utf-8') as file:
+            old_content = json.load(file)
+
+        new_content = {
+            'uuid': old_content['uuid'],
+
+            'path_to_content': old_content["content_info"]['content_path'],
+            'path_to_preview': old_content["content_info"]['preview_path'],
+            'path_to_thumbnail': old_content["content_info"]['thumbnail_path'],
+
+            'original_filename': old_content['file_info']['original_filename'],
+            'original_name': old_content['file_info']['original_name'],
+            'original_extension': old_content['file_info']['ext'],
+
+            'series': old_content['meta']['series'],
+            'sub_series': old_content['meta']['sub_series'],
+
+            'group_name': old_content['meta']['group_id'],
+            'group_members': old_content['meta']['group_uuids'],
+            'previous_record': old_content['meta']['previous_record'],
+            'next_record': old_content['meta']['next_record'],
+            'ordering': old_content['meta']['ordering'],
+
+            'width': old_content['parameters']['width'],
+            'height': old_content['parameters']['height'],
+            'resolution': old_content['parameters']['resolution_mp'],
+            'bytes_in_file': old_content['parameters']['size'],
+            'seconds': 0,
+            'media_type': old_content['parameters']['media_type'],
+
+            'registered_on': old_content['registration']['registered_at'],
+            'registered_by_username': old_content['registration']['registered_by_username'],
+            'registered_by_nickname': old_content['registration']['registered_by_nickname'],
+            'author': old_content['origin']['author'],
+            'author_url': old_content['origin']['profile'],
+            'origin_url': old_content['origin']['url'],
+            'comment': old_content['meta']['comment'],
+
+            'signature': '',
+            'signature_type': '',
+
+            'tags': old_content['tags'],
+        }
+
+        with open(filename, mode='w', encoding='utf-8') as file:
+            json.dump(new_content, file, ensure_ascii=False, indent=4)
+
+
+def fix_something():
+    folder = 'D:\\PycharmProjects\\MediaStorageSystem\\root\\metainfo'
+
+    for filename in iterate_on_files(folder):
+        print(filename)
+        with open(filename, mode='r', encoding='utf-8') as file:
+            content = json.load(file)
+
+            content['series'] = 'cute mice'
+            content['group_name'] = ''
+            content['tags'] = []
+
+        with open(filename, mode='w', encoding='utf-8') as file:
+            json.dump(content, file, ensure_ascii=False, indent=4)
 
 
 if __name__ == '__main__':

@@ -6,7 +6,8 @@ import time
 
 from flask import Flask, render_template, request, send_from_directory, abort
 
-from common import utils_filesystem, utils_text, utils_interaction
+from common import utils_filesystem, utils_text
+from core import utils_core
 from mss_browser import settings, search_engine, utils_browser
 from mss_browser.paginator_class import Paginator
 
@@ -16,31 +17,29 @@ jsons = utils_filesystem.load_jsons(
     settings.LOCAL_CHANGES_PATH,
     limit=settings.METARECORD_LOAD_LIMIT,
 )
-SYNONYMS = utils_filesystem.load_synonyms(settings.ROOT_PATH)
+synonyms = utils_filesystem.load_synonyms(settings.ROOT_PATH)
 
-REPO = utils_browser.make_repository(
+repository = utils_browser.make_repository(
     raw_metarecords=jsons,
-    synonyms=SYNONYMS,
+    synonyms=synonyms,
 )
 
-# TAG_STATS = utils_browser.calculate_stats_for_tags(metainfo)
-# TOTAL = utils_text.sep_digits(len(metainfo))
-# TOTAL_TAGS = utils_text.sep_digits(len(TAG_STATS))
-# TOTAL_BYTES = sum(x.parameters.size for x in metainfo.values())
-# TOTAL_SIZE = utils_text.byte_count_to_text(TOTAL_BYTES)
-# MAX_DATE = max(x.registration.registered_at for x in metainfo.values())
-
-CONFIG = utils_browser.get_local_config(
+config = utils_browser.get_local_config(
     path=settings.BASE_PATH,
     base_config=settings.BASE_CONFIG,
 )
 
-# for record in metainfo.values():
-#     new_tags = utils_browser.extend_tags_with_synonyms(
-#         given_tags=record.extended_tags_set,
-#         given_synonyms=SYNONYMS,
-#     )
-#     record.extended_tags_with_synonyms = new_tags
+
+@app.context_processor
+def common_names():
+    """Populate context with common names.
+    """
+    return {
+        'title': 'MediaStorageSystem',
+        'note': '',
+        'rewrite_query_for_paging': utils_browser.rewrite_query_for_paging,
+        'byte_count_to_text': utils_text.byte_count_to_text,
+    }
 
 
 @app.route('/root/<path:filename>')
@@ -68,13 +67,13 @@ def index():
     if query:
         searching_machine = search_engine.make_searching_machine(query)
         chosen_metarecords = search_engine.select_images(
-            metainfo=metainfo,
+            repository=repository,
             searching_machine=searching_machine,
         )
     else:
         chosen_metarecords = search_engine.select_random_images(
-            metainfo=metainfo,
-            items_per_page=settings.ITEMS_PER_PAGE,
+            repository=repository,
+            amount=settings.ITEMS_PER_PAGE,
         )
 
     paginator = Paginator(
@@ -88,11 +87,9 @@ def index():
     note = f'{records} records found in {duration} seconds'
 
     context = {
-        'title': 'MSS',
         'paginator': paginator,
         'query': query,
         'note': note,
-        'rewrite_query_for_paging': utils_browser.rewrite_query_for_paging,
     }
     return render_template('content.html', **context)
 
@@ -101,23 +98,19 @@ def index():
 def preview(uuid: str):
     """Show description for a single record.
     """
-    metarecord = metainfo.get(uuid)
+    metarecord = repository.get(uuid)
 
     if metarecord is None:
         abort(404)
 
-    group_id = metarecord.meta.group_id
-    if group_id:
-        note = f'This file seem to be part of something called "{group_id}"'
-    else:
-        note = ''
+    note = ''
+    if metarecord.group_name:
+        note = f'This file seem to be part of "{metarecord.group_name}"'
 
     context = {
-        'title': 'MSS',
-        'metarecord': metarecord,
+        'record': metarecord,
         'query': uuid,
         'note': note,
-        'byte_count_to_text': utils_text.byte_count_to_text
     }
     return render_template('preview.html', **context)
 
@@ -126,12 +119,12 @@ def preview(uuid: str):
 def show_tags():
     """Enlist all available tags with their frequencies.
     """
+    stats = utils_core.calculate_statistics(repository)
+    tags = sorted(stats['tags_stats'].items(),
+                  key=lambda x: x[1], reverse=True)
     context = {
-        'title': 'MSS',
-        'tags': TAG_STATS,
-        'note': f'Total records in catalogue: {TOTAL}',
-        'total_tags_num': TOTAL_TAGS,
-        'total_size': TOTAL_SIZE,
+        'tags': tags,
+        'stats': stats,
     }
     return render_template('tags.html', **context)
 
@@ -141,21 +134,20 @@ def show_help():
     """Show description page.
     """
     context = {
-        'title': 'MSS',
         'note': f'Current version of the browser: {settings.VERSION}',
     }
     return render_template('help.html', **context)
 
 
 if __name__ == '__main__':
-    if CONFIG.run_on_localhost:
-        host = utils_interaction.get_local_ip()
-    else:
-        host = settings.HOST
+    # if CONFIG.run_on_localhost:
+    #     host = utils_interaction.get_local_ip()
+    # else:
+    host = settings.HOST
 
     port = settings.PORT
 
-    if CONFIG.app_config == 'production' and CONFIG.new_tab_on_start:
+    if True:
         import threading
 
 

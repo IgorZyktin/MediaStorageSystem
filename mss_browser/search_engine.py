@@ -5,9 +5,12 @@
 import random
 import re
 from itertools import zip_longest
-from typing import List, Iterable, Iterator, Any, Optional, Set
+from typing import List, Iterable, Iterator, Any, Optional, Set, Tuple
 
-from common.metarecord_class import Metarecord, Metainfo, Pair
+from common.metarecord_class import Metarecord, Metainfo, Meta
+from core.class_imeta import IMeta
+from core.class_repository import Repository
+from core.class_search_enhancer import KEYWORDS
 
 
 class SearchingMachine:
@@ -26,6 +29,7 @@ class SearchingMachine:
         self.and_ = and_ or set()
         self.or_ = or_ or set()
         self.not_ = not_ or set()
+        self.desc = False
 
     def get_query(self) -> str:
         """Reconstruct query from known arguments.
@@ -68,6 +72,12 @@ def make_searching_machine(query: str) -> SearchingMachine:
         if not operator or not word:
             continue
 
+        if word in KEYWORDS:
+            instance.and_.add(word)
+            if word == 'DESC':
+                instance.desc = True
+            continue
+
         word = word.lower()
 
         if operator == 'OR':
@@ -82,48 +92,33 @@ def make_searching_machine(query: str) -> SearchingMachine:
     return instance
 
 
-def metarecord_pair_sorter(pair: Pair) -> tuple:
-    """Rank pair uuid+metarecord according to its internals.
-    """
-    _, metarecord = pair
-    return metarecord_sorter(metarecord)
-
-
-def metarecord_sorter(metarecord: Metarecord) -> tuple:
-    """Rank metarecord according to its internals.
-    """
-    return (
-        metarecord.meta.series,
-        metarecord.meta.sub_series,
-        metarecord.meta.ordering,
-    )
-
-
-def select_random_images(metainfo: Metainfo,
-                         items_per_page: int) -> List[Metarecord]:
+def select_random_images(repository: Repository,
+                         amount: int) -> List[Meta]:
     """Return X random metainfo records from metainfo pool.
     """
-    # note that size of metainfo in some cases might be smaller
-    # than items_per_page and random.sample will throw and exception
-    chosen_uuids = random.sample(metainfo.keys(),
-                                 min(items_per_page, len(metainfo)))
+    all_known_records = list(repository)
 
-    chosen_pais = [(uuid, metainfo[uuid]) for uuid in chosen_uuids]
+    # note that size of the repository in some cases might be smaller
+    # than amount and random.sample will throw and exception
+    adequate_amount = min(amount, len(all_known_records))
+    chosen_records = random.sample(all_known_records, adequate_amount)
+    chosen_records.sort()
 
-    return get_sorted_metainfo_records(chosen_pais)
+    return chosen_records
 
 
-def select_images(metainfo: Metainfo, searching_machine):
+def select_images(repository: Repository, searching_machine) -> List[IMeta]:
     """Return all metarecords, that match to a given query.
-    """
+
     chosen_pais = []
 
     and_ = searching_machine.and_
     or_ = searching_machine.or_
     not_ = searching_machine.not_
 
-    for uuid, meta in metainfo.items():
-        tags = meta.extended_tags_with_synonyms
+    for meta in metainfo:
+        # FIXME
+        tags = meta.tags
 
         # condition for and - all words must be present
         # condition for or - at least one word must be present
@@ -134,25 +129,34 @@ def select_images(metainfo: Metainfo, searching_machine):
         cond_not_ = any((not (not_ & tags), len(not_) == 0))
 
         if all((cond_and_, cond_or_, cond_not_)):
-            chosen_pais.append((uuid, meta))
+            chosen_pais.append((meta.uuid, meta))
 
     return get_sorted_metainfo_records(chosen_pais)
-
-
-def select_at_date(metainfo: Metainfo, target_date: str):
-    """Return all metarecords, that match to a given query.
     """
-    chosen_pais = []
+    and_uuids = set()
+    or_uuids = set()
+    not_uuids = set()
 
-    for uuid, meta in metainfo.items():
-        if meta.registration.registered_at == target_date:
-            chosen_pais.append((uuid, meta))
+    print('and_', searching_machine.and_)
+    print('or_', searching_machine.or_)
+    print('not_', searching_machine.not_)
 
-    return get_sorted_metainfo_records(chosen_pais)
+    for tag in searching_machine.and_:
+        and_uuids.update(repository.get_uuids_by_tag(tag))
 
+    for tag in searching_machine.or_:
+        with_this_tag = repository.get_uuids_by_tag(tag)
+        for uuid in with_this_tag:
+            record = repository.get(uuid)
+            if record is not None and set(record.tags) & searching_machine.and_:
+                or_uuids.add(record.uuid)
 
-def get_sorted_metainfo_records(pairs: List[Pair]) -> List[Metarecord]:
-    """From given pairs of uuid+metarecord return sorted list of metarecords.
-    """
-    pairs.sort(key=metarecord_pair_sorter)
-    return [metarecord for _, metarecord in pairs]
+    for tag in searching_machine.not_:
+        not_uuids.update(repository.get_uuids_by_tag(tag))
+
+    resulting_uuids = (and_uuids | or_uuids) - not_uuids
+    chosen_records = [repository.get(uuid) for uuid in resulting_uuids]
+    chosen_records = [x for x in chosen_records if x is not None]
+    chosen_records.sort(reverse=searching_machine.desc)
+
+    return chosen_records

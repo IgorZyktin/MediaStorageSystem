@@ -45,3 +45,15 @@ class Meta(IMeta):
             f'{type(self).__name__}'
             f'<uuid={self.uuid!r}, {self.original_filename!r}>'
         )
+
+    def __lt__(self, other) -> bool:
+        """Return True if we are less than other.
+        """
+        if isinstance(other, type(self)):
+            return self.get_ordering() < other.get_ordering()
+        return False
+
+    def get_ordering(self) -> tuple:
+        """Return something that we can sort on.
+        """
+        return self.series, self.sub_series, self.ordering

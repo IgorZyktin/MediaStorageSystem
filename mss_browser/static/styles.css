@@ -73,14 +73,17 @@ hr {
 }
 
 .preview_block {
+    margin-top: 5px;
     display: flex;
     flex-direction: row;
     justify-content: center;
     align-content: center;
+    flex-wrap: wrap;
 }
 
 .preview_block div {
-    margin: 20px;
+    margin-left: 20px;
+    margin-right: 20px;
 }
 
 .preview_table {
@@ -130,7 +133,7 @@ input {
 
 .cls_button:hover {
     background-color: var(--darky);
-    border: 1px solid var(--bleak_blue);
+    outline: 1px solid var(--bleak_blue);
 }
 
 a:link {
@@ -170,6 +173,27 @@ a:active {
     font-size: 12pt;
 }
 
-.comment_cell {
+.limited_width {
     max-width: 1000px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.buttons_block {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content: stretch;
+    margin: 10px;
+}
+
+
+.buttons_block a {
+    padding: 10px;
+    width: 100%;
+    text-align: center;
+}
+
+.spacer {
+    min-width: 20px;
 }

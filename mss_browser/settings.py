@@ -27,7 +27,7 @@ THUMBNAILS_PATH = os.path.join(ROOT_PATH, 'thumbnails')
 IMAGES_PATH = os.path.join(ROOT_PATH, 'images')
 
 # only needed during testing in development
-METARECORD_LOAD_LIMIT = 20  # -1 for no limit
+METARECORD_LOAD_LIMIT = -1  # -1 for no limit
 
 ITEMS_PER_PAGE = 50
 

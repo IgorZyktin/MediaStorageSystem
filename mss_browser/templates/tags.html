@@ -5,9 +5,15 @@
     </div>
 
     <div class="text_zone">
-        <span class="small">Total tags in catalogue: {{ total_tags_num }}</span>
+        <span>Total items in catalogue: {{ stats.total_items }}</span>
         <br>
-        <span class="small">Total size of the archive: {{ total_size }}</span>
+        <span>Total tags in catalogue: {{ stats.total_tags }}</span>
+        <br>
+        <span>Total size of the archive: {{ byte_count_to_text(stats.total_size) }}</span>
+        <br>
+        <span>Oldest item: {{ stats.max_date }}</span>
+        <br>
+        <span>Newest item: {{ stats.min_date }}</span>
         <br>
         <div class="content">
             <ol>

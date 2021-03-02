@@ -21,8 +21,8 @@ def calculate_statistics(repo: Repository,
 
     for record in repo:
         total_size += record.bytes_in_file
-        min_date = min(record.registered_at, min_date)
-        max_date = max(record.registered_at, max_date)
+        min_date = min(record.registered_on, min_date)
+        max_date = max(record.registered_on, max_date)
 
         for tag in set(record.tags):
             tags_stats[tag] += 1
@@ -30,7 +30,8 @@ def calculate_statistics(repo: Repository,
     return {
         'total_items': total_items,
         'total_size': total_size,
-        'min_date': min_date if min_date != some_new_date else '',
-        'max_date': max_date if max_date != some_old_date else '',
+        'total_tags': len(tags_stats),
+        'min_date': min_date,
+        'max_date': max_date,
         'tags_stats': dict(tags_stats),
     }

@@ -1,11 +1,22 @@
 {% extends "index.html" %}
 {% block content %}
+
+    {% if record.next_record or record.previous_record %}
+        <div class="limited_width">
+            <div class="buttons_block">
+                <a href="/preview/{{ record.previous_record }}" class="cls_button">Previous</a>
+                <span class="spacer">&nbsp;</span>
+                <a href="/preview/{{ record.next_record }}" class="cls_button">Next</a>
+            </div>
+        </div>
+    {% endif %}
+
     <div class="preview_block">
 
         <div>
-            <a href="/{{ metarecord.content_info.url_path('content_path') }}">
-                <img src="/{{ metarecord.content_info.url_path('preview_path') }}"
-                     alt="preview version of the content"/>
+            <a href="/{{ record.path_to_content }}">
+                <img src="/{{ record.path_to_preview }}"
+                     alt="Click here for full resolution"/>
             </a>
         </div>
 
@@ -16,46 +27,28 @@
                 </tr>
                 <tr>
                     <td>Original filename</td>
-                    <td>{{ metarecord.file_info.original_filename }}</td>
+                    <td>{{ record.original_filename }}</td>
                 </tr>
                 <tr>
                     <td>Series</td>
-                    <td>{{ metarecord.meta.series }}</td>
+                    <td>{{ record.series }}</td>
                 </tr>
                 <tr>
                     <td>Sub series</td>
-                    <td>{{ metarecord.meta.sub_series }}</td>
+                    <td>{{ record.sub_series }}</td>
                 </tr>
                 <tr>
                     <td>Ordering</td>
-                    <td>{{ metarecord.meta.ordering }}</td>
+                    <td>{{ record.ordering }}</td>
                 </tr>
                 <tr>
                     <td>Comment</td>
-                    <td class="comment_cell">{{ metarecord.meta.comment }}</td>
+                    <td class="limited_width">{{ record.comment }}</td>
                 </tr>
-
-                {% if metarecord.meta.previous_record %}
-                    <tr>
-                        <td>Previous</td>
-                        <td>
-                            <a href="/preview/{{ metarecord.meta.previous_record }}">{{ metarecord.meta.previous_record }}</a>
-                        </td>
-                    </tr>
-                {% endif %}
-
-                {% if metarecord.meta.next_record %}
-                    <tr>
-                        <td>Next</td>
-                        <td>
-                            <a href="/preview/{{ metarecord.meta.next_record }}">{{ metarecord.meta.next_record }}</a>
-                        </td>
-                    </tr>
-                {% endif %}
 
                 <tr>
                     <td colspan="2" style="text-align: center"><a
-                            href="/root/metainfo/{{ metarecord.uuid }}.json">Raw
+                            href="/root/metainfo/{{ record.uuid }}.json">Raw
                         metadata</a></td>
                 </tr>
 
@@ -64,23 +57,23 @@
                 </tr>
                 <tr>
                     <td>Width</td>
-                    <td>{{ metarecord.parameters.width }}</td>
+                    <td>{{ record.width }} px</td>
                 </tr>
                 <tr>
                     <td>Height</td>
-                    <td>{{ metarecord.parameters.height }}</td>
+                    <td>{{ record.height }} px</td>
                 </tr>
                 <tr>
-                    <td>Resolution in MP</td>
-                    <td>{{ metarecord.parameters.resolution_mp }}</td>
+                    <td>Resolution</td>
+                    <td>{{ record.resolution }} Mpx</td>
                 </tr>
                 <tr>
                     <td>Media type</td>
-                    <td>{{ metarecord.parameters.media_type }}</td>
+                    <td>{{ record.media_type }}</td>
                 </tr>
                 <tr>
                     <td>Size</td>
-                    <td>{{ byte_count_to_text(metarecord.parameters.size) }}</td>
+                    <td>{{ byte_count_to_text(record.bytes_in_file) }}</td>
                 </tr>
 
                 <tr>
@@ -89,28 +82,29 @@
                 <tr>
                     <td colspan="2">
                         <ol>
-                            {% for tag in metarecord.tags %}
-                                <li><a href="/search?q={{ tag }}">{{ tag }}</a></li>
+                            {% for tag in record.tags %}
+                                <li><a href="/search?q={{ tag }}">{{ tag }}</a>
+                                </li>
                             {% endfor %}
                         </ol>
                     </td>
                 </tr>
 
-                {% if metarecord.origin.author %}
+                {% if record.author %}
                     <tr>
                         <th colspan="2">Origin</th>
                     </tr>
                     <tr>
                         <td>Url</td>
-                        <td>{{ metarecord.origin.url }}</td>
+                        <td>{{ record.origin_url }}</td>
                     </tr>
                     <tr>
                         <td>Author</td>
-                        <td>{{ metarecord.origin.author }}</td>
+                        <td>{{ record.author }}</td>
                     </tr>
                     <tr>
                         <td>Profile</td>
-                        <td>{{ metarecord.origin.profile }}</td>
+                        <td>{{ record.author_url }}</td>
                     </tr>
                 {% endif %}
 
