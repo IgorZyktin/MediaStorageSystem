@@ -11,23 +11,22 @@ from core import utils_core
 from mss_browser import settings, search_engine, utils_browser
 from mss_browser.paginator_class import Paginator
 
-app = Flask(__name__)
-jsons = utils_filesystem.load_jsons(
-    settings.METAINFO_PATH,
-    settings.LOCAL_CHANGES_PATH,
-    limit=settings.METARECORD_LOAD_LIMIT,
-)
-synonyms = utils_filesystem.load_synonyms(settings.ROOT_PATH)
+if settings.START_MESSAGE:
+    print(settings.START_MESSAGE)
+
+user_config = utils_browser.get_user_config(settings.CONFIG_FILENAME)
+injection = utils_browser.get_injection(settings.INJECTION_FILENAME)
+
+jsons = utils_filesystem.load_jsons(user_config.metainfo_path,
+                                    limit=settings.METARECORD_LOAD_LIMIT)
+synonyms = utils_filesystem.load_synonyms(user_config.root_path)
 
 repository = utils_browser.make_repository(
     raw_metarecords=jsons,
     synonyms=synonyms,
 )
 
-config = utils_browser.get_local_config(
-    path=settings.BASE_PATH,
-    base_config=settings.BASE_CONFIG,
-)
+app = Flask(__name__)
 
 
 @app.context_processor
@@ -37,6 +36,7 @@ def common_names():
     return {
         'title': 'MediaStorageSystem',
         'note': '',
+        'injection': injection,
         'rewrite_query_for_paging': utils_browser.rewrite_query_for_paging,
         'byte_count_to_text': utils_text.byte_count_to_text,
     }
@@ -49,7 +49,8 @@ def serve_static(filename: str):
     Contents of the main storage are served through this function.
     It's not about static css or js files.
     """
-    return send_from_directory(settings.ROOT_PATH, filename, conditional=True)
+    return send_from_directory(user_config.root_path,
+                               filename, conditional=True)
 
 
 @app.route('/', methods=['GET', 'POST'])
@@ -73,13 +74,13 @@ def index():
     else:
         chosen_metarecords = search_engine.select_random_images(
             repository=repository,
-            amount=settings.ITEMS_PER_PAGE,
+            amount=int(user_config.items_per_page),
         )
 
     paginator = Paginator(
         sequence=chosen_metarecords,
         current_page=current_page,
-        items_per_page=settings.ITEMS_PER_PAGE,
+        items_per_page=int(user_config.items_per_page),
     )
 
     records = utils_text.sep_digits(len(paginator))
@@ -134,33 +135,10 @@ def show_help():
     """Show description page.
     """
     context = {
-        'note': f'Current version of the browser: {settings.VERSION}',
+        'note': f'Current version of the MSS browser: {settings.VERSION}',
     }
     return render_template('help.html', **context)
 
 
 if __name__ == '__main__':
-    # if CONFIG.run_on_localhost:
-    #     host = utils_interaction.get_local_ip()
-    # else:
-    host = settings.HOST
-
-    port = settings.PORT
-
-    if True:
-        import threading
-
-
-        def _start():
-            import webbrowser
-            webbrowser.open_new_tab(f'http://{host}:{port}/')
-
-
-        new_thread = threading.Timer(2.0, _start)
-        new_thread.start()
-
-    app.run(
-        host=host,
-        port=port,
-        debug=settings.DEBUG,
-    )
+    utils_browser.run_local_server(app, user_config, settings.DEBUG)

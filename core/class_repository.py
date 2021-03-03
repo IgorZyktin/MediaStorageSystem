@@ -82,6 +82,11 @@ class Repository:
         """
         return self._uuid_by_tag.get(uuid, set())
 
+    def get_extended_tags(self, uuid: str) -> Set[str]:
+        """Return extended tags for given record UUID.
+        """
+        return self._extended_tags.get(uuid, set())
+
     def clear(self) -> None:
         """Drop all records.
         """

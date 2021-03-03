@@ -2,38 +2,11 @@
 
 """Class for search enhancement.
 """
+from collections import defaultdict
 from typing import Set
 
 from core.class_imeta import IMeta
-
-UNKNOWN = 'UNKNOWN'
-
-# image sizes
-TINY = 'TINY'
-SMALL = 'SMALL'
-MEAN = 'MEAN'
-BIG = 'BIG'
-HUGE = 'HUGE'
-IMAGE_SIZES = {TINY, SMALL, MEAN, BIG, HUGE}
-
-# duration types
-SHORT = 'SHORT'
-MID = 'MID'
-LONG = 'LONG'
-DURATION_TYPES = {SHORT, MID, LONG}
-
-# media types
-IMAGE = 'IMAGE'
-GIF = 'GIF'
-VIDEO = 'VIDEO'
-AUDIO = 'AUDIO'
-MEDIA_TYPES = {IMAGE, GIF, VIDEO, AUDIO}
-
-# search keywords
-DESC = 'DESC'
-SEARCH_KEYWORDS = {DESC}
-
-KEYWORDS = IMAGE_SIZES & DURATION_TYPES & MEDIA_TYPES & SEARCH_KEYWORDS
+from core import constants
 
 
 class SearchEnhancer:
@@ -43,13 +16,14 @@ class SearchEnhancer:
     def __init__(self, synonyms: dict = None) -> None:
         """Initialize instance.
         """
-        self._synonyms = {}
+        self._synonyms = defaultdict(set)
 
         if synonyms:
             for comment, group in synonyms.items():
                 self._synonyms[comment] = set(group)
 
-    def get_extended_tags(self, record: IMeta) -> Set[str]:
+    @staticmethod
+    def get_extended_tags(record: IMeta) -> Set[str]:
         """Get base tags with additional words for search.
         """
         return {
@@ -60,67 +34,71 @@ class SearchEnhancer:
             record.group_name,
             record.author,
             record.registered_on,
-            self.get_image_size_tag(record.resolution),
-            self.get_duration_tag(record.seconds),
-            self.get_media_type_tag(record.media_type),
+            get_image_size_tag(record.resolution),
+            get_duration_tag(record.seconds),
+            get_media_type_tag(record.media_type),
         }
 
     def get_extended_tags_with_synonyms(self, record: IMeta) -> Set[str]:
         """Get extended + synonyms for search.
         """
-        extended_tags = self.get_extended_tags(record)
+        base_tags = self.get_extended_tags(record)
         additional_tags = set()
 
         for group in self._synonyms.values():
-            for tag in extended_tags:
+            for tag in base_tags:
                 if tag in group:
                     additional_tags.update(group)
+                    continue
 
-        return extended_tags.union(additional_tags)
+        return base_tags | additional_tags
 
-    @staticmethod
-    def get_image_size_tag(resolution: float) -> str:
-        """Get textual identifier for image size.
-        """
-        if 0 <= resolution < 0.1:
-            return 'TINY'
 
-        if 0.1 <= resolution < 1.0:
-            return 'SMALL'
+def get_image_size_tag(resolution: float) -> str:
+    """Get textual identifier for image size.
+    """
+    if 0 < resolution < constants.THRESHOLD_TINY:
+        return constants.RES_TINY
 
-        if 1.0 <= resolution < 5.0:
-            return 'MEAN'
+    if constants.THRESHOLD_TINY <= resolution < constants.THRESHOLD_SMALL:
+        return constants.RES_SMALL
 
-        if 5.0 <= resolution < 10.0:
-            return 'BIG'
+    if constants.THRESHOLD_SMALL <= resolution < constants.THRESHOLD_MEAN:
+        return constants.RES_MEAN
 
-        if resolution >= 10.0:
-            return 'HUGE'
+    if constants.THRESHOLD_MEAN <= resolution < constants.THRESHOLD_BIG:
+        return constants.RES_BIG
 
-        return UNKNOWN
+    if resolution >= constants.THRESHOLD_BIG:
+        return constants.RES_HUGE
 
-    @staticmethod
-    def get_duration_tag(seconds: int) -> str:
-        """Get textual identifier for media length.
-        """
-        if 0 <= seconds < 0.1:
-            return 'SHORT'
+    return constants.UNKNOWN
 
-        if 300 <= seconds < 1200:
-            return 'MID'
 
-        if seconds > 1200:
-            return 'LONG'
+def get_duration_tag(seconds: int) -> str:
+    """Get textual identifier for media length.
+    """
+    if 0 < seconds < constants.THRESHOLD_MOMENT:
+        return constants.DUR_MOMENT
 
-        return UNKNOWN
+    if constants.THRESHOLD_MOMENT <= seconds < constants.THRESHOLD_SHORT:
+        return constants.DUR_SHORT
 
-    @staticmethod
-    def get_media_type_tag(media_type: str) -> str:
-        """Get textual identifier for media type.
-        """
-        return {
-            'static_image': 'IMAGE',
-            'animated_image': 'GIF',
-            'video': 'VIDEO',
-            'audio': 'AUDIO',
-        }.get(media_type, UNKNOWN)
+    if constants.THRESHOLD_SHORT <= seconds < constants.THRESHOLD_MEDIUM:
+        return constants.DUR_MEDIUM
+
+    if seconds >= constants.THRESHOLD_MEDIUM:
+        return constants.DUR_LONG
+
+    return constants.UNKNOWN
+
+
+def get_media_type_tag(media_type: str) -> str:
+    """Get textual identifier for media type.
+    """
+    return {
+        'static_image': constants.TYPE_IMAGE,
+        'animated_image': constants.TYPE_GIF,
+        'video': constants.TYPE_VIDEO,
+        'audio': constants.TYPE_AUDIO,
+    }.get(media_type, constants.UNKNOWN)

@@ -4,9 +4,19 @@
     {% if record.next_record or record.previous_record %}
         <div class="limited_width">
             <div class="buttons_block">
-                <a href="/preview/{{ record.previous_record }}" class="cls_button">Previous</a>
+                {% if record.previous_record %}
+                    <a href="/preview/{{ record.previous_record }}"
+                       class="cls_button">Previous</a>
+                {% else %}
+                    <span class="spacer">&nbsp;</span>
+                {% endif %}
                 <span class="spacer">&nbsp;</span>
-                <a href="/preview/{{ record.next_record }}" class="cls_button">Next</a>
+                {% if record.next_record %}
+                    <a href="/preview/{{ record.next_record }}"
+                       class="cls_button">Next</a>
+                {% else %}
+                    <span class="spacer">&nbsp;</span>
+                {% endif %}
             </div>
         </div>
     {% endif %}
@@ -43,7 +53,7 @@
                 </tr>
                 <tr>
                     <td>Comment</td>
-                    <td class="limited_width">{{ record.comment }}</td>
+                    <td class="limited_width">{{ record.comment | replace('\\n','<br>') | safe }}</td>
                 </tr>
 
                 <tr>
@@ -90,21 +100,27 @@
                     </td>
                 </tr>
 
-                {% if record.author %}
+                {% if record.author or record.origin_url %}
                     <tr>
                         <th colspan="2">Origin</th>
                     </tr>
                     <tr>
                         <td>Url</td>
-                        <td>{{ record.origin_url }}</td>
+                        <td class="possible_wide"><a
+                                href="{{ record.origin_url }}">{{ record.origin_url }}</a>
+                        </td>
                     </tr>
                     <tr>
                         <td>Author</td>
-                        <td>{{ record.author }}</td>
+                        <td class="possible_wide"><a
+                                href="{{ record.author }}">{{ record.author }}</a>
+                        </td>
                     </tr>
                     <tr>
                         <td>Profile</td>
-                        <td>{{ record.author_url }}</td>
+                        <td class="possible_wide"><a
+                                href="{{ record.author_url }}">{{ record.author_url }}</a>
+                        </td>
                     </tr>
                 {% endif %}
 

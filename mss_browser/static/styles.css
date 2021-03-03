@@ -197,3 +197,7 @@ a:active {
 .spacer {
     min-width: 20px;
 }
+
+.possible_wide {
+    overflow-x: hidden;
+}

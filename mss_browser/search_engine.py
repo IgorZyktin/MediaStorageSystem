@@ -4,20 +4,18 @@
 """
 import random
 import re
-from itertools import zip_longest
-from typing import List, Iterable, Iterator, Any, Optional, Set, Tuple
+from itertools import zip_longest, chain
+from typing import List, Iterable, Iterator, Any, Optional, Set
 
-from common.metarecord_class import Metarecord, Metainfo, Meta
 from core.class_imeta import IMeta
 from core.class_repository import Repository
-from core.class_search_enhancer import KEYWORDS
+from core import constants
 
 
 class SearchingMachine:
     """Helper class that stores query parameters.
     """
-    operators = {'AND', 'OR', 'NOT'}
-    string = '|'.join(r'{}'.format(x) for x in operators)
+    string = '|'.join(r'{}'.format(x) for x in constants.OPERATORS)
     pattern = re.compile('(' + string + ')')
 
     def __init__(self,
@@ -65,17 +63,18 @@ def make_searching_machine(query: str) -> SearchingMachine:
     if not parts:
         return instance
 
-    if parts[0] not in SearchingMachine.operators:
+    if parts[0] not in constants.OPERATORS:
         parts.insert(0, 'OR')
 
     for operator, word in group_to_size(parts, 2):
         if not operator or not word:
             continue
 
-        if word in KEYWORDS:
-            instance.and_.add(word)
+        if word in constants.KEYWORDS:
             if word == 'DESC':
                 instance.desc = True
+            else:
+                instance.and_.add(word)
             continue
 
         word = word.lower()
@@ -93,7 +92,7 @@ def make_searching_machine(query: str) -> SearchingMachine:
 
 
 def select_random_images(repository: Repository,
-                         amount: int) -> List[Meta]:
+                         amount: int) -> List[IMeta]:
     """Return X random metainfo records from metainfo pool.
     """
     all_known_records = list(repository)
@@ -109,16 +108,24 @@ def select_random_images(repository: Repository,
 
 def select_images(repository: Repository, searching_machine) -> List[IMeta]:
     """Return all metarecords, that match to a given query.
-
-    chosen_pais = []
-
+    """
+    target_uuids = set()
     and_ = searching_machine.and_
     or_ = searching_machine.or_
     not_ = searching_machine.not_
 
-    for meta in metainfo:
-        # FIXME
-        tags = meta.tags
+    for tag in chain(and_, or_, not_):
+        target_uuids.update(repository.get_uuids_by_tag(tag))
+
+    chosen_records = []
+
+    for uuid in target_uuids:
+        meta = repository.get(uuid)
+
+        if meta is None:
+            continue
+
+        tags = repository.get_extended_tags(meta.uuid)
 
         # condition for and - all words must be present
         # condition for or - at least one word must be present
@@ -129,34 +136,8 @@ def select_images(repository: Repository, searching_machine) -> List[IMeta]:
         cond_not_ = any((not (not_ & tags), len(not_) == 0))
 
         if all((cond_and_, cond_or_, cond_not_)):
-            chosen_pais.append((meta.uuid, meta))
+            chosen_records.append(meta)
 
-    return get_sorted_metainfo_records(chosen_pais)
-    """
-    and_uuids = set()
-    or_uuids = set()
-    not_uuids = set()
-
-    print('and_', searching_machine.and_)
-    print('or_', searching_machine.or_)
-    print('not_', searching_machine.not_)
-
-    for tag in searching_machine.and_:
-        and_uuids.update(repository.get_uuids_by_tag(tag))
-
-    for tag in searching_machine.or_:
-        with_this_tag = repository.get_uuids_by_tag(tag)
-        for uuid in with_this_tag:
-            record = repository.get(uuid)
-            if record is not None and set(record.tags) & searching_machine.and_:
-                or_uuids.add(record.uuid)
-
-    for tag in searching_machine.not_:
-        not_uuids.update(repository.get_uuids_by_tag(tag))
-
-    resulting_uuids = (and_uuids | or_uuids) - not_uuids
-    chosen_records = [repository.get(uuid) for uuid in resulting_uuids]
-    chosen_records = [x for x in chosen_records if x is not None]
     chosen_records.sort(reverse=searching_machine.desc)
 
     return chosen_records

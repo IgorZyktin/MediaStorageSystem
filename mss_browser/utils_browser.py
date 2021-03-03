@@ -2,14 +2,13 @@
 
 """Small helper functions for mss_browser.
 """
+import configparser
 from argparse import Namespace
 from collections import defaultdict
-from typing import List, Tuple, Set, Dict
+from typing import List
 
 from werkzeug.utils import redirect
 
-from common import utils_filesystem
-from common.metarecord_class import Metainfo
 from core.class_meta import Meta
 from core.class_repository import Repository
 from core.class_search_enhancer import SearchEnhancer
@@ -37,55 +36,12 @@ def rewrite_query_for_paging(query: str, target_page: int) -> str:
     return '/search?q=' + query + f'&page={target_page}'
 
 
-def calculate_stats_for_tags(metainfo: Metainfo,
-                             reverse: bool = True) -> List[Tuple[str, int]]:
-    """Calculate statistics on tags usage.
-
-    Example output:
-        [('magazine', 398), ('artbook', 254), ('artwork', 123)]
+def get_user_config(path: str) -> Namespace:
+    """Get specific user settings.
     """
-    raw_tags = defaultdict(int)
-
-    for metarecord in metainfo.values():
-        for tag in metarecord.tags_set:
-            raw_tags[tag.lower()] += 1
-
-    stats = list(raw_tags.items())
-    stats.sort(key=lambda x: x[1], reverse=reverse)
-
-    return stats
-
-
-def extend_tags_with_synonyms(given_tags: Set[str],
-                              given_synonyms: Dict[str, List[str]]
-                              ) -> Set[str]:
-    """Mutate given tags by adding synonyms to them.
-    """
-    sets = [set(x) for x in given_synonyms.values()]
-
-    resulting_tags = set()
-
-    for tag in list(given_tags):
-        resulting_tags.add(tag)
-
-        for entry in sets:
-            if tag in entry:
-                resulting_tags.update(entry)
-
-    return resulting_tags
-
-
-def get_local_config(path: str, base_config: dict,
-                     filename: str = 'config.json') -> Namespace:
-    """Make configuration for the browser.
-    """
-    local_config = utils_filesystem.load_synonyms(path, filename)
-
-    config = {
-        **base_config,
-        **local_config,
-    }
-    return Namespace(**config)
+    config = configparser.ConfigParser()
+    config.read(path)
+    return Namespace(**dict(config['browser']))
 
 
 def make_repository(raw_metarecords: List[dict],
@@ -107,3 +63,35 @@ def make_repository(raw_metarecords: List[dict],
         repo.add_record(instance, tags)
 
     return repo
+
+
+def run_local_server(app, user_config, debug: bool) -> None:
+    """Run server on local machine.
+    """
+    if user_config.new_tab_on_start:
+        import threading
+        import webbrowser
+        tab_delay_sec = 2.0
+
+        def _start():
+            webbrowser.open_new_tab(
+                f'http://{user_config.host}:{user_config.port}/'
+            )
+
+        new_thread = threading.Timer(tab_delay_sec, _start)
+        new_thread.start()
+
+    app.run(host=user_config.host, port=user_config.port, debug=debug)
+
+
+def get_injection(path: str) -> str:
+    """Get code that must be included into HTML rendering.
+
+    Added for google analytics etc.
+    """
+    try:
+        with open(path, mode='r', encoding='utf-8') as file:
+            content = file.read()
+    except FileNotFoundError:
+        content = ''
+    return content

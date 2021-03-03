@@ -81,14 +81,14 @@ def tie_together():
 
 
 def fix_one_key():
-    folder = 'D:\\PycharmProjects\\MediaStorageSystem\\root\\metainfo'
+    folder = 'D:\\BGC_ARCHIVE\\root\\metainfo'
 
     for filename in iterate_on_files(folder):
         print(filename)
         with open(filename, mode='r', encoding='utf-8') as file:
             content = file.read()
 
-        content = content.replace('//', '/')
+        content = content.replace(' null,', ' "",')
 
         with open(filename, mode='w', encoding='utf-8') as file:
             file.write(content)
@@ -177,4 +177,4 @@ def fix_something():
 
 
 if __name__ == '__main__':
-    update_structure()
+    fix_one_key()
