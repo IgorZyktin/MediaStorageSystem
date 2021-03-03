@@ -5,9 +5,10 @@
     </div>
 
     <div class="text_zone">
-        <p>You can use keywords to perform search. Words are: AND, OR and NOT.
+        <p>You can use logical keywords to perform search.
+            Words are: AND, OR and NOT.
             Exactly uppercase. Search is not working for spelling mistakes.
-            Your request must match the tags exactly. Anything except keywords
+            Your request must match tags exactly. Anything except keywords
             is converted to lowercase during processing.</p>
 
         <p>Meanings are:</p>
@@ -41,6 +42,50 @@
         <p>Don't think of query as of logical rule. Each keyword is treated
             separately. You cannot use queries like "cats AND NOT dogs".</p>
     </div>
+
+    <div class="zone">
+        <h1>Keywords</h1>
+    </div>
+
+    <div class="text_zone">
+        <p>You can use special keywords to perform search.
+            Exactly uppercase.</p>
+
+        <p>For images:</p>
+        <ul>
+            <li>TINY - only tiny images</li>
+            <li>SMALL - only small images</li>
+            <li>MEAN - only regular size images</li>
+            <li>BIG - only big images</li>
+            <li>HUGE - only huge images</li>
+        </ul>
+
+        <p>For video/audion or animated images:</p>
+        <ul>
+            <li>MOMENT - only super short duration</li>
+            <li>SHORT - only short duration</li>
+            <li>MEDIUM - only medium length duration</li>
+            <li>LONG - only long duration</li>
+        </ul>
+
+        <p>For specific media type:</p>
+        <ul>
+            <li>IMAGE - only static images</li>
+            <li>GIF - only animated images</li>
+            <li>VIDEO - only video files</li>
+            <li>AUDIO - only audio files</li>
+        </ul>
+
+        <p>Other:</p>
+        <ul>
+            <li>DESC - show found records in reverse order</li>
+        </ul>
+
+        <p>For example: bgc AND SHORT AND DESC</p>
+        <p>Logical keywords do not matter here, AND will be always used.</p>
+
+    </div>
+
     <br>
     <br>
     <br>
