@@ -5,7 +5,7 @@
 import json
 import os
 from pathlib import Path
-from typing import List, Generator, Optional, Collection, Tuple
+from typing import List, Generator, Optional, Tuple, Collection
 
 from colorama import Fore
 
@@ -23,50 +23,23 @@ def split_extension(filename: str) -> Tuple[str, Optional[str]]:
     return parts[0].lower(), parts[1].lower()
 
 
-def iterate_over_filenames(sequence: List[str],
-                           extensions: Optional[Collection[str]] = None
-                           ) -> Generator[str, None, None]:
-    """Yield filename or None if this extension is not what we're looking for.
-    """
-    extensions = set(extensions) if extensions else set()
-
-    for element in sequence:
-        filename, ext = split_extension(element)
-
-        if ext and (not extensions or ext.lower() in extensions):
-            yield filename.lower()
-
-
-def iterate_over_new_content(path: str,
-                             supported_extensions: Collection[str] = None
-                             ) -> Generator[str, None, None]:
-    """Yield paths for new content files.
-    """
-    supported_extensions = (set(supported_extensions)
-                            if supported_extensions else set())
-
-    for sub_path, dirs, files in os.walk(path):
-        for filename in files:
-            name, ext = split_extension(filename)
-
-            if ext in supported_extensions:
-                yield join(sub_path, filename)
-
-
-def iterate_on_filenames_of_ext(*locations: str, extension: str = 'json'
+def iterate_on_filenames_of_ext(*locations: str,
+                                extensions: Collection[str] = ('json',)
                                 ) -> Generator[Tuple[str, str], None, None]:
     """Iterate on all folders and yield paths and filenames of given ext.
     """
+    supported_extensions = set(extensions)
+
     for location in locations:
         if not os.path.exists(location):
             continue
 
-        for filename in os.listdir(location):
+        for folder, _, files in os.walk(location):
+            for filename in files:
+                name, ext = split_extension(filename)
 
-            if not filename.endswith(extension):
-                continue
-
-            yield location, filename
+                if not ext or ext in supported_extensions:
+                    yield folder, filename.lower()
 
 
 def join(*args) -> str:
@@ -112,7 +85,7 @@ def ensure_folder_exists(path: str) -> Optional[str]:
         if not os.path.exists(current_path):
             os.mkdir(current_path)
             utils_common.output(f'New folder created: {current_path}',
-                                color=Fore.MARGENTA)
+                                color=Fore.MAGENTA)
 
     return current_path
 

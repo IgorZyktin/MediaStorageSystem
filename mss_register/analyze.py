@@ -18,9 +18,10 @@ def analyze_static_image(media) -> Tuple[str, Image.Image, dict]:
     parameters = {
         'width': width,
         'height': height,
-        'resolution_mp': round(width * height / 1_000_000, 2),
+        'resolution': round(width * height / 1_000_000, 2),
         'media_type': 'static_image',
-        'size': os.path.getsize(media.path),
+        'bytes_in_file': os.path.getsize(media.path),
+        'seconds': 0,
     }
 
     return 'static_image', image, parameters
@@ -34,4 +35,4 @@ def get_analyze_tool(ext: str) -> Optional[Callable]:
         'jpeg': analyze_static_image,
         'bmp': analyze_static_image,
         'png': analyze_static_image,
-    }.get(ext)
+    }.get(ext.lower())

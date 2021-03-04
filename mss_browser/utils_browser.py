@@ -18,8 +18,7 @@ from core.class_search_enhancer import SearchEnhancer
 from core.class_serializer import DictSerializer
 
 UUID4_PATTERN = re.compile(
-    r'/^[0-9A-F]{8}-[0-9A-F]{4}-[3]'
-    r'[0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$/i'
+    r'^[0-9A-F]{8}-[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{12}$'
 )
 
 
@@ -115,4 +114,4 @@ def get_synonyms(folder: str,
 def is_correct_uuid(uuid: str) -> bool:
     """Return True if this UUID is correct.
     """
-    return UUID4_PATTERN.match(uuid) is not None
+    return UUID4_PATTERN.match(uuid.upper()) is not None

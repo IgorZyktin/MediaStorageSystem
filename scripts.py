@@ -40,17 +40,17 @@ def fix_tags():
 
 
 def tie_together():
-    folder = 'D:\\BGC_ARCHIVE_\\root\\metainfo'
+    folder = 'D:\\BGC_ARCHIVE\\root\\metainfo'
 
     targets = []
     for filename in iterate_on_files(folder):
         with open(filename, mode='r', encoding='utf-8') as file:
             old_content = json.load(file)
 
-        if old_content['meta']['group_id'] == 'blade runner sketchbook':
+        if old_content['group_name'] == 'artmic design works':
             targets.append((filename, old_content))
 
-    targets.sort(key=lambda x: x[1]['meta']['ordering'])
+    targets.sort(key=lambda x: x[1]['ordering'])
 
     uuids = [x[1]['uuid'] for x in targets]
 
@@ -59,19 +59,19 @@ def tie_together():
 
         assert current['uuid'] == uuids[i]
 
-        current['meta']['group_uuids'] = uuids
+        current['group_members'] = uuids
 
         if i == 0:
-            current['meta']['previous_record'] = ''
-            current['meta']['next_record'] = uuids[1]
+            current['previous_record'] = ''
+            current['next_record'] = uuids[1]
 
         elif i == len(targets) - 1:
-            current['meta']['previous_record'] = uuids[-2]
-            current['meta']['next_record'] = ''
+            current['previous_record'] = uuids[-2]
+            current['next_record'] = ''
 
         else:
-            current['meta']['previous_record'] = uuids[i - 1]
-            current['meta']['next_record'] = uuids[i + 1]
+            current['previous_record'] = uuids[i - 1]
+            current['next_record'] = uuids[i + 1]
 
     for filename, content in targets:
         print(filename)
@@ -177,4 +177,4 @@ def fix_something():
 
 
 if __name__ == '__main__':
-    fix_one_key()
+    tie_together()
