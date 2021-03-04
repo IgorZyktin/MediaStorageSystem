@@ -3,16 +3,24 @@
 """Small helper functions for mss_browser.
 """
 import configparser
+import re
 from argparse import Namespace
 from collections import defaultdict
-from typing import List
+from typing import List, Dict
 
+from colorama import Fore
 from werkzeug.utils import redirect
 
+from common import utils_filesystem, utils_common
 from core.class_meta import Meta
 from core.class_repository import Repository
 from core.class_search_enhancer import SearchEnhancer
 from core.class_serializer import DictSerializer
+
+UUID4_PATTERN = re.compile(
+    r'/^[0-9A-F]{8}-[0-9A-F]{4}-[3]'
+    r'[0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$/i'
+)
 
 
 def add_query_to_path(request):
@@ -30,9 +38,6 @@ def add_query_to_path(request):
 def rewrite_query_for_paging(query: str, target_page: int) -> str:
     """Change query to generate different page.
     """
-    # TODO - this will stop working when search filtering will be introduced :(
-    if not query and target_page:
-        return '/new?q=' + query + f'&page={target_page}'
     return '/search?q=' + query + f'&page={target_page}'
 
 
@@ -44,10 +49,15 @@ def get_user_config(path: str) -> Namespace:
     return Namespace(**dict(config['browser']))
 
 
-def make_repository(raw_metarecords: List[dict],
-                    synonyms: dict) -> Repository:
+def make_repository(user_config, settings) -> Repository:
     """Build repository instance.
     """
+    raw_metarecords = utils_filesystem.load_jsons(
+        user_config.metainfo_path,
+        limit=settings.METARECORD_LOAD_LIMIT,
+    )
+    synonyms = get_synonyms(user_config.root_path)
+
     as_jsons = defaultdict(dict)
     for raw_record in raw_metarecords:
         uuid = raw_record['uuid']
@@ -65,9 +75,12 @@ def make_repository(raw_metarecords: List[dict],
     return repo
 
 
-def run_local_server(app, user_config, debug: bool) -> None:
+def run_local_server(app, user_config, settings) -> None:
     """Run server on local machine.
     """
+    if settings.START_MESSAGE:
+        utils_common.output(settings.START_MESSAGE, color=Fore.YELLOW)
+
     if user_config.new_tab_on_start:
         import threading
         import webbrowser
@@ -81,7 +94,7 @@ def run_local_server(app, user_config, debug: bool) -> None:
         new_thread = threading.Timer(tab_delay_sec, _start)
         new_thread.start()
 
-    app.run(host=user_config.host, port=user_config.port, debug=debug)
+    app.run(host=user_config.host, port=user_config.port, debug=settings.DEBUG)
 
 
 def get_injection(path: str) -> str:
@@ -89,9 +102,17 @@ def get_injection(path: str) -> str:
 
     Added for google analytics etc.
     """
-    try:
-        with open(path, mode='r', encoding='utf-8') as file:
-            content = file.read()
-    except FileNotFoundError:
-        content = ''
-    return content
+    return utils_filesystem.load_textual_file(path)
+
+
+def get_synonyms(folder: str,
+                 filename: str = 'synonyms.json') -> Dict[str, List[str]]:
+    """Get synonyms for the search machine.
+    """
+    return utils_filesystem.load_json(folder, filename)
+
+
+def is_correct_uuid(uuid: str) -> bool:
+    """Return True if this UUID is correct.
+    """
+    return UUID4_PATTERN.match(uuid) is not None

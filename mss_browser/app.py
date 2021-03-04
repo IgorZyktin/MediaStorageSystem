@@ -4,27 +4,19 @@
 """
 import time
 
+from colorama import init
 from flask import Flask, render_template, request, send_from_directory, abort
 
-from common import utils_filesystem, utils_text
+from common import utils_text
 from core import utils_core
 from mss_browser import settings, search_engine, utils_browser
-from mss_browser.paginator_class import Paginator
+from mss_browser.class_paginator import Paginator
+from mss_browser.class_search_request import SearchRequest
 
-if settings.START_MESSAGE:
-    print(settings.START_MESSAGE)
-
+init()
 user_config = utils_browser.get_user_config(settings.CONFIG_FILENAME)
 injection = utils_browser.get_injection(settings.INJECTION_FILENAME)
-
-jsons = utils_filesystem.load_jsons(user_config.metainfo_path,
-                                    limit=settings.METARECORD_LOAD_LIMIT)
-synonyms = utils_filesystem.load_synonyms(user_config.root_path)
-
-repository = utils_browser.make_repository(
-    raw_metarecords=jsons,
-    synonyms=synonyms,
-)
+repository = utils_browser.make_repository(user_config, settings)
 
 app = Flask(__name__)
 
@@ -34,7 +26,7 @@ def common_names():
     """Populate context with common names.
     """
     return {
-        'title': 'MediaStorageSystem',
+        'title': user_config.title,
         'note': '',
         'injection': injection,
         'rewrite_query_for_paging': utils_browser.rewrite_query_for_paging,
@@ -43,8 +35,8 @@ def common_names():
 
 
 @app.route('/root/<path:filename>')
-def serve_static(filename: str):
-    """Serve static files from main storage.
+def serve_content(filename: str):
+    """Serve files from main storage.
 
     Contents of the main storage are served through this function.
     It's not about static css or js files.
@@ -66,10 +58,10 @@ def index():
     start = time.perf_counter()
 
     if query:
-        searching_machine = search_engine.make_searching_machine(query)
+        search_request = SearchRequest.from_query(query)
         chosen_metarecords = search_engine.select_images(
             repository=repository,
-            searching_machine=searching_machine,
+            search_request=search_request,
         )
     else:
         chosen_metarecords = search_engine.select_random_images(
@@ -83,9 +75,9 @@ def index():
         items_per_page=int(user_config.items_per_page),
     )
 
-    records = utils_text.sep_digits(len(paginator))
+    total = utils_text.sep_digits(len(paginator))
     duration = '{:0.4f}'.format(time.perf_counter() - start)
-    note = f'{records} records found in {duration} seconds'
+    note = f'{total} records found in {duration} seconds'
 
     context = {
         'paginator': paginator,
@@ -99,14 +91,18 @@ def index():
 def preview(uuid: str):
     """Show description for a single record.
     """
+    if not utils_browser.is_correct_uuid(uuid):
+        abort(500)
+
     metarecord = repository.get(uuid)
 
     if metarecord is None:
         abort(404)
 
-    note = ''
     if metarecord.group_name:
         note = f'This file seem to be part of "{metarecord.group_name}"'
+    else:
+        note = ''
 
     context = {
         'record': metarecord,
@@ -121,11 +117,9 @@ def show_tags():
     """Enlist all available tags with their frequencies.
     """
     stats = utils_core.calculate_statistics(repository)
-    tags = sorted(stats['tags_stats'].items(),
-                  key=lambda x: x[1], reverse=True)
     context = {
-        'tags': tags,
         'stats': stats,
+        'tags': utils_core.sort_tags(stats['tags_stats']),
     }
     return render_template('tags.html', **context)
 
@@ -141,4 +135,4 @@ def show_help():
 
 
 if __name__ == '__main__':
-    utils_browser.run_local_server(app, user_config, settings.DEBUG)
+    utils_browser.run_local_server(app, user_config, settings)

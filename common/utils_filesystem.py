@@ -2,15 +2,14 @@
 
 """Special utils created to work with filesystem.
 """
-import os
-from collections import defaultdict
-from functools import lru_cache
-from pathlib import Path
-from typing import List, Generator, Optional, Collection, Tuple, Dict
-
 import json
+import os
+from pathlib import Path
+from typing import List, Generator, Optional, Collection, Tuple
 
-from common.metarecord_class import Metarecord, Metainfo
+from colorama import Fore
+
+from common import utils_common
 
 
 def split_extension(filename: str) -> Tuple[str, Optional[str]]:
@@ -76,7 +75,7 @@ def join(*args) -> str:
     return os.path.join(*args)
 
 
-def delete(path: str) -> None:
+def delete_file(path: str) -> None:
     """Delete file.
     """
     os.remove(path)
@@ -96,8 +95,13 @@ def ensure_folder_exists(path: str) -> Optional[str]:
     parts = list(path.parts)
     current_path = None
 
-    for part in parts:
+    for i, part in enumerate(parts):
+        # definitely a file
         if '___' in part:
+            continue
+
+        # probably a file
+        if '.' in part and i == len(parts) - 1:
             continue
 
         if current_path is None:
@@ -107,57 +111,10 @@ def ensure_folder_exists(path: str) -> Optional[str]:
 
         if not os.path.exists(current_path):
             os.mkdir(current_path)
-            print(f'New folder created: {current_path}')
+            utils_common.output(f'New folder created: {current_path}',
+                                color=Fore.MARGENTA)
 
     return current_path
-
-
-def get_metarecords(*locations: str, limit: int = -1) -> Metainfo:
-    """Load all metainfo as instances of Metarecord.
-    """
-    combined_metainfo = defaultdict(dict)
-
-    for location in locations:
-        for uuid, content in load_raw_metainfo(location).items():
-            combined_metainfo[uuid].update(content)
-
-            if 0 < limit <= len(combined_metainfo):
-                break
-
-    clean_metainfo = {}
-
-    for uuid, content in combined_metainfo.items():
-        clean_metainfo[uuid] = Metarecord(**content)
-
-    return clean_metainfo
-
-
-def load_raw_metainfo(folder: str, file_type: str = 'json') -> Dict[str, dict]:
-    """Load metarecords as dicts from given folder.
-    """
-    if not os.path.exists(folder):
-        return {}
-
-    filenames = os.listdir(folder)
-    metainfo = {}
-
-    for filename in filenames:
-        if filename.endswith(file_type):
-            path = join(folder, filename)
-            with open(path, mode='r', encoding='utf-8') as file:
-                content = json.load(file)
-                uuid = content['uuid']
-                metainfo[uuid] = content
-
-    return metainfo
-
-
-@lru_cache
-def load_synonyms(folder: str, filename: str = 'synonyms.json'
-                  ) -> Dict[str, List[str]]:
-    """Load synonyms for the search machine.
-    """
-    return load_json(folder, filename)
 
 
 def load_json(path: str, filename: str = '') -> dict:
@@ -190,3 +147,18 @@ def load_jsons(*locations: str, limit: int = -1) -> List[dict]:
                 break
 
     return all_jsons
+
+
+def load_textual_file(path: str, filename: str = '') -> str:
+    """Generic textual file loader.
+    """
+    if filename:
+        path = join(path, filename)
+
+    try:
+        with open(path, mode='r', encoding='utf-8') as file:
+            content = file.read()
+    except FileNotFoundError:
+        content = ''
+
+    return content

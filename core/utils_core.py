@@ -3,6 +3,7 @@
 """Utils for core functionality.
 """
 from collections import defaultdict
+from typing import Dict, List, Tuple
 
 from core.class_repository import Repository
 
@@ -35,3 +36,12 @@ def calculate_statistics(repo: Repository,
         'max_date': max_date,
         'tags_stats': dict(tags_stats),
     }
+
+
+def sort_tags(unsorted_tags: Dict[str, int],
+              reverse: bool = True) -> List[Tuple[str, int]]:
+    """Return sorted list with pairs of tag + amount.
+    """
+    return sorted(
+        unsorted_tags.items(), key=lambda x: x[1], reverse=reverse
+    )

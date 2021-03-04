@@ -102,7 +102,7 @@ def drop_by_key():
             content = json.load(file)
 
         if content['meta']['group_id'] == 'kenichi sonoda artworks 1983-1997':
-            utils_filesystem.delete(filename)
+            utils_filesystem.delete_file(filename)
 
         print(filename)
 
