@@ -5,27 +5,18 @@
 import json
 import os
 from shutil import copyfile
-from typing import Set
 
 from common import utils_identity, utils_filesystem
 from mss_register import settings
 from mss_register.media_type import UnregisteredMedia
 
 
-def get_existing_uuids(path: str) -> Set[str]:
-    """Get all existing UUIDs.
-    """
-    filenames = os.listdir(path)
-    return {
-        x[:-5]
-        for x in filenames if x.endswith('.json')
-    }
-
-
 def main():
     """Entry point.
     """
-    existing_uuids = get_existing_uuids(settings.METAINFO_PATH)
+    existing_uuids = utils_filesystem.get_existing_filenames(
+        path=settings.METAINFO_PATH
+    )
 
     for folder, filename in utils_filesystem.iterate_on_filenames_of_ext(
             settings.NEW_CONTENT_PATH,

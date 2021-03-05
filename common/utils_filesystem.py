@@ -5,7 +5,7 @@
 import json
 import os
 from pathlib import Path
-from typing import List, Generator, Optional, Tuple, Collection
+from typing import List, Generator, Optional, Tuple, Collection, Set
 
 from colorama import Fore
 
@@ -135,3 +135,17 @@ def load_textual_file(path: str, filename: str = '') -> str:
         content = ''
 
     return content
+
+
+def get_existing_filenames(path: str, extension: str = '.json') -> Set[str]:
+    """Get all existing UUIDs.
+
+    Function considers that path leads to the
+    metainfo folder with lots of json files in there.
+    """
+    ext_length = len(extension)
+    filenames = os.listdir(path)
+    return {
+        x[:-ext_length]
+        for x in filenames if x.endswith(extension)
+    }

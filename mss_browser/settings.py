@@ -30,7 +30,7 @@ START_MESSAGE = r"""
                                      
 """
 
-DEBUG = True
+DEBUG = False
 
 CONFIG_FILENAME = 'config.ini'
 INJECTION_FILENAME = 'injection.html'

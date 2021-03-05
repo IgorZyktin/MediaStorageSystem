@@ -3,7 +3,7 @@
 """Basic utils.
 """
 from itertools import zip_longest
-from typing import Dict, Callable, Any, Iterable, Iterator
+from typing import Dict, Callable, Any, Iterable, Iterator, List, Tuple
 
 from colorama import Fore
 
@@ -39,3 +39,12 @@ def group_to_size(iterable: Iterable, group_size: int,
     [(1, 2, 3), (4, 5, 6), (7, '?', '?')]
     """
     return zip_longest(*[iter(iterable)] * group_size, fillvalue=default)
+
+
+def sort_weighted_dict(unsorted_dict: Dict[str, int],
+                       reverse: bool = True) -> List[Tuple[str, int]]:
+    """Return sorted list with pairs of word + number.
+    """
+    return sorted(
+        unsorted_dict.items(), key=lambda x: x[1], reverse=reverse
+    )

@@ -7,7 +7,7 @@ import time
 from colorama import init
 from flask import Flask, render_template, request, send_from_directory, abort
 
-from common import utils_text
+from common import utils_text, utils_common
 from core import utils_core
 from mss_browser import settings, search_engine, utils_browser
 from mss_browser.class_paginator import Paginator
@@ -119,7 +119,7 @@ def show_tags():
     stats = utils_core.calculate_statistics(repository)
     context = {
         'stats': stats,
-        'tags': utils_core.sort_tags(stats['tags_stats']),
+        'tags': utils_common.sort_weighted_dict(stats['tags_stats']),
     }
     return render_template('tags.html', **context)
 
