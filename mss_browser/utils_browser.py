@@ -17,6 +17,7 @@ from core.class_repository import Repository
 from core.class_search_enhancer import SearchEnhancer
 from core.class_serializer import DictSerializer
 
+CORRECT_UUID_LENGTH = 36
 UUID4_PATTERN = re.compile(
     r'^[0-9A-F]{8}-[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{12}$'
 )
@@ -48,12 +49,12 @@ def get_user_config(path: str) -> Namespace:
     return Namespace(**dict(config['browser']))
 
 
-def make_repository(user_config, settings) -> Repository:
+def make_repository(user_config) -> Repository:
     """Build repository instance.
     """
     raw_metarecords = utils_filesystem.load_jsons(
         user_config.metainfo_path,
-        limit=settings.METARECORD_LOAD_LIMIT,
+        limit=int(user_config.record_load_limit),
     )
     synonyms = get_synonyms(user_config.root_path)
 
@@ -80,7 +81,7 @@ def run_local_server(app, user_config, settings) -> None:
     if settings.START_MESSAGE:
         utils_common.output(settings.START_MESSAGE, color=Fore.YELLOW)
 
-    if user_config.new_tab_on_start:
+    if user_config.new_tab_on_start == 'yes':
         import threading
         import webbrowser
         tab_delay_sec = 2.0
@@ -114,4 +115,6 @@ def get_synonyms(folder: str,
 def is_correct_uuid(uuid: str) -> bool:
     """Return True if this UUID is correct.
     """
+    if len(uuid) != CORRECT_UUID_LENGTH:
+        return False
     return UUID4_PATTERN.match(uuid.upper()) is not None

@@ -2,46 +2,30 @@
 
 """Instruments related to search and sorting.
 """
-import random
 from itertools import chain
 from typing import List
 
-from core.class_imeta import IMeta
-from core.class_repository import Repository
+from core.class_abstract_meta import AbstractMeta
+from core.class_abstract_repository import AbstractRepository
 from mss_browser.class_search_request import SearchRequest
 
 
-def select_random_images(repository: Repository,
-                         amount: int) -> List[IMeta]:
-    """Return X random metainfo records from metainfo pool.
-    """
-    all_known_records = list(repository)
-
-    # note that size of the repository in some cases might be smaller
-    # than amount and random.sample will throw and exception
-    adequate_amount = min(amount, len(all_known_records))
-    chosen_records = random.sample(all_known_records, adequate_amount)
-    chosen_records.sort()
-
-    return chosen_records
-
-
-def select_images(repository: Repository,
-                  search_request: SearchRequest) -> List[IMeta]:
-    """Return all metarecords, that match to a given query.
+def select_records(repository: AbstractRepository,
+                   search_request: SearchRequest) -> List[AbstractMeta]:
+    """Return all records, that match to a given query.
     """
     target_uuids = set()
     and_ = search_request.and_
     or_ = search_request.or_
     not_ = search_request.not_
 
-    for tag in chain(and_, or_, not_):
+    for tag in chain(and_, or_):
         target_uuids.update(repository.get_uuids_by_tag(tag))
 
     chosen_records = []
 
     for uuid in target_uuids:
-        meta = repository.get(uuid)
+        meta = repository.get_record(uuid)
 
         if meta is None:
             continue

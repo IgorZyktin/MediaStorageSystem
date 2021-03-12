@@ -7,7 +7,7 @@ import time
 from colorama import init
 from flask import Flask, render_template, request, send_from_directory, abort
 
-from common import utils_text, utils_common
+from common import utils_text
 from core import utils_core
 from mss_browser import settings, search_engine, utils_browser
 from mss_browser.class_paginator import Paginator
@@ -15,8 +15,12 @@ from mss_browser.class_search_request import SearchRequest
 
 init()
 user_config = utils_browser.get_user_config(settings.CONFIG_FILENAME)
-injection = utils_browser.get_injection(settings.INJECTION_FILENAME)
-repository = utils_browser.make_repository(user_config, settings)
+
+if user_config.inject_code == 'yes':
+    injection = utils_browser.get_injection(settings.INJECTION_FILENAME)
+else:
+    injection = ''
+repository = utils_browser.make_repository(user_config)
 
 app = Flask(__name__)
 
@@ -59,12 +63,12 @@ def index():
 
     if query:
         search_request = SearchRequest.from_query(query)
-        chosen_metarecords = search_engine.select_images(
+        chosen_metarecords = search_engine.select_records(
             repository=repository,
             search_request=search_request,
         )
     else:
-        chosen_metarecords = search_engine.select_random_images(
+        chosen_metarecords = utils_core.select_random_records(
             repository=repository,
             amount=int(user_config.items_per_page),
         )
@@ -92,9 +96,9 @@ def preview(uuid: str):
     """Show description for a single record.
     """
     if not utils_browser.is_correct_uuid(uuid):
-        abort(500)
+        abort(400)
 
-    metarecord = repository.get(uuid)
+    metarecord = repository.get_record(uuid)
 
     if metarecord is None:
         abort(404)
@@ -116,10 +120,8 @@ def preview(uuid: str):
 def show_tags():
     """Enlist all available tags with their frequencies.
     """
-    stats = utils_core.calculate_statistics(repository)
     context = {
-        'stats': stats,
-        'tags': utils_common.sort_weighted_dict(stats['tags_stats']),
+        'stats': utils_core.calculate_statistics(repository),
     }
     return render_template('tags.html', **context)
 

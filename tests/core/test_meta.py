@@ -4,7 +4,7 @@
 """
 import pytest
 
-from core.class_imeta import IMeta
+from core.class_abstract_meta import AbstractMeta
 from core.class_meta import Meta
 
 
@@ -17,7 +17,7 @@ def invalid_metarecord():
 
 @pytest.fixture
 def invalid_metarecord_field_diff():
-    return list(IMeta.__annotations__.keys())[1:]
+    return list(AbstractMeta.__annotations__.keys())[1:]
 
 
 def test_metarecord_creation_failed_args():

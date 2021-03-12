@@ -5,10 +5,10 @@
 Not supposed to be instantiated directly.
 """
 from common import utils_common
-from core.class_imeta import IMeta
+from core.class_abstract_meta import AbstractMeta
 
 
-class Meta(IMeta):
+class Meta(AbstractMeta):
     """Metarecord implementation.
 
     Not supposed to be instantiated directly.
@@ -24,11 +24,13 @@ class Meta(IMeta):
 
         self.__dict__.update(kwargs)
 
-        delta = set(self.__dict__.keys()) ^ set(IMeta.__annotations__.keys())
+        delta = (set(self.__dict__.keys())
+                 ^ set(AbstractMeta.__annotations__.keys()))
+
         if delta:
             weights = {
                 attr: num
-                for num, attr in enumerate(IMeta.__annotations__.keys())
+                for num, attr in enumerate(AbstractMeta.__annotations__.keys())
             }
             sorter = utils_common.make_weight_sorter(weights)
             attrs = ', '.join(sorted(delta, key=sorter))

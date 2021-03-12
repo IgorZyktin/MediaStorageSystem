@@ -5,7 +5,7 @@
 from collections import defaultdict
 from typing import Set
 
-from core.class_imeta import IMeta
+from core.class_abstract_meta import AbstractMeta
 from core import constants
 
 
@@ -23,7 +23,7 @@ class SearchEnhancer:
                 self._synonyms[comment] = set(group)
 
     @staticmethod
-    def get_extended_tags(record: IMeta) -> Set[str]:
+    def get_extended_tags(record: AbstractMeta) -> Set[str]:
         """Get base tags with additional words for search.
         """
         return {
@@ -39,7 +39,8 @@ class SearchEnhancer:
             get_media_type_tag(record.media_type),
         }
 
-    def get_extended_tags_with_synonyms(self, record: IMeta) -> Set[str]:
+    def get_extended_tags_with_synonyms(self,
+                                        record: AbstractMeta) -> Set[str]:
         """Get extended + synonyms for search.
         """
         base_tags = self.get_extended_tags(record)

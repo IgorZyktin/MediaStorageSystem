@@ -1,9 +1,8 @@
 {% extends "index.html" %}
 {% block content %}
     <div class="zone">
-        <h1>Tags statistics</h1>
+        <h1>Statistics</h1>
     </div>
-
     <div class="text_zone">
         <span>Total items in catalogue: {{ stats.total_items }}</span>
         <br>
@@ -14,15 +13,38 @@
         <span>Oldest item: {{ stats.max_date }}</span>
         <br>
         <span>Newest item: {{ stats.min_date }}</span>
-        <br>
+    </div>
+
+    <div class="zone">
+        <h1>Tags by frequency</h1>
+    </div>
+    <div class="text_zone">
         <div class="content">
             <ol>
-                {% for tag, times in tags %}
+                {% for tag, times in stats.sorted_tags %}
                     <li><a href="/search?q={{ tag }}">{{ tag }}
                         x {{ times }}</a>
                     </li>
                 {% endfor %}
             </ol>
+        </div>
+    </div>
+
+    <div class="zone">
+        <h1>Tags by alphabet</h1>
+    </div>
+    <div class="text_zone">
+        <div class="content">
+            {% for letter, tags in stats.tags_by_alphabet.items() %}
+                <ul>
+                    <li>{{ letter|upper }}</li>
+                    <ul>
+                        {% for tag in tags %}
+                            <li><a href="/search?q={{ tag }}">{{ tag }}</a></li>
+                        {% endfor %}
+                    </ul>
+                </ul>
+            {% endfor %}
         </div>
     </div>
 {% endblock %}

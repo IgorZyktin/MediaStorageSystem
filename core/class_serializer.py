@@ -6,9 +6,9 @@ from abc import ABC, abstractmethod
 from functools import lru_cache
 from typing import Union, TypeVar, Type
 
-from core.class_imeta import IMeta
+from core.class_abstract_meta import AbstractMeta
 
-T = TypeVar('T', bound=IMeta)
+T = TypeVar('T', bound=AbstractMeta)
 
 
 class AbstractSerializer(ABC):
@@ -49,9 +49,9 @@ def get_nonexistent_attribute(key: str) -> Union[int, str, list]:
 class DictSerializer(AbstractSerializer):
     """Metarecord to and from dict serializer.
     """
-    valid_attributes = IMeta.__annotations__.copy()
+    valid_attributes = AbstractMeta.__annotations__.copy()
 
-    def serialize(self, record: IMeta):
+    def serialize(self, record: AbstractMeta):
         """Convert instance to some other form.
         """
         serialized = {}
@@ -66,7 +66,7 @@ class DictSerializer(AbstractSerializer):
 
         return serialized
 
-    def from_source(self, *args, **kwargs) -> IMeta:
+    def from_source(self, *args, **kwargs) -> AbstractMeta:
         """Create instance from some other form.
         """
         clean_args = {}

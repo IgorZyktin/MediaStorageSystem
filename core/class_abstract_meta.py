@@ -5,10 +5,11 @@
 Declares all required fields and their types.
 Not supposed to be instantiated directly.
 """
+from abc import ABC
 from typing import List
 
 
-class IMeta:
+class AbstractMeta(ABC):
     """Metarecord interface.
 
     Declares all required fields and their types.

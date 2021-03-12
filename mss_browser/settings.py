@@ -31,9 +31,5 @@ START_MESSAGE = r"""
 """
 
 DEBUG = False
-
 CONFIG_FILENAME = 'config.ini'
 INJECTION_FILENAME = 'injection.html'
-
-# only needed during testing in development
-METARECORD_LOAD_LIMIT = -1  # -1 for no limit
