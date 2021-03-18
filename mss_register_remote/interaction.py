@@ -4,7 +4,7 @@
 """
 from typing import List, Set
 
-from common import utils_identity
+from mss.utils import utils_identity
 from mss_register_remote import metageneration
 
 

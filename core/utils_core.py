@@ -4,10 +4,11 @@
 """
 import random
 from collections import defaultdict
-from typing import List, Dict, Collection
+from typing import List
 
 from core.class_abstract_meta import AbstractMeta
 from core.class_abstract_repository import AbstractRepository
+from mss.utils.utils_collections import arrange_by_alphabet
 
 
 def calculate_statistics(repository: AbstractRepository,
@@ -46,22 +47,6 @@ def calculate_statistics(repository: AbstractRepository,
         'sorted_tags': sorted_tags,
         'tags_by_alphabet': tags_by_alphabet,
     }
-
-
-def arrange_by_alphabet(tags: Collection[str]) -> Dict[str, List[str]]:
-    """Group tags by first letter.
-
-    >>> arrange_by_alphabet(['best', 'ant', 'art', '25'])
-    {'2': ['25'], 'A': ['ant', 'art'], 'B': ['best']}
-    """
-    tags = sorted(tags)
-    arranged = defaultdict(list)
-
-    for tag in filter(None, tags):
-        first_letter = tag[0].upper()
-        arranged[first_letter].append(tag)
-
-    return dict(arranged)
 
 
 def select_random_records(repository: AbstractRepository,
