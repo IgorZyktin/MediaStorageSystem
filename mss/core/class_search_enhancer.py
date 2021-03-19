@@ -2,30 +2,24 @@
 
 """Class for search enhancement.
 """
-from collections import defaultdict
 from typing import Set
 
+from mss import constants
 from mss.core.abstract_types.class_abstract_meta import AbstractMeta
-from mss.core import constants
+from mss.core.simple_types.class_synonyms import Synonyms
 
 
 class SearchEnhancer:
     """Class for search enhancement.
     """
 
-    def __init__(self, synonyms: dict = None) -> None:
-        """Initialize instance.
-        """
-        self._synonyms = defaultdict(set)
-
-        if synonyms:
-            for comment, group in synonyms.items():
-                self._synonyms[comment] = set(group)
+    def __init__(self, synonyms: Synonyms) -> None:
+        """Initialize instance."""
+        self._synonyms = synonyms
 
     @staticmethod
     def get_extended_tags(record: AbstractMeta) -> Set[str]:
-        """Get base tags with additional words for search.
-        """
+        """Get base tags with additional words for search."""
         return {
             *(tag.lower() for tag in record.tags),
             record.uuid,
@@ -41,12 +35,11 @@ class SearchEnhancer:
 
     def get_extended_tags_with_synonyms(self,
                                         record: AbstractMeta) -> Set[str]:
-        """Get extended + synonyms for search.
-        """
+        """Get extended + synonyms for search."""
         base_tags = self.get_extended_tags(record)
         additional_tags = set()
 
-        for group in self._synonyms.values():
+        for group in self._synonyms:
             for tag in base_tags:
                 if tag in group:
                     additional_tags.update(group)
@@ -56,8 +49,7 @@ class SearchEnhancer:
 
 
 def get_image_size_tag(resolution: float) -> str:
-    """Get textual identifier for image size.
-    """
+    """Get textual identifier for image size."""
     if 0 < resolution < constants.THRESHOLD_TINY:
         return constants.RES_TINY
 
@@ -77,8 +69,7 @@ def get_image_size_tag(resolution: float) -> str:
 
 
 def get_duration_tag(seconds: int) -> str:
-    """Get textual identifier for media length.
-    """
+    """Get textual identifier for media length."""
     if 0 < seconds < constants.THRESHOLD_MOMENT:
         return constants.DUR_MOMENT
 
@@ -95,8 +86,7 @@ def get_duration_tag(seconds: int) -> str:
 
 
 def get_media_type_tag(media_type: str) -> str:
-    """Get textual identifier for media type.
-    """
+    """Get textual identifier for media type."""
     return {
         'static_image': constants.TYPE_IMAGE,
         'animated_image': constants.TYPE_GIF,

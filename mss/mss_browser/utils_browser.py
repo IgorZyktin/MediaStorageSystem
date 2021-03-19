@@ -2,20 +2,19 @@
 
 """Small helper functions for mss_browser.
 """
-import configparser
 import re
-from argparse import Namespace
 from collections import defaultdict
 from typing import List, Dict
 
 from colorama import Fore
 from werkzeug.utils import redirect
 
+import mss.constants
 from common import utils_filesystem, utils_common
 from mss.core.concrete_types.class_meta import Meta
 from mss.core.class_repository import Repository
 from mss.core.class_search_enhancer import SearchEnhancer
-from mss.core.simple_types.class_serializer import DictSerializer
+from mss.core.simple_types.class_serializer import Serializer
 
 CORRECT_UUID_LENGTH = 36
 UUID4_PATTERN = re.compile(
@@ -41,14 +40,6 @@ def rewrite_query_for_paging(query: str, target_page: int) -> str:
     return '/search?q=' + query + f'&page={target_page}'
 
 
-def get_user_config(path: str) -> Namespace:
-    """Get specific user settings.
-    """
-    config = configparser.ConfigParser()
-    config.read(path)
-    return Namespace(**dict(config['browser']))
-
-
 def make_repository(user_config) -> Repository:
     """Build repository instance.
     """
@@ -64,7 +55,7 @@ def make_repository(user_config) -> Repository:
         as_jsons[uuid].update(raw_record)
 
     repo = Repository()
-    serializer = DictSerializer(target_type=Meta)
+    serializer = Serializer(target_type=Meta)
     enhancer = SearchEnhancer(synonyms=synonyms)
 
     for record in as_jsons.values():
@@ -75,41 +66,23 @@ def make_repository(user_config) -> Repository:
     return repo
 
 
-def run_local_server(app, user_config, settings) -> None:
+def run_local_server(app, config) -> None:
     """Run server on local machine.
     """
-    if settings.START_MESSAGE:
-        utils_common.output(settings.START_MESSAGE, color=Fore.YELLOW)
-
-    if user_config.new_tab_on_start == 'yes':
+    if config.new_tab_on_start == 'yes':
         import threading
         import webbrowser
         tab_delay_sec = 2.0
 
         def _start():
             webbrowser.open_new_tab(
-                f'http://{user_config.host}:{user_config.port}/'
+                f'http://{config.host}:{config.port}/'
             )
 
         new_thread = threading.Timer(tab_delay_sec, _start)
         new_thread.start()
 
-    app.run(host=user_config.host, port=user_config.port, debug=settings.DEBUG)
-
-
-def get_injection(path: str) -> str:
-    """Get code that must be included into HTML rendering.
-
-    Added for google analytics etc.
-    """
-    return utils_filesystem.load_textual_file(path)
-
-
-def get_synonyms(folder: str,
-                 filename: str = 'synonyms.json') -> Dict[str, List[str]]:
-    """Get synonyms for the search machine.
-    """
-    return utils_filesystem.load_json(folder, filename)
+    app.run(host=config.host, port=config.port, debug=config.debug == 'yes')
 
 
 def is_correct_uuid(uuid: str) -> bool:

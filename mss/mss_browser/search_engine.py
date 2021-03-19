@@ -5,8 +5,8 @@
 from itertools import chain
 from typing import List
 
-from core.abstract_types.class_abstract_meta import AbstractMeta
-from core.abstract_types.class_abstract_repository import AbstractRepository
+from mss.core.abstract_types.class_abstract_meta import AbstractMeta
+from mss.core.abstract_types.class_abstract_repository import AbstractRepository
 from mss.mss_browser.class_search_request import SearchRequest
 
 

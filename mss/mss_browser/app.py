@@ -4,23 +4,22 @@
 """
 import time
 
-from colorama import init
 from flask import Flask, render_template, request, send_from_directory, abort
 
+import mss.core.configuration
+from mss import constants
 from mss.core import utils_core
-from mss.mss_browser import search_engine, settings, utils_browser
+from mss.core.class_repository import Repository
+from mss.core.configuration import Config
+from mss.core.file_handling import load_all_themes, update_one_theme
+from mss.core.helper_types.class_filesystem import Filesystem
+from mss.mss_browser import search_engine, utils_browser
 from mss.mss_browser.class_paginator import Paginator
 from mss.mss_browser.class_search_request import SearchRequest
 from mss.utils import utils_text
 
-init()
-user_config = utils_browser.get_user_config(settings.CONFIG_FILENAME)
-
-if user_config.inject_code == 'yes':
-    injection = utils_browser.get_injection(settings.INJECTION_FILENAME)
-else:
-    injection = ''
-repository = utils_browser.make_repository(user_config)
+config = Config(root_path='', title='', injection='', version='', themes=[])
+repository = Repository()
 
 app = Flask(__name__)
 
@@ -30,23 +29,26 @@ def common_names():
     """Populate context with common names.
     """
     return {
-        'title': user_config.title,
+        'title': config.title,
         'note': '',
-        'injection': injection,
+        'injection': config.injection,
         'rewrite_query_for_paging': utils_browser.rewrite_query_for_paging,
         'byte_count_to_text': utils_text.byte_count_to_text,
     }
 
 
-@app.route('/root/<path:filename>')
+@app.route('/content/<path:filename>')
 def serve_content(filename: str):
     """Serve files from main storage.
 
     Contents of the main storage are served through this function.
     It's not about static css or js files.
     """
-    return send_from_directory(user_config.root_path,
-                               filename, conditional=True)
+    # FIXME
+    if 'root/' in filename:
+        filename = filename.replace('root/', '')
+
+    return send_from_directory(config.root_path, filename, conditional=True)
 
 
 @app.route('/', methods=['GET', 'POST'])
@@ -118,10 +120,9 @@ def preview(uuid: str):
 
 @app.route('/tags')
 def show_tags():
-    """Enlist all available tags with their frequencies.
-    """
+    """Enlist all available tags with their frequencies."""
     context = {
-        'stats': utils_core.calculate_statistics(repository),
+        'statistics': config.themes[0].statistics,
     }
     return render_template('tags.html', **context)
 
@@ -131,10 +132,27 @@ def show_help():
     """Show description page.
     """
     context = {
-        'note': f'Current version of the MSS browser: {settings.VERSION}',
+        'note': f'Current version: {config.version}',
     }
     return render_template('help.html', **context)
 
 
 if __name__ == '__main__':
-    utils_browser.run_local_server(app, user_config, settings)
+    print(constants.START_MESSAGE)
+
+    user_config = mss.core.configuration.get_user_config('config.ini')
+    config.title = user_config.title
+
+    filesystem = Filesystem(user_config.root_path)
+    config.root_path = filesystem.root_folder
+
+    if user_config.inject_code == 'yes':
+        config.injection = filesystem.read_file('injection.html')
+
+    themes = load_all_themes(config.root_path, filesystem)
+
+    for _theme in themes:
+        update_one_theme(_theme, repository, filesystem)
+
+    config.themes = themes
+    utils_browser.run_local_server(app, user_config)

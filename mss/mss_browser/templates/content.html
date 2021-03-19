@@ -34,7 +34,7 @@
         {% for metarecord in paginator %}
             <div class="envelope">
                 <a href="{{ url_for('preview', uuid=metarecord.uuid) }}">
-                    <img src="{{ metarecord.path_to_thumbnail }}"
+                    <img src="/content/{{ metarecord.theme_directory }}/{{ metarecord.path_to_thumbnail }}"
                          alt="{{ metarecord.original_name }}"/>
                 </a>
             </div>

@@ -39,6 +39,13 @@ hr {
     margin: 3px;
 }
 
+.one_tag {
+    border: 1px solid black;
+    margin: 5px;
+    padding: 10px;
+    border-radius: 5px;
+}
+
 .pages {
     width: 100%;
     max-width: var(--max_width);
@@ -156,6 +163,7 @@ a:active {
 .text_zone {
     border: 1px solid var(--grayish);
     padding: 20px;
+    border-radius: 10px;
 }
 
 .zone, .text_zone {
