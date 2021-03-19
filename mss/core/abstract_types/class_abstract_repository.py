@@ -5,7 +5,7 @@
 import abc
 from typing import Optional, Iterable, Set, Tuple
 
-from core.class_abstract_meta import AbstractMeta
+from mss.core.abstract_types.class_abstract_meta import AbstractMeta
 
 
 class AbstractRepository(abc.ABC):

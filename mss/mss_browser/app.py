@@ -7,11 +7,11 @@ import time
 from colorama import init
 from flask import Flask, render_template, request, send_from_directory, abort
 
-from common import utils_text
-from core import utils_core
-from mss_browser import settings, search_engine, utils_browser
-from mss_browser.class_paginator import Paginator
-from mss_browser.class_search_request import SearchRequest
+from mss.core import utils_core
+from mss.mss_browser import search_engine, settings, utils_browser
+from mss.mss_browser.class_paginator import Paginator
+from mss.mss_browser.class_search_request import SearchRequest
+from mss.utils import utils_text
 
 init()
 user_config = utils_browser.get_user_config(settings.CONFIG_FILENAME)

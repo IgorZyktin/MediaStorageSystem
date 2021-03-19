@@ -5,8 +5,8 @@
 import re
 from typing import TypeVar, Generic, Optional, Set
 
-from common.utils_common import group_to_size
-from core import constants
+from mss.utils.utils_collections import group_to_size
+from mss.core import constants
 
 T = TypeVar('T')
 

@@ -4,8 +4,8 @@
 """
 import pytest
 
-from core.class_meta import Meta
-from core.class_repository import Repository
+from mss.core.class_repository import Repository
+from mss.core.concrete_types.class_meta import Meta
 
 
 @pytest.fixture

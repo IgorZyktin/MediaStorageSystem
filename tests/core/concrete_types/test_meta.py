@@ -4,8 +4,8 @@
 """
 import pytest
 
-from core.class_abstract_meta import AbstractMeta
-from core.class_meta import Meta
+from mss.core.abstract_types.class_abstract_meta import AbstractMeta
+from mss.core.concrete_types.class_meta import Meta
 
 
 @pytest.fixture
@@ -18,12 +18,6 @@ def invalid_metarecord():
 @pytest.fixture
 def invalid_metarecord_field_diff():
     return list(AbstractMeta.__annotations__.keys())[1:]
-
-
-def test_metarecord_creation_failed_args():
-    msg = 'Meta does not take positional arguments'
-    with pytest.raises(ValueError, match=msg):
-        Meta(1, 2, 3)
 
 
 def test_metarecord_creation_failed_kwargs(invalid_metarecord,
@@ -45,3 +39,18 @@ def test_metarecord_repr(valid_metarecord_dict):
     instance = Meta(**valid_metarecord_dict)
     assert str(instance) == "Meta<uuid='008a2494-a6a4-4d63-886d-" \
                             "9e050f7a0d4a', 'original_filename.jpg'>"
+
+
+def test_meta_ordering(valid_metarecord_dict):
+    meta_1 = Meta(**{**valid_metarecord_dict, **dict(series='a',
+                                                     sub_series='a',
+                                                     ordering=3)})
+    meta_2 = Meta(**{**valid_metarecord_dict, **dict(series='a',
+                                                     sub_series='a',
+                                                     ordering=2)})
+    meta_3 = Meta(**{**valid_metarecord_dict, **dict(series='a',
+                                                     sub_series='a',
+                                                     ordering=1)})
+    metas = [meta_1, meta_2, meta_3]
+    metas.sort()
+    assert metas == [meta_3, meta_2, meta_1]

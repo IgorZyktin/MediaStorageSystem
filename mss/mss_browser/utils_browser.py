@@ -12,10 +12,10 @@ from colorama import Fore
 from werkzeug.utils import redirect
 
 from common import utils_filesystem, utils_common
-from core.class_meta import Meta
-from core.class_repository import Repository
-from core.class_search_enhancer import SearchEnhancer
-from core.class_serializer import DictSerializer
+from mss.core.concrete_types.class_meta import Meta
+from mss.core.class_repository import Repository
+from mss.core.class_search_enhancer import SearchEnhancer
+from mss.core.simple_types.class_serializer import DictSerializer
 
 CORRECT_UUID_LENGTH = 36
 UUID4_PATTERN = re.compile(

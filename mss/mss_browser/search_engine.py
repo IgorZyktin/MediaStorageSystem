@@ -5,9 +5,9 @@
 from itertools import chain
 from typing import List
 
-from core.class_abstract_meta import AbstractMeta
-from core.class_abstract_repository import AbstractRepository
-from mss_browser.class_search_request import SearchRequest
+from core.abstract_types.class_abstract_meta import AbstractMeta
+from core.abstract_types.class_abstract_repository import AbstractRepository
+from mss.mss_browser.class_search_request import SearchRequest
 
 
 def select_records(repository: AbstractRepository,

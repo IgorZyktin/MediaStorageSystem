@@ -16,6 +16,7 @@ class AbstractMeta(ABC):
     Not supposed to be instantiated directly.
     """
     uuid: str
+    theme_directory: str
 
     # content locations
     path_to_content: str

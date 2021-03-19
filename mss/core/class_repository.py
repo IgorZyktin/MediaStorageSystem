@@ -3,10 +3,12 @@
 """Storage for metarecords.
 """
 from collections import defaultdict
-from typing import Dict, Optional, Set, ItemsView, KeysView, ValuesView, Tuple
+from typing import Dict, Optional, Set, ItemsView, KeysView, ValuesView
 
-from core.class_abstract_meta import AbstractMeta
-from core.class_abstract_repository import AbstractRepository
+from mss.core.abstract_types.class_abstract_meta import AbstractMeta
+from mss.core.abstract_types.class_abstract_repository import (
+    AbstractRepository
+)
 
 
 class Repository(AbstractRepository):

@@ -1,0 +1,8 @@
+name: Cute mice
+synonyms:
+    - Various mouse names:
+          - mouse
+          - mice
+tags_on_demand:
+    - Do not show scary mice:
+          - scary

@@ -1,1 +1,0 @@
-pyinstaller --onefile -y --hidden-import flask --paths D:\\PycharmProjects\\MediaStorageSystem\\venv\\Lib\\site-packages --add-data "browser/templates;templates" --add-data "browser/static;static" browser/__main__.py

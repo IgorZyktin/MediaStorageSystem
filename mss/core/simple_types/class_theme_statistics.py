@@ -20,8 +20,8 @@ class ThemeStatistics:
         self.total_items = 0
         self.total_size = 0
         self._tags: List[str] = []
-        self._tags_by_popularity: Dict[str, int] = {}
-        self._tags_by_alphabet: Dict[str, List[str]] = {}
+        self._tags_by_popularity: List[Tuple[str, int]] = []
+        self._tags_by_alphabet: List[Tuple[str, List[str]]] = []
         self._need_recalculation_popularity = True
         self._need_recalculation_alphabet = True
 
@@ -53,7 +53,7 @@ class ThemeStatistics:
             'Total size': self.total_size_readable,
             'Oldest item': self.min_date,
             'Newest item': self.max_date,
-            'Total tags': len(self.tags_by_popularity),
+            'Total tags': sep_digits(len(self.tags_by_popularity)),
             'tags_by_popularity': self.tags_by_popularity,
             'tags_by_alphabet': self.tags_by_alphabet,
         }
@@ -69,42 +69,48 @@ class ThemeStatistics:
         return byte_count_to_text(self.total_size)
 
     @property
-    def tags_by_popularity(self) -> Dict[str, int]:
-        """Return map of tags sorted by popularity.
+    def tags_by_popularity(self) -> List[Tuple[str, int]]:
+        """Return list of tags sorted by popularity.
 
         Example:
-        {
-            "tag_1": 25,
-            "tag_2": 14,
-        }
+        [
+            ("tag_1", 25),
+            ("tag_2", 14),
+        ]
         """
         if self._need_recalculation_popularity:
             tags_stats = defaultdict(int)
             for tag in self._tags:
                 tags_stats[tag] += 1
 
-            self._tags_by_popularity = {
-                key: value
-                for key, value in sorted(tags_stats.items(),
-                                         key=lambda x: x[1],
-                                         reverse=True)
-            }
+            tags_items = list(tags_stats.items())
+
+            # by alphabet
+            tags_items.sort(key=lambda x: x[0], reverse=False)
+
+            # by popularity
+            tags_items.sort(key=lambda x: x[1], reverse=True)
+
+            self._tags_by_popularity = tags_items
             self._need_recalculation_popularity = False
 
         return self._tags_by_popularity
 
     @property
-    def tags_by_alphabet(self) -> Dict[str, List[str]]:
+    def tags_by_alphabet(self) -> List[Tuple[str, List[str]]]:
         """Return map of tags by alphabet.
 
         Example:
-        {
-            "A": ["aqua", "azure"],
-            "B"": ["bobcat"],
-        }
+        [
+            ("A", ["aqua", "azure"]),
+            ("B"", ["bobcat"]),
+        ]
         """
         if self._need_recalculation_alphabet:
-            self._tags_by_alphabet = arrange_by_alphabet(self._tags)
+            self._tags_by_alphabet = list(
+                arrange_by_alphabet(self._tags).items()
+            )
             self._need_recalculation_alphabet = False
 
+        # noinspection PyTypeChecker
         return self._tags_by_alphabet

@@ -4,8 +4,21 @@
 
 Not supposed to be instantiated directly.
 """
-from common import utils_common
-from core.class_abstract_meta import AbstractMeta
+from typing import Dict, Callable, Any
+
+from mss.core.abstract_types.class_abstract_meta import AbstractMeta
+
+
+def make_weight_sorter(weights: Dict[str, int]) -> Callable:
+    """Factory for sorter functions.
+    """
+
+    def func(element: Any) -> int:
+        """Sorter func.
+        """
+        return weights.get(element, -1)
+
+    return func
 
 
 class Meta(AbstractMeta):
@@ -14,25 +27,21 @@ class Meta(AbstractMeta):
     Not supposed to be instantiated directly.
     """
 
-    def __init__(self, *args, **kwargs) -> None:
+    def __init__(self, **kwargs) -> None:
         """Initialize instance.
         """
-        if args:
-            raise ValueError(
-                f'{type(self).__name__} does not take positional arguments'
-            )
-
+        super().__init__()
         self.__dict__.update(kwargs)
 
         delta = (set(self.__dict__.keys())
-                 ^ set(AbstractMeta.__annotations__.keys()))
+                 ^ set(type(self).__annotations__.keys()))
 
         if delta:
             weights = {
                 attr: num
                 for num, attr in enumerate(AbstractMeta.__annotations__.keys())
             }
-            sorter = utils_common.make_weight_sorter(weights)
+            sorter = make_weight_sorter(weights)
             attrs = ', '.join(sorted(delta, key=sorter))
 
             raise AttributeError(

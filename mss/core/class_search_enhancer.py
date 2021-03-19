@@ -5,8 +5,8 @@
 from collections import defaultdict
 from typing import Set
 
-from core.class_abstract_meta import AbstractMeta
-from core import constants
+from mss.core.abstract_types.class_abstract_meta import AbstractMeta
+from mss.core import constants
 
 
 class SearchEnhancer:

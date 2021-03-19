@@ -3,7 +3,8 @@
 """Utils for collection handling.
 """
 from collections import defaultdict
-from typing import Collection, Dict, List
+from itertools import zip_longest
+from typing import Collection, Dict, List, Iterable, Any, Iterator
 
 
 def arrange_by_alphabet(words: Collection[str],
@@ -26,3 +27,16 @@ def arrange_by_alphabet(words: Collection[str],
             arranged_words[key] = list(dict.fromkeys(arranged_words[key]))
 
     return dict(arranged_words)
+
+
+def group_to_size(iterable: Iterable, group_size: int,
+                  default: Any = None) -> Iterator[tuple]:
+    """Return contents of the iterable grouped in blocks of given size.
+
+    >>> list(group_to_size([1, 2, 3, 4, 5, 6, 7], 2, '?'))
+    [(1, 2), (3, 4), (5, 6), (7, '?')]
+
+    >>> list(group_to_size([1, 2, 3, 4, 5, 6, 7], 3, '?'))
+    [(1, 2, 3), (4, 5, 6), (7, '?', '?')]
+    """
+    return zip_longest(*[iter(iterable)] * group_size, fillvalue=default)

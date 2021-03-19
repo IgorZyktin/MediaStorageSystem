@@ -5,9 +5,9 @@
 from dataclasses import dataclass
 from typing import Set
 
-from core.simple_types.class_synonyms import Synonyms
-from core.simple_types.class_tags_on_demand import TagsOnDemand
-from core.simple_types.class_theme_statistics import ThemeStatistics
+from mss.core.simple_types.class_synonyms import Synonyms
+from mss.core.simple_types.class_tags_on_demand import TagsOnDemand
+from mss.core.simple_types.class_theme_statistics import ThemeStatistics
 
 
 @dataclass
@@ -23,7 +23,7 @@ class Theme:
 
     def __repr__(self) -> str:
         """Return textual representation."""
-        return f'{type(self).__name__}<name={self.name}>'
+        return f'{type(self).__name__}<name={self.name!r}>'
 
     def __lt__(self, other) -> bool:
         """Return True if we are less than other."""
