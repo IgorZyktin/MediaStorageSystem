@@ -15,12 +15,13 @@ from mss_register.media_type import UnregisteredMedia
 def main():
     """Entry point.
     """
-    existing_uuids = utils_filesystem.get_existing_filenames(
-        path=settings.METAINFO_PATH
-    )
+    root_path = 'D:\\BGC_ARCHIVE\\'
+    target_path = 'D:\\BGC_ARCHIVE_\\'
+    theme_dir = 'gits'
+    existing_uuids = utils_filesystem.get_existing_uuids(root_path=root_path)
 
     for folder, filename in utils_filesystem.iterate_on_filenames_of_ext(
-            settings.NEW_CONTENT_PATH,
+            target_path,
             extensions=settings.SUPPORTED_EXTENSIONS
     ):
         uuid = utils_identity.get_new_uuid(existing_uuids)
@@ -29,17 +30,17 @@ def main():
         correct = media.analyze()
 
         if correct:
-            register(media, path, filename)
+            register(media, target_path, path, filename)
             print(path)
             # utils_filesystem.delete(path)
 
 
-def register(media, path, filename) -> None:
+def register(media, target_path, path, filename) -> None:
     """Add this media to the storage.
     """
     metainfo = media.to_metainfo()
     metainfo_name = media.uuid + '.json'
-    metainfo_path = utils_filesystem.join(settings.ROOT_PATH,
+    metainfo_path = utils_filesystem.join(target_path,
                                           'metainfo',
                                           metainfo_name)
 

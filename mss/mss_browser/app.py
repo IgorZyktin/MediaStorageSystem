@@ -44,10 +44,6 @@ def serve_content(filename: str):
     Contents of the main storage are served through this function.
     It's not about static css or js files.
     """
-    # FIXME
-    if 'root/' in filename:
-        filename = filename.replace('root/', '')
-
     return send_from_directory(config.root_path, filename, conditional=True)
 
 
@@ -110,9 +106,11 @@ def preview(uuid: str):
     else:
         note = ''
 
+    query = request.args.get('q', '')
+
     context = {
         'record': metarecord,
-        'query': uuid,
+        'query': query,
         'note': note,
     }
     return render_template('preview.html', **context)
@@ -143,8 +141,8 @@ if __name__ == '__main__':
     user_config = mss.core.configuration.get_user_config('config.ini')
     config.title = user_config.title
 
-    filesystem = Filesystem(user_config.root_path)
-    config.root_path = filesystem.root_folder
+    filesystem = Filesystem()
+    config.root_path = filesystem.absolute(user_config.root_path)
 
     if user_config.inject_code == 'yes':
         config.injection = filesystem.read_file('injection.html')
@@ -152,7 +150,7 @@ if __name__ == '__main__':
     themes = load_all_themes(config.root_path, filesystem)
 
     for _theme in themes:
-        update_one_theme(_theme, repository, filesystem)
+        update_one_theme(config.root_path, _theme, repository, filesystem)
 
     config.themes = themes
     utils_browser.run_local_server(app, user_config)

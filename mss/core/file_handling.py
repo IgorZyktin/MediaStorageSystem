@@ -62,18 +62,15 @@ def load_single_theme(path: str, directory_name: str,
     return theme
 
 
-def update_one_theme(theme: Theme, repository: Repository,
+def update_one_theme(root: str, theme: Theme, repository: Repository,
                      filesystem: Filesystem) -> None:
     """"""
-    path = filesystem.join(filesystem.root_folder, theme.directory, 'metainfo')
+    path = filesystem.join(root, theme.directory, 'metainfo')
     serializer = Serializer(target_type=Meta)
     enhancer = SearchEnhancer(synonyms=theme.synonyms)
 
-    i = 0
+    print('Updating:', theme.name)
     for filename in filesystem.list_files(path):
-        # i += 1
-        # if i > 10:
-        #     break
         full_path = filesystem.join(path, filename)
         content = filesystem.read_file(full_path)
         record = json.loads(content)

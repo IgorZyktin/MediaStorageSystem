@@ -40,10 +40,11 @@ hr {
 }
 
 .one_tag {
-    border: 1px solid black;
+    border: 1px solid var(--bleak_blue);
     margin: 5px;
     padding: 10px;
     border-radius: 5px;
+    background-color: #242b1d;
 }
 
 .pages {

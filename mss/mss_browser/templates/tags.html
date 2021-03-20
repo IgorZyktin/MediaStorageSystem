@@ -10,14 +10,12 @@
     </div>
 
     <div class="zone">
-        <h1>Tags by popularity</h1>
+        <h1>Tags by frequency</h1>
     </div>
     <div class="text_zone">
         <div class="content">
             {% for tag, times in statistics.tags_by_popularity %}
-                <div class="one_tag">
-                    <a href="/search?q={{ tag }}">{{ tag }} x {{ times }}</a>
-                </div>
+                <a href="/search?q={{ tag }}" class="one_tag">{{ tag }} x {{ times }}</a>
             {% endfor %}
         </div>
     </div>

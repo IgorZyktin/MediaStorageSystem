@@ -1,17 +1,29 @@
+# -*- coding: utf-8 -*-
+
+"""Tool for UUID refreshing.
+"""
 import os
 
-FOLDER = 'D:\\BGC_ARCHIVE\\bubblegum_crisis'
+from mss.core.helper_types.class_filesystem import Filesystem
+from mss.utils.utils_scripts import greet, ask
 
 
 def main():
-    path = os.path.join(FOLDER, 'metainfo')
-    meta = [x[:-5] for x in os.listdir(path)]
-    meta.sort()
+    """Entry point."""
+    greet('UUID refreshing tool')
 
-    meta_path = os.path.join(FOLDER, 'used_uuids.csv')
-    with open(meta_path, mode='w', encoding='utf-8') as file:
-        for line in meta:
-            file.write(line + '\n')
+    filesystem = Filesystem()
+    theme_directory = ask('Theme directory')
+    meta_path = filesystem.join(theme_directory, 'metainfo')
+    names = [x[:-5] for x in filesystem.list_files(meta_path)]
+    names.sort()
+
+    file_path = os.path.join(theme_directory, 'used_uuids.csv')
+    with open(file_path, mode='w', encoding='utf-8') as file:
+        for name in names:
+            file.write(name + '\n')
+
+    print(f'Written {len(names)} records')
 
 
 if __name__ == '__main__':
