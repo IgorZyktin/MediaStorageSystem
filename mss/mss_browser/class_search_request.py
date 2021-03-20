@@ -27,6 +27,8 @@ class SearchRequest(Generic[T]):
         self.or_ = or_ or set()
         self.not_ = not_ or set()
         self.desc = False
+        self.only_theme = ''
+        self.except_theme = ''
 
     def get_query(self) -> str:
         """Reconstruct query from known arguments.

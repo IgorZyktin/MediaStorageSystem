@@ -25,5 +25,6 @@ class Synonyms:
     @classmethod
     def from_dict(cls, raw_data: dict) -> 'Synonyms':
         """Create instance from raw data."""
+        raw_data = raw_data or {}
         synonyms = [frozenset(words) for words in raw_data.values()]
         return cls(synonyms)

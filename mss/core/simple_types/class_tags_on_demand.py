@@ -28,6 +28,7 @@ class TagsOnDemand:
     @classmethod
     def from_dict(cls, raw_data: dict) -> 'TagsOnDemand':
         """Create instance from raw data."""
+        raw_data = raw_data or {}
         tags = []
         for words in raw_data.values():
             if isinstance(words, str):

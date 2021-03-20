@@ -9,11 +9,17 @@ from mss.core.abstract_types.class_abstract_meta import AbstractMeta
 from mss.core.abstract_types.class_abstract_repository import AbstractRepository
 
 
-def select_random_records(repository: AbstractRepository,
+def select_random_records(repository: AbstractRepository, directory: str,
                           amount: int) -> List[AbstractMeta]:
     """Return X random records from repository.
     """
     all_known_records = list(repository.all_records())
+
+    if directory != 'all_themes':
+        all_known_records = [
+            x for x in all_known_records
+            if x.theme_directory == directory
+        ]
 
     # note that size of the repository in some cases might be smaller
     # than amount and random.sample will throw and exception

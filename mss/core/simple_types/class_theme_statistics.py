@@ -35,6 +35,20 @@ class ThemeStatistics:
             if isinstance(value, (int, str)):
                 yield key, value
 
+    def __add__(self, other) -> 'ThemeStatistics':
+        """Sum two statistics together."""
+        cls = type(self)
+        assert isinstance(other, cls)
+        instance = cls()
+        instance.min_date = min(self.min_date or other.min_date,
+                                other.min_date or self.min_date)
+        instance.max_date = max(self.max_date or other.max_date,
+                                other.max_date or self.max_date)
+        instance.total_items = self.total_items + other.total_items
+        instance.total_size = self.total_size + other.total_size
+        instance.tags = self.tags + other.tags
+        return instance
+
     def add_item(self, item_date: str, item_size: int,
                  item_tags: Collection[str]) -> None:
         """Add information about single item."""
@@ -114,3 +128,15 @@ class ThemeStatistics:
 
         # noinspection PyTypeChecker
         return self._tags_by_alphabet
+
+    @property
+    def tags(self) -> List[str]:
+        """Return copy of inner tags."""
+        return self._tags.copy()
+
+    @tags.setter
+    def tags(self, new_tags: Collection[str]) -> None:
+        """Assign new tags."""
+        self._tags = self._tags + list(new_tags)
+        self._need_recalculation_alphabet = True
+        self._need_recalculation_popularity = True

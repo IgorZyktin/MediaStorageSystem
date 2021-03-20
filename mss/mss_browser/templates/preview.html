@@ -5,17 +5,17 @@
         <div class="limited_width">
             <div class="buttons_block">
                 {% if record.previous_record %}
-                    <a href="/preview/{{ record.previous_record }}"
+                    <a href="/preview/{{ directory }}/{{ record.previous_record }}"
                        class="cls_button">Previous</a>
                 {% else %}
-                    <span class="spacer">&nbsp;</span>
+                    <a class="spacer">&nbsp;</a>
                 {% endif %}
                 <span class="spacer">&nbsp;</span>
                 {% if record.next_record %}
-                    <a href="/preview/{{ record.next_record }}"
+                    <a href="/preview/{{ directory }}/{{ record.next_record }}"
                        class="cls_button">Next</a>
                 {% else %}
-                    <span class="spacer">&nbsp;</span>
+                    <a class="spacer">&nbsp;</a>
                 {% endif %}
             </div>
         </div>
@@ -58,7 +58,7 @@
 
                 <tr>
                     <td colspan="2" style="text-align: center"><a
-                            href="/root/metainfo/{{ record.uuid }}.json">Raw
+                            href="/content/{{ record.theme_directory }}/metainfo/{{ record.uuid }}.json">Raw
                         metadata</a></td>
                 </tr>
 
@@ -93,7 +93,7 @@
                     <td colspan="2">
                         <ol>
                             {% for tag in record.tags %}
-                                <li><a href="/search?q={{ tag }}">{{ tag }}</a>
+                                <li><a href="/index/{{ directory }}/search?q={{ tag }}">{{ tag }}</a>
                                 </li>
                             {% endfor %}
                         </ol>

@@ -1,10 +1,27 @@
 {% extends "index.html" %}
 {% block content %}
     <div class="zone">
-        <h1>Statistics</h1>
+        <h1>Themes</h1>
     </div>
     <div class="text_zone">
-        {% for label, value in statistics %}
+        <div class="content">
+            {% for theme in all_themes %}
+                {% if theme.directory == current_theme.directory %}
+                    <a href="/tags/{{ theme.directory }}/"
+                       class="one_tag_active">{{ theme.name }}</a>
+                {% else %}
+                    <a href="/tags/{{ theme.directory }}/"
+                       class="one_tag">{{ theme.name }}</a>
+                {% endif %}
+            {% endfor %}
+        </div>
+    </div>
+
+    <div class="zone">
+        <h1>Statistics for "{{ current_theme.name }}"</h1>
+    </div>
+    <div class="text_zone">
+        {% for label, value in current_theme.statistics %}
             <span>{{ label }}: {{ value }}</span><br>
         {% endfor %}
     </div>
@@ -14,8 +31,9 @@
     </div>
     <div class="text_zone">
         <div class="content">
-            {% for tag, times in statistics.tags_by_popularity %}
-                <a href="/search?q={{ tag }}" class="one_tag">{{ tag }} x {{ times }}</a>
+            {% for tag, times in current_theme.statistics.tags_by_popularity %}
+                <a href="/index/{{ directory }}/search?q={{ tag }}"
+                   class="one_tag">{{ tag }} x {{ times }}</a>
             {% endfor %}
         </div>
     </div>
@@ -25,12 +43,14 @@
     </div>
     <div class="text_zone">
         <div class="content">
-            {% for letter, tags in statistics.tags_by_alphabet %}
+            {% for letter, tags in current_theme.statistics.tags_by_alphabet %}
                 <ul>
                     <li>{{ letter|upper }}</li>
                     <ul>
                         {% for tag in tags %}
-                            <li><a href="/search?q={{ tag }}">{{ tag }}</a>
+                            <li>
+                                <a href="/index/{{ directory }}/search?q={{ tag }}">
+                                    {{ tag }}</a>
                             </li>
                         {% endfor %}
                     </ul>

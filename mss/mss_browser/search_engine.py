@@ -43,6 +43,12 @@ def select_records(repository: AbstractRepository,
         if all((cond_and_, cond_or_, cond_not_)):
             chosen_records.append(meta)
 
+    if search_request.only_theme:
+        chosen_records = [
+            x for x in chosen_records
+            if x.theme_directory == search_request.only_theme
+        ]
+
     chosen_records.sort(reverse=search_request.desc)
 
     return chosen_records

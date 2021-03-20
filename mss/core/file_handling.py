@@ -3,6 +3,7 @@
 """Work with actual files using Filesystem class.
 """
 import json
+from itertools import chain
 from typing import List, Optional
 
 import yaml
@@ -30,6 +31,34 @@ def load_all_themes(path: str, filesystem: Filesystem) -> List[Theme]:
             themes.append(theme)
 
     return themes
+
+
+def make_default_theme(themes: List[Theme]) -> None:
+    """Make combined theme called "All themes"."""
+    assert themes
+
+    all_synonyms = set(chain.from_iterable(list(x.synonyms)
+                                           for x in themes))
+
+    all_tags_on_demand = set(chain.from_iterable(list(x.tags_on_demand)
+                                                 for x in themes))
+
+    all_uuids = set(chain.from_iterable(x.used_uuids
+                                        for x in themes))
+
+    default = Theme(
+        name='All themes',
+        directory='all_themes',
+        synonyms=Synonyms(all_synonyms),
+        tags_on_demand=TagsOnDemand(all_tags_on_demand),
+        statistics=ThemeStatistics(),
+        used_uuids=all_uuids,
+    )
+
+    for each in themes:
+        default.statistics += each.statistics
+
+    themes.insert(0, default)
 
 
 def load_single_theme(path: str, directory_name: str,

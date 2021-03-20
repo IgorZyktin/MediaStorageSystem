@@ -1,39 +1,45 @@
 {% extends "index.html" %}
 {% block content %}
 
-{% macro pagination(paginator, rewrite_query_for_paging, query) %}
-    {% if paginator.num_pages > 1 %}
-        <div class="pages">
-            {% if paginator.has_previous %}
-                <a href="{{ rewrite_query_for_paging(query, 1) }}">First</a>
-                <a href="{{ rewrite_query_for_paging(query, paginator.previous_page_number) }}">Previous</a>
-            {% endif %}
-
-            {% for is_dummy, is_current, page in paginator.iterate_over_pages() %}
-                {% if is_dummy %}
-                    <a class="inactive_page">...</a>
-                {% elif is_current %}
-                    <a href="{{ rewrite_query_for_paging(query, page) }}"
-                       class="current_page">{{ page }}</a>
+    {% macro pagination(paginator, rewrite_query_for_paging, directory, query) %}
+        {% if paginator.num_pages > 1 %}
+            <div class="pages">
+                {% if paginator.has_previous %}
+                    <a href="{{ rewrite_query_for_paging(directory, query, 1) }}">First</a>
+                    <a href="{{ rewrite_query_for_paging(directory, query, paginator.previous_page_number) }}">Previous</a>
                 {% else %}
-                    <a href="{{ rewrite_query_for_paging(query, page) }}">{{ page }}</a>
+                    <a>First</a>
+                    <a>Previous</a>
                 {% endif %}
-            {% endfor %}
 
-            {% if paginator.has_next %}
-                <a href="{{ rewrite_query_for_paging(query, paginator.next_page_number) }}">Next</a>
-                <a href="{{ rewrite_query_for_paging(query, paginator.num_pages) }}">Last</a>
-            {% endif %}
-        </div>
-    {% endif %}
-{% endmacro %}
+                {% for is_dummy, is_current, page in paginator.iterate_over_pages() %}
+                    {% if is_dummy %}
+                        <a class="inactive_page">...</a>
+                    {% elif is_current %}
+                        <a href="{{ rewrite_query_for_paging(directory, query, page) }}"
+                           class="current_page">{{ page }}</a>
+                    {% else %}
+                        <a href="{{ rewrite_query_for_paging(directory, query, page) }}">{{ page }}</a>
+                    {% endif %}
+                {% endfor %}
 
-    {{ pagination(paginator, rewrite_query_for_paging, query) }}
+                {% if paginator.has_next %}
+                    <a href="{{ rewrite_query_for_paging(directory, query, paginator.next_page_number) }}">Next</a>
+                    <a href="{{ rewrite_query_for_paging(directory, query, paginator.num_pages) }}">Last</a>
+                {% else %}
+                    <a>Next</a>
+                    <a>Last</a>
+                {% endif %}
+            </div>
+        {% endif %}
+    {% endmacro %}
+
+    {{ pagination(paginator, rewrite_query_for_paging, directory, query) }}
 
     <div class="content">
         {% for metarecord in paginator %}
             <div class="envelope">
-                <a href="{{ url_for('preview', uuid=metarecord.uuid) }}">
+                <a href="{{ url_for('preview', directory=directory, uuid=metarecord.uuid) + '?q=' + query }}">
                     <img src="/content/{{ metarecord.theme_directory }}/{{ metarecord.path_to_thumbnail }}"
                          alt="{{ metarecord.original_name }}"/>
                 </a>
@@ -41,6 +47,6 @@
         {% endfor %}
     </div>
 
-    {{ pagination(paginator, rewrite_query_for_paging, query) }}
+    {{ pagination(paginator, rewrite_query_for_paging, directory, query) }}
 
 {% endblock %}

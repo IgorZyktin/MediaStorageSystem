@@ -10,6 +10,12 @@
     --brightey: #f0d7a6;
 }
 
+/*@media screen and (max-width: 1000px) {*/
+/*  body {*/
+/*    font-size: 30px;*/
+/*  }*/
+/*}*/
+
 html, body {
     background-color: var(--darky);
     height: 100%;
@@ -39,12 +45,16 @@ hr {
     margin: 3px;
 }
 
-.one_tag {
+.one_tag, .one_tag_active {
     border: 1px solid var(--bleak_blue);
     margin: 5px;
     padding: 10px;
     border-radius: 5px;
     background-color: #242b1d;
+}
+
+.one_tag_active {
+    background-color: #384c23;
 }
 
 .pages {

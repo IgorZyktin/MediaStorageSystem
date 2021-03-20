@@ -4,14 +4,16 @@
 """
 import time
 
-from flask import Flask, render_template, request, send_from_directory, abort
+from flask import Flask, render_template, request, send_from_directory, abort, \
+    redirect, url_for
 
 import mss.core.configuration
 from mss import constants
 from mss.core import utils_core
 from mss.core.class_repository import Repository
 from mss.core.configuration import Config
-from mss.core.file_handling import load_all_themes, update_one_theme
+from mss.core.file_handling import load_all_themes, update_one_theme, \
+    make_default_theme
 from mss.core.helper_types.class_filesystem import Filesystem
 from mss.mss_browser import search_engine, utils_browser
 from mss.mss_browser.class_paginator import Paginator
@@ -26,8 +28,7 @@ app = Flask(__name__)
 
 @app.context_processor
 def common_names():
-    """Populate context with common names.
-    """
+    """Populate context with common names."""
     return {
         'title': config.title,
         'note': '',
@@ -48,12 +49,17 @@ def serve_content(filename: str):
 
 
 @app.route('/', methods=['GET', 'POST'])
-@app.route('/search', methods=['GET', 'POST'])
 def index():
-    """Main page of the script.
-    """
+    """Entry page."""
+    return redirect(url_for('index_all', directory='all_themes'))
+
+
+@app.route('/index/<directory>/', methods=['GET', 'POST'])
+@app.route('/index/<directory>/search', methods=['GET', 'POST'])
+def index_all(directory: str):
+    """Main page of the script."""
     if request.method == 'POST':
-        return utils_browser.add_query_to_path(request)
+        return utils_browser.add_query_to_path(request, directory)
 
     query = request.args.get('q', '')
     current_page = int(request.args.get('page', 1))
@@ -61,6 +67,9 @@ def index():
 
     if query:
         search_request = SearchRequest.from_query(query)
+        if directory != 'all_themes':
+            search_request.only_theme = directory
+
         chosen_metarecords = search_engine.select_records(
             repository=repository,
             search_request=search_request,
@@ -68,6 +77,7 @@ def index():
     else:
         chosen_metarecords = utils_core.select_random_records(
             repository=repository,
+            directory=directory,
             amount=int(user_config.items_per_page),
         )
 
@@ -85,12 +95,13 @@ def index():
         'paginator': paginator,
         'query': query,
         'note': note,
+        'directory': directory,
     }
     return render_template('content.html', **context)
 
 
-@app.route('/preview/<uuid>')
-def preview(uuid: str):
+@app.route('/preview/<directory>/<uuid>')
+def preview(directory: str, uuid: str):
     """Show description for a single record.
     """
     if not utils_browser.is_correct_uuid(uuid):
@@ -112,27 +123,37 @@ def preview(uuid: str):
         'record': metarecord,
         'query': query,
         'note': note,
+        'directory': directory,
     }
     return render_template('preview.html', **context)
 
 
-@app.route('/tags')
-def show_tags():
+@app.route('/tags/<directory>/')
+def show_tags(directory: str):
     """Enlist all available tags with their frequencies."""
+    # FIXME
+    theme_inst = config.themes[0]
+    for theme_inst in config.themes:
+        if theme_inst.directory == directory:
+            break
+    else:
+        abort(404)
+
     context = {
-        'statistics': config.themes[0].statistics,
+        'directory': directory,
+        'current_theme': theme_inst,
+        'statistics': theme_inst.statistics,
+        'all_themes': config.themes,
     }
     return render_template('tags.html', **context)
 
 
-@app.route('/help')
-def show_help():
-    """Show description page.
-    """
-    context = {
-        'note': f'Current version: {config.version}',
-    }
-    return render_template('help.html', **context)
+@app.route('/help/<directory>/')
+def show_help(directory: str):
+    """Show description page."""
+    return render_template('help.html',
+                           note=f'Current version: {config.version}',
+                           directory=directory)
 
 
 if __name__ == '__main__':
@@ -140,6 +161,7 @@ if __name__ == '__main__':
 
     user_config = mss.core.configuration.get_user_config('config.ini')
     config.title = user_config.title
+    config.version = constants.__version__
 
     filesystem = Filesystem()
     config.root_path = filesystem.absolute(user_config.root_path)
@@ -152,5 +174,6 @@ if __name__ == '__main__':
     for _theme in themes:
         update_one_theme(config.root_path, _theme, repository, filesystem)
 
+    make_default_theme(themes)
     config.themes = themes
     utils_browser.run_local_server(app, user_config)
