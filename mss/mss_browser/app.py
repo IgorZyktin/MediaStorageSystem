@@ -18,23 +18,21 @@ from mss.core.file_handling import (
     load_all_themes, update_one_theme, make_default_theme,
 )
 from mss.core.helper_types.class_filesystem import Filesystem
+from mss.core.simple_types.class_theme_repository import ThemeRepository
 from mss.mss_browser import search_engine, utils_browser
 from mss.mss_browser.class_paginator import Paginator
 from mss.mss_browser.class_search_request import SearchRequest
+from mss.mss_browser.utils_browser import (
+    get_placeholder, get_group_name, get_note_on_search,
+    rewrite_query_for_paging,
+)
 from mss.utils import utils_text
 
-config = Config(root_path='', title='', injection='', themes=[])
+config = Config(root_path='', title='', injection='')
 repository = Repository()
+theme_repository = ThemeRepository()
 
 app = Flask(__name__)
-
-
-def _get_theme(directory: str):
-    for theme in config.themes:
-        if theme.directory == directory:
-            return theme
-    else:
-        abort(404)
 
 
 @app.context_processor
@@ -44,7 +42,7 @@ def common_names():
         'title': config.title,
         'note': '',
         'injection': config.injection,
-        'rewrite_query_for_paging': utils_browser.rewrite_query_for_paging,
+        'rewrite_query_for_paging': rewrite_query_for_paging,
         'byte_count_to_text': utils_text.byte_count_to_text,
     }
 
@@ -75,26 +73,24 @@ def index_all(directory: str):
     if request.method == 'POST':
         return utils_browser.add_query_to_path(request, directory)
 
+    start = time.perf_counter()
     query = request.args.get('q', '')
     current_page = int(request.args.get('page', 1))
-    start = time.perf_counter()
-    theme = _get_theme(directory)
+    current_theme = theme_repository.get(directory) or abort(404)
 
     if query:
         search_request = SearchRequest.from_query(query, directory)
         chosen_metarecords = search_engine.select_records(
-            theme=theme,
+            theme=current_theme,
             repository=repository,
             search_request=search_request,
         )
-        prefix = ''
     else:
         chosen_metarecords = utils_core.select_random_records(
-            theme=theme,
+            theme=current_theme,
             repository=repository,
             amount=int(user_config.items_per_page),
         )
-        prefix = 'Random'
 
     paginator = Paginator(
         sequence=chosen_metarecords,
@@ -102,21 +98,13 @@ def index_all(directory: str):
         items_per_page=int(user_config.items_per_page),
     )
 
-    total = utils_text.sep_digits(len(paginator))
-    duration = '{:0.4f}'.format(time.perf_counter() - start)
-    note = f'{prefix} {total} records found in {duration} seconds'
-
-    if theme.directory == constants.ALL_THEMES:
-        placeholder = ''
-    else:
-        placeholder = f'Search on theme "{theme.name}"'
-
     context = {
         'paginator': paginator,
         'query': query,
-        'note': note,
+        'note': get_note_on_search(len(paginator),
+                                   time.perf_counter() - start),
         'directory': directory,
-        'placeholder': placeholder,
+        'placeholder': get_placeholder(current_theme),
     }
     return render_template('content.html', **context)
 
@@ -125,33 +113,17 @@ def index_all(directory: str):
 def preview(directory: str, uuid: str):
     """Show description for a single record.
     """
-    if not utils_browser.is_correct_uuid(uuid):
-        abort(404)
-
-    record = repository.get_record(uuid)
-
-    if record is None:
-        abort(404)
-
-    if record.group_name:
-        note = f'This file seem to be part of "{record.group_name}"'
-    else:
-        note = ''
-
+    _ = utils_browser.is_correct_uuid(uuid) or abort(404)
+    meta = repository.get_record(uuid) or abort(404)
+    current_theme = theme_repository.get(directory) or abort(404)
     query = request.args.get('q', '')
 
-    theme = _get_theme(directory)
-    if theme.directory == constants.ALL_THEMES:
-        placeholder = ''
-    else:
-        placeholder = f'Search on theme "{theme.name}"'
-
     context = {
-        'record': record,
+        'meta': meta,
         'query': query,
-        'note': note,
+        'note': get_group_name(meta),
         'directory': directory,
-        'placeholder': placeholder,
+        'placeholder': get_placeholder(current_theme),
     }
     return render_template('preview.html', **context)
 
@@ -159,19 +131,14 @@ def preview(directory: str, uuid: str):
 @app.route('/tags/<directory>/')
 def show_tags(directory: str):
     """Enlist all available tags with their frequencies."""
-    # FIXME
-    theme = _get_theme(directory)
-    if theme.directory == constants.ALL_THEMES:
-        placeholder = ''
-    else:
-        placeholder = f'Search on theme "{theme.name}"'
+    current_theme = theme_repository.get(directory) or abort(404)
 
     context = {
         'directory': directory,
-        'current_theme': theme,
-        'statistics': theme.statistics,
-        'all_themes': config.themes,
-        'placeholder': placeholder,
+        'current_theme': current_theme,
+        'statistics': current_theme.statistics,
+        'theme_repository': theme_repository,
+        'placeholder': get_placeholder(current_theme),
     }
     return render_template('tags.html', **context)
 
@@ -179,17 +146,12 @@ def show_tags(directory: str):
 @app.route('/help/<directory>/')
 def show_help(directory: str):
     """Show help page."""
-    # FIXME
-    theme = _get_theme(directory)
-    if theme.directory == constants.ALL_THEMES:
-        placeholder = ''
-    else:
-        placeholder = f'Search on theme "{theme.name}"'
+    current_theme = theme_repository.get(directory) or abort(404)
 
     context = {
         'note': f'Current version: {constants.__version__}',
         'directory': directory,
-        'placeholder': placeholder,
+        'placeholder': get_placeholder(current_theme),
     }
     return render_template('help.html', **context)
 
@@ -219,7 +181,11 @@ if __name__ == '__main__':
 
     for _theme in themes:
         update_one_theme(config.root_path, _theme, repository, filesystem)
+        theme_repository.add(_theme)
 
-    make_default_theme(themes)
-    config.themes = themes
-    utils_browser.run_local_server(app, user_config)
+    default = make_default_theme(themes)
+    theme_repository.add(default)
+
+    app.run(host=user_config.host,
+            port=user_config.port,
+            debug=user_config.debug == 'yes')

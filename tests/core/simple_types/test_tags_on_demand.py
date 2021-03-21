@@ -39,3 +39,10 @@ def test_tags_on_demand_sum():
 
     _sum = partial(reduce, operator.add)
     assert _sum([inst1, inst2]) == ref
+
+
+def test_bool():
+    inst1 = TagsOnDemand([])
+    assert not inst1
+    inst2 = TagsOnDemand(['a', 'b', 'c', 'd'])
+    assert inst2

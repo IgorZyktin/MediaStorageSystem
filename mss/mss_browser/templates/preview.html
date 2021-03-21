@@ -1,18 +1,20 @@
 {% extends "index.html" %}
 {% block content %}
 
-    {% if record.next_record or record.previous_record %}
+    {% if meta.next_record or meta.previous_record %}
         <div class="limited_width">
             <div class="buttons_block">
-                {% if record.previous_record %}
-                    <a href="/preview/{{ directory }}/{{ record.previous_record }}"
+                {% if meta.previous_record %}
+                    <a href="/preview/{{ directory }}/{{ meta.previous_record }}"
                        class="cls_button">Previous</a>
                 {% else %}
                     <a class="spacer">&nbsp;</a>
                 {% endif %}
+
                 <span class="spacer">&nbsp;</span>
-                {% if record.next_record %}
-                    <a href="/preview/{{ directory }}/{{ record.next_record }}"
+
+                {% if meta.next_record %}
+                    <a href="/preview/{{ directory }}/{{ meta.next_record }}"
                        class="cls_button">Next</a>
                 {% else %}
                     <a class="spacer">&nbsp;</a>
@@ -24,8 +26,8 @@
     <div class="preview_block">
 
         <div>
-            <a href="/content/{{ record.directory }}/{{ record.path_to_content }}">
-                <img src="/content/{{ record.directory }}/{{ record.path_to_preview }}"
+            <a href="/content/{{ meta.directory }}/{{ meta.path_to_content }}">
+                <img src="/content/{{ meta.directory }}/{{ meta.path_to_preview }}"
                      alt="Click here for full resolution"/>
             </a>
         </div>
@@ -37,28 +39,28 @@
                 </tr>
                 <tr>
                     <td>Original filename</td>
-                    <td>{{ record.original_filename }}</td>
+                    <td>{{ meta.original_filename }}</td>
                 </tr>
                 <tr>
                     <td>Series</td>
-                    <td>{{ record.series }}</td>
+                    <td>{{ meta.series }}</td>
                 </tr>
                 <tr>
                     <td>Sub series</td>
-                    <td>{{ record.sub_series }}</td>
+                    <td>{{ meta.sub_series }}</td>
                 </tr>
                 <tr>
                     <td>Ordering</td>
-                    <td>{{ record.ordering }}</td>
+                    <td>{{ meta.ordering }}</td>
                 </tr>
                 <tr>
                     <td>Comment</td>
-                    <td class="limited_width">{{ record.comment | replace('\\n','<br>') | safe }}</td>
+                    <td class="limited_width">{{ meta.comment | replace('\\n','<br>') | safe }}</td>
                 </tr>
 
                 <tr>
                     <td colspan="2" style="text-align: center"><a
-                            href="/content/{{ record.directory }}/metainfo/{{ record.uuid }}.json">Raw
+                            href="/content/{{ meta.directory }}/metainfo/{{ meta.uuid }}.json">Raw
                         metadata</a></td>
                 </tr>
 
@@ -67,23 +69,23 @@
                 </tr>
                 <tr>
                     <td>Width</td>
-                    <td>{{ record.width }} px</td>
+                    <td>{{ meta.width }} px</td>
                 </tr>
                 <tr>
                     <td>Height</td>
-                    <td>{{ record.height }} px</td>
+                    <td>{{ meta.height }} px</td>
                 </tr>
                 <tr>
                     <td>Resolution</td>
-                    <td>{{ record.resolution }} Mpx</td>
+                    <td>{{ meta.resolution }} Mpx</td>
                 </tr>
                 <tr>
                     <td>Media type</td>
-                    <td>{{ record.media_type }}</td>
+                    <td>{{ meta.media_type }}</td>
                 </tr>
                 <tr>
                     <td>Size</td>
-                    <td>{{ byte_count_to_text(record.bytes_in_file) }}</td>
+                    <td>{{ byte_count_to_text(meta.bytes_in_file) }}</td>
                 </tr>
 
                 <tr>
@@ -92,7 +94,7 @@
                 <tr>
                     <td colspan="2">
                         <ol>
-                            {% for tag in record.tags %}
+                            {% for tag in meta.tags %}
                                 <li><a href="/index/{{ directory }}/search?q={{ tag }}">{{ tag }}</a>
                                 </li>
                             {% endfor %}
@@ -100,24 +102,24 @@
                     </td>
                 </tr>
 
-                {% if record.author or record.origin_url %}
+                {% if meta.author or meta.origin_url %}
                     <tr>
                         <th colspan="2">Origin</th>
                     </tr>
                     <tr>
                         <td>Url</td>
                         <td class="possible_wide"><a
-                                href="{{ record.origin_url }}">{{ record.origin_url }}</a>
+                                href="{{ meta.origin_url }}">{{ meta.origin_url }}</a>
                         </td>
                     </tr>
                     <tr>
                         <td>Author</td>
-                        <td class="possible_wide">{{ record.author }}</td>
+                        <td class="possible_wide">{{ meta.author }}</td>
                     </tr>
                     <tr>
                         <td>Profile</td>
                         <td class="possible_wide"><a
-                                href="{{ record.author_url }}">{{ record.author_url }}</a>
+                                href="{{ meta.author_url }}">{{ meta.author_url }}</a>
                         </td>
                     </tr>
                 {% endif %}

@@ -5,7 +5,7 @@
 import os
 
 BASE_PATH = 'D:\\BGC_ARCHIVE_\\'
-ROOT_PATH = os.path.join(BASE_PATH, 'root')
+ROOT_PATH = os.path.join(BASE_PATH, 'example')
 METAINFO_PATH = os.path.join(ROOT_PATH, 'metainfo')
 LOCAL_CHANGES_PATH = os.path.join(ROOT_PATH, 'local_changes')
 PREVIEWS_PATH = os.path.join(ROOT_PATH, 'previews')

@@ -11,7 +11,7 @@ from typing import List, Optional
 import yaml
 
 from mss.core.class_repository import Repository
-from mss.core.class_search_enhancer import SearchEnhancer
+from mss.core.helper_types.class_search_enhancer import SearchEnhancer
 from mss.core.concrete_types.class_meta import Meta
 from mss.core.helper_types.class_filesystem import Filesystem
 from mss.core.simple_types.class_serializer import Serializer
@@ -36,13 +36,13 @@ def load_all_themes(path: str, filesystem: Filesystem) -> List[Theme]:
     return themes
 
 
-def make_default_theme(themes: List[Theme]) -> None:
+def make_default_theme(themes: List[Theme]) -> Theme:
     """Make combined theme called "All themes"."""
     assert themes
     _sum = partial(reduce, operator.add)
     all_uuids = set(chain.from_iterable(x.used_uuids for x in themes))
 
-    default = Theme(
+    return Theme(
         name='All themes',
         directory='all_themes',
         synonyms=_sum(x.synonyms for x in themes),
@@ -50,8 +50,6 @@ def make_default_theme(themes: List[Theme]) -> None:
         statistics=_sum(x.statistics for x in themes),
         used_uuids=all_uuids,
     )
-
-    themes.insert(0, default)
 
 
 def load_single_theme(path: str, directory_name: str,

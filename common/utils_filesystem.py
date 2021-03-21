@@ -2,14 +2,8 @@
 
 """Special utils created to work with filesystem.
 """
-import json
 import os
-from pathlib import Path
-from typing import List, Generator, Optional, Tuple, Collection, Set
-
-from colorama import Fore
-
-from common import utils_common
+from typing import Generator, Optional, Tuple, Collection
 
 
 def split_extension(filename: str) -> Tuple[str, Optional[str]]:
@@ -40,22 +34,3 @@ def iterate_on_filenames_of_ext(*locations: str,
 
                 if not ext or ext in supported_extensions:
                     yield folder, filename.lower()
-
-
-def join(*args) -> str:
-    """Use os.path.join to create joined path.
-    """
-    return os.path.join(*args)
-
-
-def delete_file(path: str) -> None:
-    """Delete file.
-    """
-    os.remove(path)
-
-
-def get_filename(path: str) -> str:
-    """Extract filename from path.
-    """
-    _, tail = os.path.split(path)
-    return tail

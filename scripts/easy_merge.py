@@ -8,7 +8,7 @@ from mss_register import settings
 
 FOLDER = 'D:\\BGC_ARCHIVE_TMP\\GENERATED\\images\\fanart\\'
 SOURCE = 'D:\\BGC_ARCHIVE_TMP\\GENERATED\\'
-ROOT = 'D:\\BGC_ARCHIVE_TMP\\GENERATED\\root'
+ROOT = 'D:\\BGC_ARCHIVE_TMP\\GENERATED\\example'
 
 
 def ifiles():
@@ -63,9 +63,9 @@ def main():
         clean_content = {
             "uuid": content['uuid'],
             "content_info": {
-                "content_path": f"root\\{base}",
-                "preview_path": f"root\\previews\\{base}",
-                "thumbnail_path": f"root\\thumbnails\\{base}"
+                "content_path": f"example\\{base}",
+                "preview_path": f"example\\previews\\{base}",
+                "thumbnail_path": f"example\\thumbnails\\{base}"
             },
             "file_info": {
                 "original_filename": content['original_filename'],

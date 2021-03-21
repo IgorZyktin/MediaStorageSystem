@@ -23,7 +23,7 @@ class Theme:
 
     def __repr__(self) -> str:
         """Return textual representation."""
-        return f'{type(self).__name__}<name={self.name!r}>'
+        return f'{type(self).__name__}<directory={self.directory!r}>'
 
     def __lt__(self, other) -> bool:
         """Return True if we are less than other."""

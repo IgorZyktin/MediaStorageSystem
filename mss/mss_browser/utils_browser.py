@@ -6,6 +6,11 @@ import re
 
 from werkzeug.utils import redirect
 
+from mss import constants
+from mss.core.abstract_types.class_abstract_meta import AbstractMeta
+from mss.core.simple_types.class_theme import Theme
+from mss.utils.utils_text import sep_digits
+
 CORRECT_UUID_LENGTH = 36
 UUID4_PATTERN = re.compile(
     r'^[0-9A-F]{8}-[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{12}$'
@@ -29,28 +34,29 @@ def rewrite_query_for_paging(directory: str, query: str,
     return f'/index/{directory}/search?q=' + query + f'&page={target_page}'
 
 
-def run_local_server(app, config) -> None:
-    """Run server on local machine.
-    """
-    if config.new_tab_on_start == 'yes':
-        import threading
-        import webbrowser
-        tab_delay_sec = 2.0
-
-        def _start():
-            webbrowser.open_new_tab(
-                f'http://{config.host}:{config.port}/'
-            )
-
-        new_thread = threading.Timer(tab_delay_sec, _start)
-        new_thread.start()
-
-    app.run(host=config.host, port=config.port, debug=config.debug == 'yes')
-
-
 def is_correct_uuid(uuid: str) -> bool:
-    """Return True if this UUID is correct.
-    """
+    """Return True if this UUID is correct."""
     if len(uuid) != CORRECT_UUID_LENGTH:
         return False
     return UUID4_PATTERN.match(uuid.upper()) is not None
+
+
+def get_placeholder(current_theme: Theme) -> str:
+    """Return specific placeholder if we're not in default theme."""
+    if current_theme.directory != constants.ALL_THEMES:
+        return f'Search on theme "{current_theme.name}"'
+    return ''
+
+
+def get_group_name(record: AbstractMeta) -> str:
+    """Return specific group name if we have one."""
+    if record.group_name:
+        return f'This file is from group "{record.group_name}"'
+    return ''
+
+
+def get_note_on_search(total: int, duration: float) -> str:
+    """Return description of search duration."""
+    _total = sep_digits(total)
+    _duration = '{:0.4f}'.format(duration)
+    return f'Found {_total} records in {_duration} seconds'

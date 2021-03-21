@@ -15,7 +15,7 @@ def iterate_on_files(folder):
 
 
 def fix_thumbnail_size():
-    folder = 'D:\\BGC_ARCHIVE\\root\\thumbnails'
+    folder = 'D:\\BGC_ARCHIVE\\example\\thumbnails'
 
     for path, dirs, files in os.walk(folder):
         for file in files:
@@ -82,7 +82,7 @@ def tie_together():
 
 
 def fix_one_key():
-    folder = 'D:\\BGC_ARCHIVE\\root\\metainfo'
+    folder = 'D:\\BGC_ARCHIVE\\example\\metainfo'
 
     for filename in iterate_on_files(folder):
         print(filename)
@@ -96,7 +96,7 @@ def fix_one_key():
 
 
 def drop_by_key():
-    folder = 'D:\\BGC_ARCHIVE\\root\\metainfo'
+    folder = 'D:\\BGC_ARCHIVE\\example\\metainfo'
 
     for filename in iterate_on_files(folder):
         with open(filename, mode='r', encoding='utf-8') as file:
@@ -109,7 +109,7 @@ def drop_by_key():
 
 
 def update_structure():
-    folder = 'D:\\BGC_ARCHIVE\\root\\metainfo'
+    folder = 'D:\\BGC_ARCHIVE\\example\\metainfo'
 
     for filename in iterate_on_files(folder):
         print(filename)
@@ -162,14 +162,14 @@ def update_structure():
 
 
 def fix_something():
-    folder = 'D:\\PycharmProjects\\MediaStorageSystem\\root\\metainfo'
+    folder = 'D:\\PycharmProjects\\MediaStorageSystem\\example\\metainfo'
 
     for filename in iterate_on_files(folder):
         print(filename)
         with open(filename, mode='r', encoding='utf-8') as file:
             content = json.load(file)
 
-            content['series'] = 'cute mice'
+            content['series'] = 'cute gerbils'
             content['group_name'] = ''
             content['tags'] = []
 

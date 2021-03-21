@@ -53,10 +53,10 @@ def single_handling(existing_uuids: Set[str]) -> None:
     meta['original_filename'] = filename
     meta['original_extension'] = extension
 
-    meta['path_to_content'] = utils_filesystem.join('root', sub_path, new_name)
-    meta['path_to_preview'] = utils_filesystem.join('root', 'previews',
+    meta['path_to_content'] = utils_filesystem.join('example', sub_path, new_name)
+    meta['path_to_preview'] = utils_filesystem.join('example', 'previews',
                                                     sub_path, new_name)
-    meta['path_to_thumbnail'] = utils_filesystem.join('root', 'thumbnails',
+    meta['path_to_thumbnail'] = utils_filesystem.join('example', 'thumbnails',
                                                       sub_path, new_name)
 
     tool = analyze.get_analyze_tool(extension)
@@ -74,7 +74,7 @@ def single_handling(existing_uuids: Set[str]) -> None:
                                                      meta['path_to_thumbnail'])
 
     utils_filesystem.ensure_folder_exists(
-        utils_filesystem.join(settings.BASE_PATH, 'root', sub_path)
+        utils_filesystem.join(settings.BASE_PATH, 'example', sub_path)
     )
     shutil.copy(path, actual_path_to_content)
 

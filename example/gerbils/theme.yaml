@@ -1,7 +1,8 @@
-name: Cute mice
+name: Cute gerbils
 synonyms:
     Various mouse names:
         - mouse
+        - gerbil
         - mice
 tags_on_demand:
     Do not show scary mice:

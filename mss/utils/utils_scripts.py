@@ -55,8 +55,7 @@ def perc(iterable: Iterable) -> Generator:
 
         print(f'\r[{complete}{left}] {ending}', end='')
         yield element
-
-    print('\nDONE!')
+    print()
 
 
 def relocate_by_uuid(uuid: str, source_theme_path: str,
@@ -147,8 +146,9 @@ def get_path_ending(path: str, pivot: str) -> str:
     parts = path.split(os.sep)
     for i, element in enumerate(parts):
         if element == pivot:
-            return os.sep.join(parts[i+1:])
+            return os.sep.join(parts[i + 1:])
     return path
+
 
 def drop_filename_from_path(path: str, filename: str) -> str:
     """

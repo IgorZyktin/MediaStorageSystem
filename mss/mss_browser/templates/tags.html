@@ -1,11 +1,15 @@
 {% extends "index.html" %}
 {% block content %}
+
+    {#-----------------------------------------------------------------------#}
     <div class="zone">
         <h1>Themes</h1>
     </div>
+    {#-----------------------------------------------------------------------#}
+
     <div class="text_zone">
         <div class="content">
-            {% for theme in all_themes %}
+            {% for theme in theme_repository %}
                 {% if theme.directory == current_theme.directory %}
                     <a href="/tags/{{ theme.directory }}/"
                        class="one_tag_active">{{ theme.name }}</a>
@@ -17,11 +21,14 @@
         </div>
     </div>
 
+    {#-----------------------------------------------------------------------#}
     <div class="zone">
         <h1>Statistics for "{{ current_theme.name }}"</h1>
     </div>
+    {#-----------------------------------------------------------------------#}
+
     <div class="text_zone">
-        {% for label, value in current_theme.statistics %}
+        {% for label, value in statistics %}
             <span>{{ label }}: {{ value }}</span><br>
         {% endfor %}
     </div>
@@ -40,24 +47,30 @@
         </div>
     {% endif %}
 
+    {#-----------------------------------------------------------------------#}
     <div class="zone">
         <h1>Tags by frequency</h1>
     </div>
+    {#-----------------------------------------------------------------------#}
+
     <div class="text_zone">
         <div class="content">
-            {% for tag, times in current_theme.statistics.tags_by_popularity %}
+            {% for tag, times in statistics.tags_by_popularity %}
                 <a href="/index/{{ directory }}/search?q={{ tag }}"
                    class="one_tag">{{ tag }} x {{ times }}</a>
             {% endfor %}
         </div>
     </div>
 
+    {#-----------------------------------------------------------------------#}
     <div class="zone">
         <h1>Tags by alphabet</h1>
     </div>
+    {#-----------------------------------------------------------------------#}
+
     <div class="text_zone">
         <div class="content">
-            {% for letter, tags in current_theme.statistics.tags_by_alphabet %}
+            {% for letter, tags in statistics.tags_by_alphabet %}
                 <ul>
                     <li>{{ letter|upper }}</li>
                     <ul>
@@ -72,4 +85,5 @@
             {% endfor %}
         </div>
     </div>
+
 {% endblock %}
