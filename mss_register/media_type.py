@@ -7,6 +7,7 @@ from pathlib import Path
 from typing import Dict, Any
 
 from common import utils_filesystem
+from mss.utils.utils_scripts import get_path_ending, drop_filename_from_path
 from mss_register import analyze, settings
 
 # FIXME
@@ -50,55 +51,45 @@ class UnregisteredMedia:
         self.media_type, self.content, self.parameters = tool(self)
         return True
 
-    def to_metainfo(self) -> Dict[str, Any]:
+    def to_metainfo(self, target_dir, theme) -> Dict[str, Any]:
         """Get metainfo for this media.
         """
         global total
         total += 1
 
         # TODO ----------------------------------------------------------------
-        series = 'kenichi sonoda'
-        sub_series = 'gallant'
+        series = 'comics'
+        sub_series = 'philip dick comics biography'
         ordering = total
-        group_name = 'gallant works gallant'
+        group_name = 'philip dick comics biography'
         group_members = []
         comment = """""".strip()
-        tags = ['kenichi sonoda', 'artbook', 'artwork', 'gallant']
+        tags = ['philip dick', 'comics', 'biography']
+        author = 'Laurent Queyssi, Mauro Marchesi'
         # TODO ----------------------------------------------------------------
 
-        parts = Path(self.path).parts
+        trace = get_path_ending(self.path, theme)
+        trace = drop_filename_from_path(trace, self.original_filename)
 
-        sub_parts = []
-        started = False
-        for element in parts:
-            if element == 'new_content':
-                started = True
-            elif not started:
-                continue
-            else:
-                sub_parts.append(element)
-
-        sub_parts = sub_parts[:-1]
-
-        content_path = utils_filesystem.join(settings.ROOT_PATH,
-                                             *sub_parts,
+        content_path = utils_filesystem.join(target_dir,
+                                             trace,
                                              self.unique_filename)
 
-        thumbnail_path = utils_filesystem.join(settings.ROOT_PATH,
+        thumbnail_path = utils_filesystem.join(target_dir,
                                                'thumbnails',
-                                               *sub_parts,
+                                               trace,
                                                self.unique_filename)
 
-        preview_path = utils_filesystem.join(settings.ROOT_PATH,
+        preview_path = utils_filesystem.join(target_dir,
                                              'previews',
-                                             *sub_parts,
+                                             trace,
                                              self.unique_filename)
 
         return {
             'uuid': self.uuid,
-            'path_to_content': cut_root(content_path),
-            'path_to_preview': cut_root(preview_path),
-            'path_to_thumbnail': cut_root(thumbnail_path),
+            'path_to_content': get_path_ending(content_path, theme),
+            'path_to_preview': get_path_ending(preview_path, theme),
+            'path_to_thumbnail': get_path_ending(thumbnail_path, theme),
             'original_filename': self.original_filename,
             'original_name': self.original_name,
             'original_extension': self.original_extension,
@@ -115,7 +106,7 @@ class UnregisteredMedia:
             'registered_on': str(datetime.now().date()),
             'registered_by_username': '',
             'registered_by_nickname': '',
-            'author': 'Kenichi Sonoda',
+            'author': author,
             'author_url': '',
             'origin_url': '',
             'comment': comment,
@@ -125,16 +116,3 @@ class UnregisteredMedia:
 
             'tags': tags,
         }
-
-
-def cut_root(path) -> str:
-    parts = list(Path(path).parts)
-    final_parts = []
-    started = False
-    for element in parts:
-        if element == 'root':
-            started = True
-        elif not started:
-            continue
-        final_parts.append(element)
-    return utils_filesystem.join(*final_parts)

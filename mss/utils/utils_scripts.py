@@ -138,6 +138,23 @@ def iterate_on_filenames_of_ext(path: str,
     for folder, _, files in os.walk(path):
         for filename in files:
             name, ext = os.path.splitext(filename)
-            print(name, ext)
+
             if ext and ext in supported_extensions:
                 yield folder, filename.lower()
+
+
+def get_path_ending(path: str, pivot: str) -> str:
+    parts = path.split(os.sep)
+    for i, element in enumerate(parts):
+        if element == pivot:
+            return os.sep.join(parts[i+1:])
+    return path
+
+def drop_filename_from_path(path: str, filename: str) -> str:
+    """
+    >>> drop_filename_from_path(r'C:\\users\\test.txt', 'test.txt')
+    'C:\\users\\'
+    """
+    if path.endswith(filename):
+        return path[:-len(filename)]
+    return path

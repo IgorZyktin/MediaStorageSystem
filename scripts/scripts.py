@@ -27,27 +27,28 @@ def fix_thumbnail_size():
 
 
 def fix_tags():
-    folder = 'D:\\BGC_ARCHIVE\\root\\metainfo'
-
+    folder = 'D:\\BGC_ARCHIVE\\bubblegum_crisis\\metainfo'
+    gn = set()
     for filename in iterate_on_files(folder):
-        print(filename)
         with open(filename, mode='r', encoding='utf-8') as file:
             content = json.load(file)
 
-        with open(filename, mode='w', encoding='utf-8') as file:
-            json.dump(content, file, ensure_ascii=False, indent=4,
-                      sort_keys=True)
+            gn.add(content.get('group_name'))
+    print(gn)
+        # with open(filename, mode='w', encoding='utf-8') as file:
+        #     json.dump(content, file, ensure_ascii=False, indent=4,
+        #               sort_keys=True)
 
 
 def tie_together():
-    folder = 'D:\\BGC_ARCHIVE\\root\\metainfo'
+    folder = r'D:\BGC_ARCHIVE\science_fiction\metainfo'
 
     targets = []
     for filename in iterate_on_files(folder):
         with open(filename, mode='r', encoding='utf-8') as file:
             old_content = json.load(file)
 
-        if old_content['group_name'] == 'gallant works gallant':
+        if old_content['group_name'] == 'philip dick comics biography':
             targets.append((filename, old_content))
 
     targets.sort(key=lambda x: x[1]['ordering'])
