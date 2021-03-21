@@ -15,9 +15,8 @@ def get_user_config(path: str) -> Namespace:
 
 
 class Config:
-    def __init__(self, root_path, title, injection, version, themes):
+    def __init__(self, root_path, title, injection, themes):
         self.root_path = root_path
         self.title = title
         self.injection = injection
-        self.version = version
         self.themes = themes

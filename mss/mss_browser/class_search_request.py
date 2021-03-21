@@ -14,7 +14,7 @@ T = TypeVar('T')
 class SearchRequest(Generic[T]):
     """Helper class that stores query parameters.
     """
-    string = '|'.join(r'{}'.format(x) for x in constants.OPERATORS)
+    string = '|'.join(r'\b{}\b'.format(x) for x in constants.OPERATORS)
     pattern = re.compile('(' + string + ')')
 
     def __init__(self,
@@ -27,6 +27,7 @@ class SearchRequest(Generic[T]):
         self.or_ = or_ or set()
         self.not_ = not_ or set()
         self.desc = False
+        self.user_demands_all = False
         self.only_theme = ''
         self.except_theme = ''
 
@@ -45,13 +46,16 @@ class SearchRequest(Generic[T]):
         return ' '.join(sequence)
 
     @classmethod
-    def from_query(cls, query: str) -> T:
+    def from_query(cls, query: str, directory: str) -> T:
         """Make instance of the searching machine for the given query.
         """
         parts = cls.pattern.split(query)
         parts = [x.strip() for x in parts if x.strip()]
 
         instance = cls()
+
+        if directory != constants.ALL_THEMES:
+            instance.only_theme = directory
 
         if not parts:
             return instance
@@ -66,6 +70,8 @@ class SearchRequest(Generic[T]):
             if word in constants.KEYWORDS:
                 if word == constants.FLAG_DESC:
                     instance.desc = True
+                elif word == constants.FLAG_DEMAND:
+                    instance.user_demands_all = True
                 else:
                     instance.and_.add(word)
                 continue
@@ -80,5 +86,11 @@ class SearchRequest(Generic[T]):
 
             elif operator == constants.KW_NOT:
                 instance.not_.add(word)
+
+            elif operator == constants.KW_ONLY:
+                instance.only_theme = word
+
+            elif operator == constants.KW_EXCEPT:
+                instance.except_theme = word
 
         return instance

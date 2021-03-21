@@ -26,6 +26,20 @@
         {% endfor %}
     </div>
 
+    {% if current_theme.tags_on_demand %}
+        <div class="zone">
+            <h1>Implicit tags for "{{ current_theme.name }}"</h1>
+        </div>
+        <div class="text_zone">
+            <div class="content">
+                {% for tag in current_theme.tags_on_demand %}
+                    <a href="/index/{{ directory }}/search?q={{ tag }}"
+                       class="one_tag">{{ tag }}</a>
+                {% endfor %}
+            </div>
+        </div>
+    {% endif %}
+
     <div class="zone">
         <h1>Tags by frequency</h1>
     </div>

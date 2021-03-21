@@ -25,6 +25,22 @@ class TagsOnDemand:
         """Return True if this tag is in out storage."""
         return item in self._storage
 
+    def __add__(self, other) -> 'TagsOnDemand':
+        """Sym two tags holders together."""
+        cls = type(self)
+        assert isinstance(other, cls), f'Incompatible type: {type(other)}'
+        return cls(frozenset(self) | frozenset(other))
+
+    def __eq__(self, other) -> bool:
+        """Return True if other has same tags."""
+        cls = type(self)
+        assert isinstance(other, cls), f'Incompatible type: {type(other)}'
+        return frozenset(self) == frozenset(other)
+
+    def __bool__(self) -> bool:
+        """Return True if we have at least one tag."""
+        return bool(self._storage)
+
     @classmethod
     def from_dict(cls, raw_data: dict) -> 'TagsOnDemand':
         """Create instance from raw data."""

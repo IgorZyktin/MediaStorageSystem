@@ -3,6 +3,8 @@
 """Work with actual files using Filesystem class.
 """
 import json
+import operator
+from functools import reduce, partial
 from itertools import chain
 from typing import List, Optional
 
@@ -17,6 +19,7 @@ from mss.core.simple_types.class_synonyms import Synonyms
 from mss.core.simple_types.class_tags_on_demand import TagsOnDemand
 from mss.core.simple_types.class_theme import Theme
 from mss.core.simple_types.class_theme_statistics import ThemeStatistics
+from mss.utils.utils_scripts import perc
 
 
 def load_all_themes(path: str, filesystem: Filesystem) -> List[Theme]:
@@ -36,27 +39,17 @@ def load_all_themes(path: str, filesystem: Filesystem) -> List[Theme]:
 def make_default_theme(themes: List[Theme]) -> None:
     """Make combined theme called "All themes"."""
     assert themes
-
-    all_synonyms = set(chain.from_iterable(list(x.synonyms)
-                                           for x in themes))
-
-    all_tags_on_demand = set(chain.from_iterable(list(x.tags_on_demand)
-                                                 for x in themes))
-
-    all_uuids = set(chain.from_iterable(x.used_uuids
-                                        for x in themes))
+    _sum = partial(reduce, operator.add)
+    all_uuids = set(chain.from_iterable(x.used_uuids for x in themes))
 
     default = Theme(
         name='All themes',
         directory='all_themes',
-        synonyms=Synonyms(all_synonyms),
-        tags_on_demand=TagsOnDemand(all_tags_on_demand),
-        statistics=ThemeStatistics(),
+        synonyms=_sum(x.synonyms for x in themes),
+        tags_on_demand=_sum(x.tags_on_demand for x in themes),
+        statistics=_sum(x.statistics for x in themes),
         used_uuids=all_uuids,
     )
-
-    for each in themes:
-        default.statistics += each.statistics
 
     themes.insert(0, default)
 
@@ -99,7 +92,7 @@ def update_one_theme(root: str, theme: Theme, repository: Repository,
     enhancer = SearchEnhancer(synonyms=theme.synonyms)
 
     print('Updating:', theme.name)
-    for filename in filesystem.list_files(path):
+    for filename in perc(filesystem.list_files(path)):
         full_path = filesystem.join(path, filename)
         content = filesystem.read_file(full_path)
         record = json.loads(content)
@@ -111,4 +104,4 @@ def update_one_theme(root: str, theme: Theme, repository: Repository,
             item_size=instance.bytes_in_file,
             item_tags=instance.tags,
         )
-        instance.theme_directory = theme.directory
+        instance.directory = theme.directory

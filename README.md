@@ -2,13 +2,13 @@
 
 System for saving media content with tags.
 
-Initial idea was to build a system in which you could 
-throw media materials in and it will save them without duplicates.
+Initial idea was to build a system in which you could throw media materials in,
+and it will save them without duplicates.
 
-From practical side, idea of this repository can be described this way: 
-"I want to gather any images related to the movie Blade runner. 
-So I'll put inside every related image and await that there will 
-be no duplicates at the end". 
+From practical side, idea of this repository can be described this way:
+"I want to gather any images related to the movie Blade runner. So I'll put
+inside every related image and await that there will be no duplicates at the
+end".
 
 **Currently adding is not yet implemented, so archive is read only.**
 
@@ -16,59 +16,86 @@ be no duplicates at the end".
 
 ### Browser
 
-Allows you to browse what is inside the archive. 
-Built as a web application, deployable as a web server, but can also
-run locally. Regular python flask based application.
-  
+Allows you to browse what is inside the archive. Built as a web application,
+deployable as a web server, but can also run locally. Regular python flask
+based application.
+
 ### Placement of components
 
-Gathered media files are supposed to be packed into a single zip file 
-and shipped this way. No program components (like browser) are supposed 
-to be included into the package. All tools are to be placed near content 
-manually. After download, contents must be unpacked.
+Gathered media files are supposed to be packed into a single zip file and
+shipped this way. No program components (like browser) are supposed to be
+included into the package. All tools are to be placed near content manually.
+After downloading, contents must be unpacked.
 
-Resulting folder structure must look like this:
+Resulting folder structure must look something like this:
+
 ```
 my_archive
 ├── Description.md
 ├── <version file>
-└── root
+├── cats
+│   ├── metainfo
+│   │   └── ...
+│   ├── previews
+│   │   └── ...
+│   ├── thumbnails
+│   │   └── ...
+│   └── images
+│       └── ...
+└── dogs
     ├── metainfo
-    │   ├── ...
     │   └── ...
     ├── previews
-    │   ├── ...
     │   └── ...
     ├── thumbnails
-    │   ├── ...
     │   └── ...
     └── images
-        ├── ...
         └── ...
 ```
+
+Where "cats" and "dogs" are your corresponding themes.
 
 ### Search engine
 
 You can use logical keywords to perform search, such as: AND, OR and NOT.
-Exactly uppercase. Search is not working for spelling mistakes.
-Your request must match tag exactly. Anything, except keywords, 
-is converted to lowercase during processing.
+Exactly uppercase. Search is not working for spelling mistakes. Your request
+must match tag exactly. Anything, except keywords, is converted to lowercase
+during processing.
 
 Meanings are:
 
 * AND - record is included only if text is present in at least one tag.
-* OR - record is included if text is present, but other keywords might change it.
+* OR - record is included if text is present, but other keywords might change
+  it.
 * NOT - record is excluded if text is found in any tag.
 
-Query will be split into series of pairs keyword+text.
-If your request does not start from keyword, system will automatically
-add AND at the start. So "cats AND dogs NOT frogs" will be turned
-into "AND cats AND dogs NOT frogs". As a result, human readable form
-of this request is: "show me all records, that specifically have
-tag 'dogs' and optionally have tag 'cats', but definitely do not have tag 'frogs'".
+Query will be split into series of pairs keyword+text. If your request does not
+start from keyword, system will automatically add AND at the start. So "cats
+AND dogs NOT frogs" will be turned into "AND cats AND dogs NOT frogs". As a
+result, human readable form of this request is: "show me all records, that
+specifically have tag 'dogs' and optionally have tag 'cats', but definitely do
+not have tag 'frogs'".
 
 Do not think of the query as of logical rule. Each keyword is treated
 separately. You cannot use queries like "cats AND NOT dogs".
+
+### Themes
+
+Themes are constructed from folders in base folder. 
+Each theme is representing some, well, theme and makes it possible to 
+distinguish between them. Once you got inside theme, system will try to keep 
+you inside. You can change themes on the Tags tab. You also can use 
+keywords to alter search results without actually changing your current theme.
+
+Meanings are:
+
+* ONLY - record is included only if its theme is the same as in user request.
+* EXCEPT - record is excluded if its theme is the same as in user request. 
+
+Note that themes are separate from tags. Even if they have the same name, 
+search will be performed separately.
+
+**Currently you need to specify directory name, not actually theme name.**
 
 ### Special keywords
 
@@ -95,49 +122,60 @@ For specific media type:
 * AUDIO - only audio files.
 
 Other:
-      
+
 * DESC - show found records in reverse order.
 
-For example: dragons AND SHORT AND DESC.
-Logical keywords do not matter here, AND will be always used.
+For example: dragons AND SHORT AND DESC. Logical keywords do not matter here,
+AND will be always used.
 
 ### Synonyms
 
-Since you have to match tags literally, soon it becomes tedious to write 
-search requests. Synonyms are here to help you! In file called 'synonyms.json' 
-you can write down replacements you'd like to use. Everything in given list of 
-words will be treated equally. JSON key is comment and value is an array of tags.
+Since you have to match tags literally, soon it becomes tedious to write search
+requests. Synonyms are here to help you! In each theme there is a file called
+"theme.yaml" with a section called "Synonyms". There you can write down
+replacements you'd like to use. Everything in given list of words will be
+treated equally. Key is a comment and value is an array of tags.
 
-Example of synonyms.json:
-```json
-{
-	"If user wants to find cats": ["cat", "kitty", "kitten"],
-	"If user wants to find dogs": ["dog", "puppy", "doggie"] 
-}
+Example:
+
+```yaml
+synonyms:
+    "If user wants to find cats":
+        - "cat"
+        - "kitty"
+        - "kitten"
+    "If user wants to find dogs":
+        - "dog"
+        - "puppy"
+        - "doggie"  
 ```
 
 ### Tags on demand (not yet implemented)
 
-Sometimes you don't want something to be shown during regular search. 
-Like things not really appropriate, or something you specifically do not like. 
-You can describe such things in a file called "tags_on_demand.json".
+Sometimes you don't want something to be shown during regular search. Like
+things not really appropriate, or something you specifically do not like. You
+can describe such things in a section called "tags_on_demand" in "theme.yaml".
 
-Tags in this list will be shown only if they were specifically included in 
-search request. Synonyms are not applied to this tags. Syntax is similar to synonyms.
+Tags in this list will be shown only if they were specifically included in
+search request. Synonyms are not applied to these tags. Syntax is similar to
+synonyms.
 
-Example of tags_on_demand.json:
-```json
-{
-	"Some users do not like spiders": ["spider", "arachnids", "arachnid"]
-}
+Example:
+
+```yaml
+tags_on_demand:
+    "Some users do not like spiders":
+        - "spider"
+        - "arachnids"
+        - "arachnid"
 ```
 
 ### Code injection
 
-You can add text file called "injection.html" to the browser folder. 
-Everything from this file will be added at the bottom of every rendered page, 
-without escaping, before the end of the "body" tag. This feature is added so 
-you could include external metrics/features, that require adding some 
-HTML/JS code to your page.
+You can add text file called "injection.html" to the browser folder. Everything
+from this file will be added at the bottom of every rendered page, without
+escaping, before the end of the "body" tag. This feature is added for you to be
+able to include external metrics/features, that require adding some HTML/JS 
+code to your page.
 
 

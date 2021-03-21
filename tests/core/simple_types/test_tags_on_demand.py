@@ -2,6 +2,9 @@
 
 """Tests.
 """
+import operator
+from functools import partial, reduce
+
 from mss.core.simple_types.class_tags_on_demand import TagsOnDemand
 
 
@@ -25,3 +28,14 @@ def test_tags_on_demand_from_dict():
 def test_tags_on_demand_contains(tags_on_demand):
     assert 'a' in tags_on_demand
     assert 'z' not in tags_on_demand
+
+
+def test_tags_on_demand_sum():
+    inst1 = TagsOnDemand(['a', 'b', 'c', 'd'])
+    inst2 = TagsOnDemand(['c', 'd', 'e', 'f'])
+    ref = TagsOnDemand(['a', 'b', 'c', 'd', 'e', 'f'])
+    assert inst1 + inst2 == ref
+    assert inst2 + inst1 == ref
+
+    _sum = partial(reduce, operator.add)
+    assert _sum([inst1, inst2]) == ref

@@ -60,9 +60,9 @@ class Meta(AbstractMeta):
     def __lt__(self, other) -> bool:
         """Return True if we are less than other.
         """
-        if isinstance(other, type(self)):
-            return self.get_ordering() < other.get_ordering()
-        return False
+        assert isinstance(other, type(self)), f'Incompatible ' \
+                                              f'type: {type(other)}'
+        return self.get_ordering() < other.get_ordering()
 
     def get_ordering(self) -> tuple:
         """Return something that we can sort on.

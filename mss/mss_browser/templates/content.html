@@ -37,11 +37,11 @@
     {{ pagination(paginator, rewrite_query_for_paging, directory, query) }}
 
     <div class="content">
-        {% for metarecord in paginator %}
+        {% for record in paginator %}
             <div class="envelope">
-                <a href="{{ url_for('preview', directory=directory, uuid=metarecord.uuid) + '?q=' + query }}">
-                    <img src="/content/{{ metarecord.theme_directory }}/{{ metarecord.path_to_thumbnail }}"
-                         alt="{{ metarecord.original_name }}"/>
+                <a href="{{ url_for('preview', directory=directory, uuid=record.uuid) + '?q=' + query }}">
+                    <img src="/content/{{ record.directory }}/{{ record.path_to_thumbnail }}"
+                         alt="{{ record.original_name }}"/>
                 </a>
             </div>
         {% endfor %}

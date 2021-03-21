@@ -6,23 +6,36 @@ from itertools import chain
 from typing import List
 
 from mss.core.abstract_types.class_abstract_meta import AbstractMeta
-from mss.core.abstract_types.class_abstract_repository import AbstractRepository
+from mss.core.abstract_types.class_abstract_repository import (
+    AbstractRepository
+)
+from mss.core.simple_types.class_theme import Theme
 from mss.mss_browser.class_search_request import SearchRequest
 
 
-def select_records(repository: AbstractRepository,
+def select_records(theme: Theme,
+                   repository: AbstractRepository,
                    search_request: SearchRequest) -> List[AbstractMeta]:
     """Return all records, that match to a given query.
     """
+    # FIXME
     target_uuids = set()
     and_ = search_request.and_
     or_ = search_request.or_
     not_ = search_request.not_
 
-    for tag in chain(and_, or_):
-        target_uuids.update(repository.get_uuids_by_tag(tag))
+    if any([and_, or_]):
+        for tag in chain(and_, or_):
+            target_uuids.update(repository.get_uuids_by_tag(tag))
+    else:
+        target_uuids = set(repository.all_uuids())
 
     chosen_records = []
+
+    if search_request.user_demands_all:
+        avoid_tags = set()
+    else:
+        avoid_tags = set(theme.tags_on_demand) - and_ - or_
 
     for uuid in target_uuids:
         meta = repository.get_record(uuid)
@@ -31,6 +44,9 @@ def select_records(repository: AbstractRepository,
             continue
 
         tags = repository.get_extended_tags(meta.uuid)
+
+        if tags & avoid_tags:
+            continue
 
         # condition for and - all words must be present
         # condition for or - at least one word must be present
@@ -46,7 +62,13 @@ def select_records(repository: AbstractRepository,
     if search_request.only_theme:
         chosen_records = [
             x for x in chosen_records
-            if x.theme_directory == search_request.only_theme
+            if x.directory == search_request.only_theme
+        ]
+
+    if search_request.except_theme:
+        chosen_records = [
+            x for x in chosen_records
+            if x.directory != search_request.except_theme
         ]
 
     chosen_records.sort(reverse=search_request.desc)

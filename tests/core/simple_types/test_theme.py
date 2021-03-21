@@ -9,6 +9,6 @@ def test_theme_repr(theme):
 
 
 def test_theme_sorting(theme, theme_another):
-    themes = [None, theme, theme_another]
+    themes = [theme, theme_another]
     themes.sort()
-    assert themes == [None, theme_another, theme]
+    assert themes == [theme_another, theme]

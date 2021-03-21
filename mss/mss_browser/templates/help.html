@@ -44,6 +44,36 @@
     </div>
 
     <div class="zone">
+        <h1>Themes</h1>
+    </div>
+
+    <div class="text_zone">
+        <p>Themes are constructed from folders in base folder.
+            Each theme is representing some, well, theme and makes it possible
+            to
+            distinguish between them. Once you got inside theme, system will
+            try to keep
+            you inside. You can change themes on the Tags tab. You also can use
+            keywords to alter search results without actually changing your
+            current theme.</p>
+
+        <p>Meanings are:</p>
+        <ul>
+            <li>ONLY - record is included only if its theme
+                is the same as in user request.
+            </li>
+
+            <li>EXCEPT - record is excluded if its theme
+                is the same as in user request.
+            </li>
+        </ul>
+        <p>Note that themes are separate from tags. Even if they have the same
+            name, search will be performed separately.</p>
+        <p><strong>Currently you need to specify directory name, not actually
+            theme name.</strong></p>
+    </div>
+
+    <div class="zone">
         <h1>Keywords</h1>
     </div>
 
@@ -79,6 +109,9 @@
         <p>Other:</p>
         <ul>
             <li>DESC - show found records in reverse order</li>
+            <li>DEMAND - show also records that usually demands
+                being specifically noted
+            </li>
         </ul>
 
         <p>For example: bgc AND SHORT AND DESC</p>

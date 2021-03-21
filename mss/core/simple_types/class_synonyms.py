@@ -22,6 +22,18 @@ class Synonyms:
         for group in self._storage:
             yield group
 
+    def __add__(self, other) -> 'Synonyms':
+        """Sym two synonyms together."""
+        cls = type(self)
+        assert isinstance(other, cls), f'Incompatible type: {type(other)}'
+        return cls(frozenset(self) | frozenset(other))
+
+    def __eq__(self, other) -> bool:
+        """Return True if other has same words."""
+        cls = type(self)
+        assert isinstance(other, cls), f'Incompatible type: {type(other)}'
+        return frozenset(self) == frozenset(other)
+
     @classmethod
     def from_dict(cls, raw_data: dict) -> 'Synonyms':
         """Create instance from raw data."""

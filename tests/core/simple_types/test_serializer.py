@@ -2,6 +2,8 @@
 
 """Tests.
 """
+from typing import List
+
 from mss.core.simple_types.class_serializer import Serializer
 from mss.core.concrete_types.class_meta import Meta
 
@@ -11,7 +13,7 @@ class Demo:
     """
     x: int
     y: str
-    z: list
+    z: List[int]
 
     def __init__(self, x, y, z):
         """Initialize instance."""

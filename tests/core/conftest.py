@@ -9,7 +9,7 @@ import pytest
 def valid_metarecord_dict():
     return {
         'uuid': '008a2494-a6a4-4d63-886d-9e050f7a0d4a',
-        'theme_directory': 'some_directory',
+        'directory': 'some_directory',
 
         'path_to_content': 'content',
         'path_to_preview': 'preview',
@@ -81,6 +81,6 @@ def valid_empty_metarecord():
         'sub_series': '',
         'tags': [],
         'uuid': '',
-        'theme_directory': '',
+        'directory': '',
         'width': 0,
     }

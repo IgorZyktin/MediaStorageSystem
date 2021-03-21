@@ -27,6 +27,6 @@ class Theme:
 
     def __lt__(self, other) -> bool:
         """Return True if we are less than other."""
-        if isinstance(other, type(self)):
-            return self.name < other.name
-        return False
+        assert isinstance(other, type(self)), f'Incompatible type: ' \
+                                              f'{type(other)}'
+        return self.name < other.name

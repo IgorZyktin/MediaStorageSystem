@@ -3,7 +3,7 @@
 """Constant values.
 """
 
-__version__ = '2021.03.12'
+__version__ = '2021.03.21'
 
 UNKNOWN = 'UNKNOWN'
 
@@ -42,14 +42,17 @@ MEDIA_TYPES = {TYPE_IMAGE, TYPE_GIF, TYPE_VIDEO, TYPE_AUDIO}
 
 # search flags
 FLAG_DESC = 'DESC'
-FLAGS = {FLAG_DESC}
+FLAG_DEMAND = 'DEMAND'
+FLAGS = {FLAG_DESC, FLAG_DEMAND}
 
 KEYWORDS = IMAGE_SIZES | DURATION_TYPES | MEDIA_TYPES | FLAGS
 
 KW_AND = 'AND'
 KW_OR = 'OR'
 KW_NOT = 'NOT'
-OPERATORS = {KW_AND, KW_OR, KW_NOT}
+KW_ONLY = 'ONLY'
+KW_EXCEPT = 'EXCEPT'
+OPERATORS = {KW_AND, KW_OR, KW_NOT, KW_ONLY, KW_EXCEPT}
 
 START_MESSAGE = r"""
 ███╗   ███╗███████╗██████╗ ██╗ █████╗                          
@@ -78,3 +81,4 @@ START_MESSAGE = r"""
 """
 
 TERMINAL_WIDTH = 79
+ALL_THEMES = 'all_themes'

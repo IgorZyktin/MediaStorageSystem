@@ -38,7 +38,7 @@ class ThemeStatistics:
     def __add__(self, other) -> 'ThemeStatistics':
         """Sum two statistics together."""
         cls = type(self)
-        assert isinstance(other, cls)
+        assert isinstance(other, cls), f'Incompatible type: {type(other)}'
         instance = cls()
         instance.min_date = min(self.min_date or other.min_date,
                                 other.min_date or self.min_date)

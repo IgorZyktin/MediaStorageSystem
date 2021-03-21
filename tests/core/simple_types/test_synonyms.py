@@ -2,6 +2,9 @@
 
 """Tests.
 """
+import operator
+from functools import partial, reduce
+
 from mss.core.simple_types.class_synonyms import Synonyms
 
 
@@ -21,3 +24,14 @@ def test_synonyms_from_dict():
     })
     assert list(inst) == [frozenset({'one', 'two'}),
                           frozenset({'three', 'four'})]
+
+
+def test_synonyms_sum():
+    inst1 = Synonyms([['a', 'b'], ['c', 'd']])
+    inst2 = Synonyms([['c', 'd'], ['e', 'f']])
+    ref = Synonyms([['a', 'b'], ['c', 'd'], ['e', 'f']])
+    assert inst1 + inst2 == ref
+    assert inst2 + inst1 == ref
+
+    _sum = partial(reduce, operator.add)
+    assert _sum([inst1, inst2]) == ref
