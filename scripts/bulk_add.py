@@ -58,7 +58,7 @@ def register(media, theme, target_theme_dir, original_path,
     filesystem.ensure_folder_exists(filesystem.join(target_theme_dir,
                                                     'thumbnails'))
 
-    metainfo = media.to_metainfo(target_theme_dir, theme)
+    metainfo = media.to_metainfo(target_theme_dir, theme, filesystem)
     metainfo_path = filesystem.join(target_theme_dir,
                                     'metainfo',
                                     media.uuid + '.json')

@@ -48,7 +48,7 @@ def tie_together():
         with open(filename, mode='r', encoding='utf-8') as file:
             old_content = json.load(file)
 
-        if old_content['group_name'] == 'philip dick comics biography':
+        if old_content['group_name'] == 'the world of cyberpunk 2077':
             targets.append((filename, old_content))
 
     targets.sort(key=lambda x: x[1]['ordering'])

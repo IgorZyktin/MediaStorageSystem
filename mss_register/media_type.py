@@ -3,12 +3,11 @@
 """Container for any media type.
 """
 from datetime import datetime
-from pathlib import Path
 from typing import Dict, Any
 
 from common import utils_filesystem
 from mss.utils.utils_scripts import get_path_ending, drop_filename_from_path
-from mss_register import analyze, settings
+from mss_register import analyze
 
 # FIXME
 total = 0
@@ -51,39 +50,39 @@ class UnregisteredMedia:
         self.media_type, self.content, self.parameters = tool(self)
         return True
 
-    def to_metainfo(self, target_dir, theme) -> Dict[str, Any]:
+    def to_metainfo(self, target_dir, theme, filesystem) -> Dict[str, Any]:
         """Get metainfo for this media.
         """
         global total
         total += 1
 
         # TODO ----------------------------------------------------------------
-        series = 'comics'
-        sub_series = 'philip dick comics biography'
+        series = 'cyberpunk 2077'
+        sub_series = 'the world of cyberpunk 2077'
         ordering = total
-        group_name = 'philip dick comics biography'
+        group_name = 'the world of cyberpunk 2077'
         group_members = []
         comment = """""".strip()
-        tags = ['philip dick', 'comics', 'biography']
-        author = 'Laurent Queyssi, Mauro Marchesi'
+        tags = ['artbook', 'cyberpunk 2077', 'game']
+        author = 'CD Project RED, Dark Horse'
         # TODO ----------------------------------------------------------------
 
         trace = get_path_ending(self.path, theme)
         trace = drop_filename_from_path(trace, self.original_filename)
 
-        content_path = utils_filesystem.join(target_dir,
-                                             trace,
-                                             self.unique_filename)
+        content_path = filesystem.join(target_dir,
+                                       trace,
+                                       self.unique_filename)
 
-        thumbnail_path = utils_filesystem.join(target_dir,
-                                               'thumbnails',
-                                               trace,
-                                               self.unique_filename)
+        thumbnail_path = filesystem.join(target_dir,
+                                         'thumbnails',
+                                         trace,
+                                         self.unique_filename)
 
-        preview_path = utils_filesystem.join(target_dir,
-                                             'previews',
-                                             trace,
-                                             self.unique_filename)
+        preview_path = filesystem.join(target_dir,
+                                       'previews',
+                                       trace,
+                                       self.unique_filename)
 
         return {
             'uuid': self.uuid,
