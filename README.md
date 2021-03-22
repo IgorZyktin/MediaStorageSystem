@@ -12,7 +12,9 @@ end".
 
 **Currently adding is not yet implemented, so archive is read only.**
 
-**Currently system works only with images.**
+**Current version works only with images.**
+
+**Current version does not checks for duplicates.**
 
 ### Browser
 
@@ -40,8 +42,11 @@ my_archive
 │   │   └── ...
 │   ├── thumbnails
 │   │   └── ...
-│   └── images
-│       └── ...
+│   ├── images
+│   │   └── ...
+│   ├── theme.yaml
+│   └── used_uuids.csv
+│
 └── dogs
     ├── metainfo
     │   └── ...
@@ -49,8 +54,10 @@ my_archive
     │   └── ...
     ├── thumbnails
     │   └── ...
-    └── images
-        └── ...
+    ├── images
+    │   └── ...
+    ├── theme.yaml
+    └── used_uuids.csv
 ```
 
 Where "cats" and "dogs" are your corresponding themes.
@@ -82,18 +89,22 @@ separately. You cannot use queries like "cats AND NOT dogs".
 ### Themes
 
 Themes are constructed from folders in base folder. 
-Each theme is representing some, well, theme and makes it possible to 
+Each "theme" is representing some, well, theme and makes it possible to 
 distinguish between them. Once you got inside theme, system will try to keep 
 you inside. You can change themes on the Tags tab. You also can use 
 keywords to alter search results without actually changing your current theme.
 
 Meanings are:
 
-* ONLY - record is included only if its theme is the same as in user request.
-* EXCEPT - record is excluded if its theme is the same as in user request. 
+* INCLUDE - record is included only if its theme is the same as in user request.
+* EXCLUDE - record is excluded if its theme is the same as in user request. 
 
 Note that themes are separate from tags. Even if they have the same name, 
-search will be performed separately.
+search will be performed separately. You also cas use these keywords multiple times.
+
+For example:
+
+> cats AND dogs INCLUDE mammals INCLUDE toys EXCLUDE sports
 
 **Currently you need to specify directory name, not actually theme name.**
 
@@ -124,9 +135,13 @@ For specific media type:
 Other:
 
 * DESC - show found records in reverse order.
+* DEMAND - force showing hidden tags.
 
-For example: dragons AND SHORT AND DESC. Logical keywords do not matter here,
-AND will be always used.
+For example: 
+
+> dragons AND SHORT AND DESC
+
+Logical keywords do not matter here, AND will always be used.
 
 ### Synonyms
 
@@ -141,16 +156,16 @@ Example:
 ```yaml
 synonyms:
     "If user wants to find cats":
-        - "cat"
-        - "kitty"
-        - "kitten"
+        - cat
+        - kitty
+        - kitten
     "If user wants to find dogs":
-        - "dog"
-        - "puppy"
-        - "doggie"  
+        - dog
+        - puppy
+        - doggie
 ```
 
-### Tags on demand (not yet implemented)
+### Tags on demand
 
 Sometimes you don't want something to be shown during regular search. Like
 things not really appropriate, or something you specifically do not like. You
@@ -165,9 +180,9 @@ Example:
 ```yaml
 tags_on_demand:
     "Some users do not like spiders":
-        - "spider"
-        - "arachnids"
-        - "arachnid"
+        - spider
+        - arachnids
+        - arachnid
 ```
 
 ### Code injection

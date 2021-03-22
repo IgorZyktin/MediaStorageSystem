@@ -3,9 +3,7 @@
 """Constant values.
 """
 
-__version__ = '2021.03.21'
-
-UNKNOWN = 'UNKNOWN'
+__version__ = '2021.03.22'
 
 # image sizes
 RES_TINY = 'TINY'
@@ -83,5 +81,6 @@ START_MESSAGE = r"""
 TERMINAL_WIDTH = 79
 ALL_THEMES = 'all_themes'
 NEVER_FIND_THIS = '?????????????'
+UNKNOWN = 'UNKNOWN'
 THUMBNAIL_SIZE = (384, 384)
 PREVIEW_SIZE = (1024, 1024)
