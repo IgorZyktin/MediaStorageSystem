@@ -16,8 +16,7 @@ class Repository(AbstractRepository):
     """
 
     def __init__(self) -> None:
-        """Initialize instance.
-        """
+        """Initialize instance."""
         self._storage_of_records: Dict[str, AbstractMeta] = {}
         self._uuid_by_tag: Dict[str, Set[str]] = defaultdict(set)
         self._extended_tags_for_records: Dict[str, Set[str]] = {}

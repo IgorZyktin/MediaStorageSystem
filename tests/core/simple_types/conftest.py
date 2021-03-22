@@ -4,6 +4,7 @@
 """
 import pytest
 
+from mss.core.simple_types.class_query import Query
 from mss.core.simple_types.class_synonyms import Synonyms
 from mss.core.simple_types.class_tags_on_demand import TagsOnDemand
 from mss.core.simple_types.class_theme import Theme
@@ -53,5 +54,31 @@ def theme_another(statistics, synonyms, tags_on_demand):
         tags_on_demand=tags_on_demand,
         statistics=statistics,
         used_uuids={'a', 'b', 'c'},
+    )
+    return inst
+
+
+@pytest.fixture
+def query():
+    inst = Query(
+        and_=frozenset(['and_this', 'and_that']),
+        or_=frozenset(['or_this', 'or_that']),
+        not_=frozenset(['not_this']),
+        include=frozenset(['only this']),
+        exclude=frozenset(['except_this']),
+        flags=frozenset(),
+    )
+    return inst
+
+
+@pytest.fixture
+def empty_query():
+    inst = Query(
+        and_=frozenset(),
+        or_=frozenset(),
+        not_=frozenset(['not_this']),
+        include=frozenset(['only this']),
+        exclude=frozenset(['except_this']),
+        flags=frozenset(),
     )
     return inst

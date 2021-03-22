@@ -4,7 +4,7 @@
 """
 import pytest
 
-from mss.core.class_repository import Repository
+from mss.core.concrete_types.class_repository import Repository
 from mss.core.concrete_types.class_meta import Meta
 
 

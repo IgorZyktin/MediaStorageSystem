@@ -1,38 +1,40 @@
 {% extends "index.html" %}
+
+{% macro pagination(paginator, rewrite_query_for_paging, directory, query) %}
+    {% if paginator.num_pages > 1 %}
+        <div class="pages">
+            {% if paginator.has_previous %}
+                <a href="{{ rewrite_query_for_paging(directory, query, 1) }}">First</a>
+                <a href="{{ rewrite_query_for_paging(directory, query, paginator.previous_page_number) }}">Previous</a>
+            {% else %}
+                <a>First</a>
+                <a>Previous</a>
+            {% endif %}
+
+            {% for is_dummy, is_current, page in paginator.iterate_over_pages() %}
+                {% if is_dummy %}
+                    <a class="inactive_page">...</a>
+                {% elif is_current %}
+                    <a href="{{ rewrite_query_for_paging(directory, query, page) }}"
+                       class="current_page">{{ page }}</a>
+                {% else %}
+                    <a href="{{ rewrite_query_for_paging(directory, query, page) }}">{{ page }}</a>
+                {% endif %}
+            {% endfor %}
+
+            {% if paginator.has_next %}
+                <a href="{{ rewrite_query_for_paging(directory, query, paginator.next_page_number) }}">Next</a>
+                <a href="{{ rewrite_query_for_paging(directory, query, paginator.num_pages) }}">Last</a>
+            {% else %}
+                <a>Next</a>
+                <a>Last</a>
+            {% endif %}
+        </div>
+    {% endif %}
+{% endmacro %}
+
+
 {% block content %}
-
-    {% macro pagination(paginator, rewrite_query_for_paging, directory, query) %}
-        {% if paginator.num_pages > 1 %}
-            <div class="pages">
-                {% if paginator.has_previous %}
-                    <a href="{{ rewrite_query_for_paging(directory, query, 1) }}">First</a>
-                    <a href="{{ rewrite_query_for_paging(directory, query, paginator.previous_page_number) }}">Previous</a>
-                {% else %}
-                    <a>First</a>
-                    <a>Previous</a>
-                {% endif %}
-
-                {% for is_dummy, is_current, page in paginator.iterate_over_pages() %}
-                    {% if is_dummy %}
-                        <a class="inactive_page">...</a>
-                    {% elif is_current %}
-                        <a href="{{ rewrite_query_for_paging(directory, query, page) }}"
-                           class="current_page">{{ page }}</a>
-                    {% else %}
-                        <a href="{{ rewrite_query_for_paging(directory, query, page) }}">{{ page }}</a>
-                    {% endif %}
-                {% endfor %}
-
-                {% if paginator.has_next %}
-                    <a href="{{ rewrite_query_for_paging(directory, query, paginator.next_page_number) }}">Next</a>
-                    <a href="{{ rewrite_query_for_paging(directory, query, paginator.num_pages) }}">Last</a>
-                {% else %}
-                    <a>Next</a>
-                    <a>Last</a>
-                {% endif %}
-            </div>
-        {% endif %}
-    {% endmacro %}
 
     {{ pagination(paginator, rewrite_query_for_paging, directory, query) }}
 

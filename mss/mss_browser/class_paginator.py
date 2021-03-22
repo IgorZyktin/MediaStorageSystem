@@ -14,12 +14,15 @@ class Paginator:
                  items_per_page: int) -> None:
         """Initialize instance.
         """
-        assert items_per_page > 0
         self.sequence = sequence
-        self.current_page = current_page
+        self.current_page = min(current_page, 1)
         self.items_per_page = items_per_page
         self.total_items = len(sequence)
-        self.num_pages = math.ceil(self.total_items / self.items_per_page)
+
+        if items_per_page:
+            self.num_pages = math.ceil(self.total_items / self.items_per_page)
+        else:
+            self.num_pages = 0
 
     def __len__(self) -> int:
         """Return total amount of items in sequence.

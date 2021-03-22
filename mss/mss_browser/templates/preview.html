@@ -1,4 +1,15 @@
 {% extends "index.html" %}
+
+{% macro if_not_empty(label, value, suffix='') %}
+    {% if value %}
+        <tr>
+            <td>{{ label }}</td>
+            <td>{{ value }}{{ suffix }}</td>
+        </tr>
+    {% endif %}
+{% endmacro %}
+
+
 {% block content %}
 
     {% if meta.next_record or meta.previous_record %}
@@ -37,26 +48,17 @@
                 <tr>
                     <th colspan="2">Information</th>
                 </tr>
-                <tr>
-                    <td>Original filename</td>
-                    <td>{{ meta.original_filename }}</td>
-                </tr>
-                <tr>
-                    <td>Series</td>
-                    <td>{{ meta.series }}</td>
-                </tr>
-                <tr>
-                    <td>Sub series</td>
-                    <td>{{ meta.sub_series }}</td>
-                </tr>
-                <tr>
-                    <td>Ordering</td>
-                    <td>{{ meta.ordering }}</td>
-                </tr>
-                <tr>
-                    <td>Comment</td>
-                    <td class="limited_width">{{ meta.comment | replace('\\n','<br>') | safe }}</td>
-                </tr>
+                {{ if_not_empty('Original filename', meta.original_filename) }}
+                {{ if_not_empty('Series', meta.series) }}
+                {{ if_not_empty('Sub series', meta.sub_series) }}
+                {{ if_not_empty('Ordering', meta.ordering) }}
+
+                {% if meta.comment %}
+                    <tr>
+                        <td>Comment</td>
+                        <td class="limited_width">{{ meta.comment | replace('\\n','<br>') | safe }}</td>
+                    </tr>
+                {% endif %}
 
                 <tr>
                     <td colspan="2" style="text-align: center"><a
@@ -67,22 +69,12 @@
                 <tr>
                     <th colspan="2">Parameters</th>
                 </tr>
-                <tr>
-                    <td>Width</td>
-                    <td>{{ meta.width }} px</td>
-                </tr>
-                <tr>
-                    <td>Height</td>
-                    <td>{{ meta.height }} px</td>
-                </tr>
-                <tr>
-                    <td>Resolution</td>
-                    <td>{{ meta.resolution }} Mpx</td>
-                </tr>
-                <tr>
-                    <td>Media type</td>
-                    <td>{{ meta.media_type }}</td>
-                </tr>
+
+                {{ if_not_empty('Width', meta.width, ' px') }}
+                {{ if_not_empty('Height', meta.height, ' px') }}
+                {{ if_not_empty('Resolution', meta.resolution, ' Mpx') }}
+                {{ if_not_empty('Media type', meta.media_type) }}
+
                 <tr>
                     <td>Size</td>
                     <td>{{ byte_count_to_text(meta.bytes_in_file) }}</td>
@@ -95,7 +87,8 @@
                     <td colspan="2">
                         <ol>
                             {% for tag in meta.tags %}
-                                <li><a href="/index/{{ directory }}/search?q={{ tag }}">{{ tag }}</a>
+                                <li>
+                                    <a href="/index/{{ directory }}/search?q={{ tag }}">{{ tag }}</a>
                                 </li>
                             {% endfor %}
                         </ol>
@@ -108,8 +101,8 @@
                     </tr>
                     <tr>
                         <td>Url</td>
-                        <td class="possible_wide"><a
-                                href="{{ meta.origin_url }}">{{ meta.origin_url }}</a>
+                        <td class="possible_wide">
+                            <a href="{{ meta.origin_url }}">{{ meta.origin_url }}</a>
                         </td>
                     </tr>
                     <tr>
@@ -118,8 +111,8 @@
                     </tr>
                     <tr>
                         <td>Profile</td>
-                        <td class="possible_wide"><a
-                                href="{{ meta.author_url }}">{{ meta.author_url }}</a>
+                        <td class="possible_wide">
+                            <a href="{{ meta.author_url }}">{{ meta.author_url }}</a>
                         </td>
                     </tr>
                 {% endif %}

@@ -9,28 +9,21 @@ from flask import (
     redirect, url_for,
 )
 
-import mss.core.configuration
+import mss.core.utils_core
 from mss import constants
-from mss.core import utils_core
-from mss.core.class_repository import Repository
-from mss.core.configuration import Config
-from mss.core.file_handling import (
-    load_all_themes, update_one_theme, make_default_theme,
-)
+from mss.core import utils_core, configuration, simple_types, concrete_types
+from mss.core.file_handling import update_repositories
 from mss.core.helper_types.class_filesystem import Filesystem
-from mss.core.simple_types.class_theme_repository import ThemeRepository
-from mss.mss_browser import search_engine, utils_browser
+from mss.mss_browser import utils_browser
 from mss.mss_browser.class_paginator import Paginator
-from mss.mss_browser.class_search_request import SearchRequest
-from mss.mss_browser.utils_browser import (
-    get_placeholder, get_group_name, get_note_on_search,
-    rewrite_query_for_paging,
-)
 from mss.utils import utils_text
 
-config = Config(root_path='', title='', injection='')
-repository = Repository()
-theme_repository = ThemeRepository()
+filesystem = Filesystem()
+config = configuration.get_config(filesystem)
+query_builder = concrete_types.QueryBuilder(target_type=simple_types.Query)
+repository = concrete_types.Repository()
+theme_repository = simple_types.ThemeRepository()
+update_repositories(theme_repository, repository, config.root_path, filesystem)
 
 app = Flask(__name__)
 
@@ -42,7 +35,7 @@ def common_names():
         'title': config.title,
         'note': '',
         'injection': config.injection,
-        'rewrite_query_for_paging': rewrite_query_for_paging,
+        'rewrite_query_for_paging': utils_browser.rewrite_query_for_paging,
         'byte_count_to_text': utils_text.byte_count_to_text,
     }
 
@@ -74,56 +67,56 @@ def index_all(directory: str):
         return utils_browser.add_query_to_path(request, directory)
 
     start = time.perf_counter()
-    query = request.args.get('q', '')
+    query_text = request.args.get('q', '')
     current_page = int(request.args.get('page', 1))
     current_theme = theme_repository.get(directory) or abort(404)
+    query = query_builder.from_query(query_text, directory)
 
     if query:
-        search_request = SearchRequest.from_query(query, directory)
-        chosen_metarecords = search_engine.select_records(
+        chosen_metarecords = mss.core.utils_core.select_records(
             theme=current_theme,
             repository=repository,
-            search_request=search_request,
+            query=query,
         )
     else:
         chosen_metarecords = utils_core.select_random_records(
             theme=current_theme,
             repository=repository,
-            amount=int(user_config.items_per_page),
+            amount=config.items_per_page,
         )
 
     paginator = Paginator(
         sequence=chosen_metarecords,
         current_page=current_page,
-        items_per_page=int(user_config.items_per_page),
+        items_per_page=config.items_per_page,
     )
 
+    note = utils_browser.get_note_on_search(len(paginator),
+                                            time.perf_counter() - start)
     context = {
         'paginator': paginator,
-        'query': query,
-        'note': get_note_on_search(len(paginator),
-                                   time.perf_counter() - start),
+        'query': query_text,
+        'note': note,
         'directory': directory,
-        'placeholder': get_placeholder(current_theme),
+        'placeholder': utils_browser.get_placeholder(current_theme),
     }
     return render_template('content.html', **context)
 
 
 @app.route('/preview/<directory>/<uuid>')
 def preview(directory: str, uuid: str):
-    """Show description for a single record.
-    """
+    """Show description for a single record."""
     _ = utils_browser.is_correct_uuid(uuid) or abort(404)
     meta = repository.get_record(uuid) or abort(404)
     current_theme = theme_repository.get(directory) or abort(404)
-    query = request.args.get('q', '')
+    query_text = request.args.get('q', '')
 
     context = {
         'meta': meta,
-        'query': query,
-        'note': get_group_name(meta),
+        'query': query_text,
+        'note': utils_browser.get_group_name(meta),
         'directory': directory,
-        'placeholder': get_placeholder(current_theme),
+        'placeholder': utils_browser.get_placeholder(current_theme),
     }
     return render_template('preview.html', **context)
 
@@ -138,7 +131,7 @@ def show_tags(directory: str):
         'current_theme': current_theme,
         'statistics': current_theme.statistics,
         'theme_repository': theme_repository,
-        'placeholder': get_placeholder(current_theme),
+        'placeholder': utils_browser.get_placeholder(current_theme),
     }
     return render_template('tags.html', **context)
 
@@ -151,7 +144,7 @@ def show_help(directory: str):
     context = {
         'note': f'Current version: {constants.__version__}',
         'directory': directory,
-        'placeholder': get_placeholder(current_theme),
+        'placeholder': utils_browser.get_placeholder(current_theme),
     }
     return render_template('help.html', **context)
 
@@ -167,25 +160,4 @@ def page_not_found(e):
 
 if __name__ == '__main__':
     print(constants.START_MESSAGE)
-
-    user_config = mss.core.configuration.get_user_config('config.ini')
-    config.title = user_config.title
-
-    filesystem = Filesystem()
-    config.root_path = filesystem.absolute(user_config.root_path)
-
-    if user_config.inject_code == 'yes':
-        config.injection = filesystem.read_file('injection.html')
-
-    themes = load_all_themes(config.root_path, filesystem)
-
-    for _theme in themes:
-        update_one_theme(config.root_path, _theme, repository, filesystem)
-        theme_repository.add(_theme)
-
-    default = make_default_theme(themes)
-    theme_repository.add(default)
-
-    app.run(host=user_config.host,
-            port=user_config.port,
-            debug=user_config.debug == 'yes')
+    app.run(host=config.host, port=config.port, debug=config.debug)

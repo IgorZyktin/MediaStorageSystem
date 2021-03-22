@@ -3,9 +3,11 @@
 """Utils for core functionality.
 """
 import random
+from itertools import chain
 from typing import List
 
 from mss import constants
+from mss.core import simple_types
 from mss.core.abstract_types.class_abstract_meta import AbstractMeta
 from mss.core.abstract_types.class_abstract_repository import (
     AbstractRepository
@@ -16,8 +18,7 @@ from mss.core.simple_types.class_theme import Theme
 def select_random_records(theme: Theme,
                           repository: AbstractRepository,
                           amount: int) -> List[AbstractMeta]:
-    """Return X random records from repository.
-    """
+    """Return X random records from repository."""
     # FIXME
     all_known_records = list(repository.all_records())
 
@@ -41,5 +42,68 @@ def select_random_records(theme: Theme,
     adequate_amount = min(amount, len(valid_records))
     chosen_records = random.sample(valid_records, adequate_amount)
     chosen_records.sort()
+
+    return chosen_records
+
+
+def select_records(theme: simple_types.Theme,
+                   repository: AbstractRepository,
+                   query: simple_types.Query) -> List[AbstractMeta]:
+    """Return all records, that match to a given query."""
+    target_uuids = set()
+
+    if query:
+        for tag in chain(query.and_, query.or_):
+            target_uuids.update(repository.get_uuids_by_tag(tag))
+    else:
+        target_uuids = set(repository.all_uuids())
+
+    chosen_records = []
+
+    if constants.FLAG_DEMAND in query.flags:
+        avoid_tags = set()
+    else:
+        avoid_tags = set(theme.tags_on_demand) - query.and_ - query.or_
+
+    for uuid in target_uuids:
+        meta = repository.get_record(uuid)
+
+        if meta is None:
+            continue
+
+        tags = repository.get_extended_tags(meta.uuid)
+
+        if tags & avoid_tags:
+            continue
+
+        # condition for and - all words must be present
+        # condition for or - at least one word must be present
+        # condition for not - no words must be present
+        # skipped if predicate is empty
+        cond_and_ = any((query.and_ & tags == query.and_,
+                         len(query.and_) == 0))
+
+        cond_or_ = any((query.or_ & tags,
+                        len(query.or_) == 0))
+
+        cond_not_ = any((not (query.not_ & tags),
+                         len(query.not_) == 0))
+
+        if all((cond_and_, cond_or_, cond_not_)):
+            chosen_records.append(meta)
+
+    if query.include:
+        chosen_records = [
+            x for x in chosen_records
+            if x.directory in query.include
+        ]
+
+    if query.exclude:
+        chosen_records = [
+            x for x in chosen_records
+            if x.directory not in query.exclude
+        ]
+
+    chosen_records.sort(reverse=constants.FLAG_DESC in query.flags)
 
     return chosen_records

@@ -10,14 +10,15 @@ from typing import List, Optional
 
 import yaml
 
-from mss.core.class_repository import Repository
-from mss.core.helper_types.class_search_enhancer import SearchEnhancer
 from mss.core.concrete_types.class_meta import Meta
+from mss.core.concrete_types.class_repository import Repository
 from mss.core.helper_types.class_filesystem import Filesystem
+from mss.core.helper_types.class_search_enhancer import SearchEnhancer
 from mss.core.simple_types.class_serializer import Serializer
 from mss.core.simple_types.class_synonyms import Synonyms
 from mss.core.simple_types.class_tags_on_demand import TagsOnDemand
 from mss.core.simple_types.class_theme import Theme
+from mss.core.simple_types.class_theme_repository import ThemeRepository
 from mss.core.simple_types.class_theme_statistics import ThemeStatistics
 from mss.utils.utils_scripts import perc
 
@@ -103,3 +104,17 @@ def update_one_theme(root: str, theme: Theme, repository: Repository,
             item_tags=instance.tags,
         )
         instance.directory = theme.directory
+
+
+def update_repositories(theme_repository: ThemeRepository,
+                        repository: Repository,
+                        root_path: str, filesystem: Filesystem) -> None:
+    """Put all meta info into repositories."""
+    themes = load_all_themes(root_path, filesystem)
+
+    for _theme in themes:
+        update_one_theme(root_path, _theme, repository, filesystem)
+        theme_repository.add(_theme)
+
+    default = make_default_theme(themes)
+    theme_repository.add(default)
