@@ -50,7 +50,7 @@ def serve_content(filename: str):
     return send_from_directory(config.root_path, filename, conditional=True)
 
 
-@app.route('/', methods=['GET', 'POST'])
+@app.route('/')
 def index():
     """Entry page.
 

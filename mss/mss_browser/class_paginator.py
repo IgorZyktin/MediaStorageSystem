@@ -129,9 +129,21 @@ class Paginator:
         pages = _generate(gen)
 
         if self.current_page > self._pages_in_block // 2 + 1:
-            yield {'is_dummy': True, 'is_current': False, 'number': -1}
+            yield {'is_dummy': False,
+                   'is_current': self.current_page == 1,
+                   'number': 1}
+
+            yield {'is_dummy': True,
+                   'is_current': False,
+                   'number': -1}
 
         yield from pages
 
         if self.current_page + self._pages_in_block // 2 < self.num_pages:
-            yield {'is_dummy': True, 'is_current': False, 'number': -1}
+            yield {'is_dummy': True,
+                   'is_current': False,
+                   'number': -1}
+
+            yield {'is_dummy': False,
+                   'is_current': self.current_page == self.num_pages,
+                   'number': self.num_pages}

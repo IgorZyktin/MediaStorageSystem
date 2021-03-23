@@ -72,15 +72,13 @@
         <div class="content">
             {% for letter, tags in statistics.tags_by_alphabet %}
                 <ul>
-                    <li>{{ letter|upper }}</li>
-                    <ul>
-                        {% for tag in tags %}
-                            <li>
-                                <a href="/index/{{ directory }}/search?q={{ tag }}">
-                                    {{ tag }}</a>
-                            </li>
-                        {% endfor %}
-                    </ul>
+                    <li><p>{{ letter|upper }}</p></li>
+                    {% for tag in tags %}
+                        <li>
+                            <a href="/index/{{ directory }}/search?q={{ tag }}">
+                                {{ tag }}</a>
+                        </li>
+                    {% endfor %}
                 </ul>
             {% endfor %}
         </div>

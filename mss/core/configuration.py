@@ -49,6 +49,8 @@ def get_config(filesystem: Filesystem) -> Config:
     user_config = load_raw_user_config('config.ini')
 
     inst = Config()
+    inst.host = user_config.host
+    inst.port = user_config.port
     inst.title = user_config.title
     inst.items_per_page = user_config.items_per_page
     inst.root_path = filesystem.absolute(user_config.root_path)
