@@ -17,6 +17,7 @@ from mss.core.simple_types.class_theme import Theme
 
 def select_random_records(theme: Theme,
                           repository: AbstractRepository,
+                          query: simple_types.Query,
                           amount: int) -> List[AbstractMeta]:
     """Return X random records from repository."""
     # FIXME
@@ -36,6 +37,18 @@ def select_random_records(theme: Theme,
             continue
 
         valid_records.append(record)
+
+    if query.include:
+        valid_records = [
+            x for x in valid_records
+            if x.directory in query.include
+        ]
+
+    if query.exclude:
+        valid_records = [
+            x for x in valid_records
+            if x.directory not in query.exclude
+        ]
 
     # note that size of the repository in some cases might be smaller
     # than amount and random.sample will throw and exception

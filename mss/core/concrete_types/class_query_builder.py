@@ -49,7 +49,7 @@ class QueryBuilder(Generic[T]):
             return almost_empty_query
 
         if parts[0] not in constants.OPERATORS:
-            parts.insert(0, constants.KW_AND)
+            parts.insert(0, constants.KW_OR)
 
         for operator, word in group_to_size(parts, 2, default='?'):
             if operator not in constants.OPERATORS \

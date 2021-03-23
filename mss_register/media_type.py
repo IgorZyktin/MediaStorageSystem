@@ -57,14 +57,14 @@ class UnregisteredMedia:
         total += 1
 
         # TODO ----------------------------------------------------------------
-        series = 'cyberpunk 2077'
-        sub_series = 'the world of cyberpunk 2077'
-        ordering = total
-        group_name = 'the world of cyberpunk 2077'
+        series = 'farm'
+        sub_series = ''
+        ordering = 0
+        group_name = ''
         group_members = []
         comment = """""".strip()
-        tags = ['artbook', 'cyberpunk 2077', 'game']
-        author = 'CD Project RED, Dark Horse'
+        tags = ['farm']
+        author = ''
         # TODO ----------------------------------------------------------------
 
         trace = get_path_ending(self.path, theme)

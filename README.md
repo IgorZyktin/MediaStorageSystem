@@ -1,14 +1,8 @@
 # MediaStorageSystem
 
-System for saving media content with tags.
+Store media materials, search by tags, browse content.
 
-Initial idea was to build a system in which you could throw media materials in,
-and it will save them without duplicates.
-
-From practical side, idea of this repository can be described this way:
-"I want to gather any images related to the movie Blade runner. So I'll put
-inside every related image and await that there will be no duplicates at the
-end".
+![demo](./demo.png)
 
 **Currently adding is not yet implemented, so archive is read only.**
 

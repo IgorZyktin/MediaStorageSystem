@@ -82,6 +82,7 @@ def index_all(directory: str):
         chosen_metarecords = utils_core.select_random_records(
             theme=current_theme,
             repository=repository,
+            query=query,
             amount=config.items_per_page,
         )
 

@@ -3,6 +3,17 @@
 
 
 {% block content %}
+    <script>
+        function copy(text) {
+            let input = document.createElement('input');
+            input.setAttribute('value', text);
+            document.body.appendChild(input);
+            input.select();
+            let result = document.execCommand('copy');
+            document.body.removeChild(input);
+            return result;
+        }
+    </script>
 
     {% if meta.next_record or meta.previous_record %}
         <div class="limited_width">
@@ -52,10 +63,14 @@
                     </tr>
                 {% endif %}
 
-                <tr>
-                    <td colspan="2" style="text-align: center"><a
-                            href="/content/{{ meta.directory }}/metainfo/{{ meta.uuid }}.json">Raw
-                        metadata</a></td>
+                <tr style="text-align: center">
+                    <td>
+                        <a href="/content/{{ meta.directory }}/metainfo/{{ meta.uuid }}.json">
+                            Raw metadata</a>
+                    </td>
+                    <td>
+                        <a onclick="copy('{{ meta.uuid }}')">Copy UUID</a>
+                    </td>
                 </tr>
 
                 <tr>
@@ -75,6 +90,16 @@
                 <tr>
                     <th colspan="2">Tags</th>
                 </tr>
+
+                {% if meta.group_name %}
+                    <td>
+                        Group
+                    </td>
+                    <td>
+                        <a href="/index/{{ directory }}/search?q={{ meta.group_name }}">{{ meta.group_name }}</a>
+                    </td>
+                {% endif %}
+
                 <tr>
                     <td colspan="2">
                         <ol>
@@ -91,22 +116,30 @@
                     <tr>
                         <th colspan="2">Origin</th>
                     </tr>
-                    <tr>
-                        <td>Url</td>
-                        <td class="possible_wide">
-                            <a href="{{ meta.origin_url }}">{{ meta.origin_url }}</a>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>Author</td>
-                        <td class="possible_wide">{{ meta.author }}</td>
-                    </tr>
-                    <tr>
-                        <td>Profile</td>
-                        <td class="possible_wide">
-                            <a href="{{ meta.author_url }}">{{ meta.author_url }}</a>
-                        </td>
-                    </tr>
+                    {% if meta.origin_url %}
+                        <tr>
+                            <td>Url</td>
+                            <td class="possible_wide">
+                                <a href="{{ meta.origin_url }}">{{ meta.origin_url }}</a>
+                            </td>
+                        </tr>
+                    {% endif %}
+
+                    {% if meta.author %}
+                        <tr>
+                            <td>Author</td>
+                            <td class="possible_wide">{{ meta.author }}</td>
+                        </tr>
+                    {% endif %}
+
+                    {% if meta.author_url %}
+                        <tr>
+                            <td>Profile</td>
+                            <td class="possible_wide">
+                                <a href="{{ meta.author_url }}">{{ meta.author_url }}</a>
+                            </td>
+                        </tr>
+                    {% endif %}
                 {% endif %}
 
             </table>

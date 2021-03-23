@@ -21,9 +21,9 @@ def main():
     # root_path = ask('Root directory')
     # theme = ask('Theme')
 
-    target_root_dir = 'D:\\BGC_ARCHIVE\\'
-    source_root_dir = 'D:\\BGC_ARCHIVE_\\science_fiction\\'
-    theme = 'science_fiction'
+    target_root_dir = 'D:\\PycharmProjects\\MediaStorageSystem\\example'
+    source_root_dir = 'D:\\BGC_ARCHIVE_\\'
+    theme = 'farm'
     target_theme_dir = filesystem.join(target_root_dir, theme)
 
     filesystem.ensure_folder_exists(source_root_dir)

@@ -41,14 +41,14 @@ def fix_tags():
 
 
 def tie_together():
-    folder = r'D:\BGC_ARCHIVE\science_fiction\metainfo'
+    folder = 'D:\\PycharmProjects\\MediaStorageSystem\\example\\gerbils\\metainfo'
 
     targets = []
     for filename in iterate_on_files(folder):
         with open(filename, mode='r', encoding='utf-8') as file:
             old_content = json.load(file)
 
-        if old_content['group_name'] == 'the world of cyberpunk 2077':
+        if old_content['group_name'] == 'browney':
             targets.append((filename, old_content))
 
     targets.sort(key=lambda x: x[1]['ordering'])
@@ -162,16 +162,20 @@ def update_structure():
 
 
 def fix_something():
-    folder = 'D:\\PycharmProjects\\MediaStorageSystem\\example\\metainfo'
+    folder = 'D:\\PycharmProjects\\MediaStorageSystem\\example\\gerbils\\metainfo'
 
     for filename in iterate_on_files(folder):
         print(filename)
         with open(filename, mode='r', encoding='utf-8') as file:
             content = json.load(file)
 
-            content['series'] = 'cute gerbils'
-            content['group_name'] = ''
-            content['tags'] = []
+            content['path_to_content'] = content['path_to_content ']
+            content['path_to_preview'] = content['path_to_preview ']
+            content['path_to_thumbnail'] = content['path_to_thumbnail ']
+
+            del content['path_to_content ']
+            del content['path_to_preview ']
+            del content['path_to_thumbnail ']
 
         with open(filename, mode='w', encoding='utf-8') as file:
             json.dump(content, file, ensure_ascii=False, indent=4)
