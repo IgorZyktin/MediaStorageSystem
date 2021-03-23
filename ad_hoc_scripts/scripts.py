@@ -3,8 +3,8 @@ import os
 
 from PIL import Image
 
-from common import utils_filesystem
-from mss_register import settings
+from ad_hoc_scripts.common import utils_filesystem
+from ad_hoc_scripts.mss_register import settings
 
 
 def iterate_on_files(folder):
@@ -41,14 +41,14 @@ def fix_tags():
 
 
 def tie_together():
-    folder = 'D:\\PycharmProjects\\MediaStorageSystem\\example\\gerbils\\metainfo'
+    folder = 'D:\\BGC_ARCHIVE_TARGET\\bubblegum_crisis\\metainfo'
 
     targets = []
     for filename in iterate_on_files(folder):
         with open(filename, mode='r', encoding='utf-8') as file:
             old_content = json.load(file)
 
-        if old_content['group_name'] == 'browney':
+        if old_content['group_name'] == 'reika live stage book':
             targets.append((filename, old_content))
 
     targets.sort(key=lambda x: x[1]['ordering'])
@@ -82,14 +82,14 @@ def tie_together():
 
 
 def fix_one_key():
-    folder = 'D:\\BGC_ARCHIVE\\example\\metainfo'
+    folder = 'D:\\BGC_ARCHIVE_TARGET\\blade_runner\\metainfo'
 
     for filename in iterate_on_files(folder):
         print(filename)
         with open(filename, mode='r', encoding='utf-8') as file:
             content = file.read()
 
-        content = content.replace(' null,', ' "",')
+        content = content.replace('//', '/')
 
         with open(filename, mode='w', encoding='utf-8') as file:
             file.write(content)

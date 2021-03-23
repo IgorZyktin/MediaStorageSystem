@@ -7,9 +7,10 @@ import os
 import shutil
 from typing import Set
 
-from common import utils_filesystem
-from mss_register_remote import settings, interaction, network, analyze
-from mss_register_remote.interaction import get_basic_description
+from ad_hoc_scripts.common import utils_filesystem
+from ad_hoc_scripts.mss_register_remote import settings, interaction
+from ad_hoc_scripts.mss_register_remote import analyze, network
+from ad_hoc_scripts.mss_register_remote import get_basic_description
 
 
 def main():

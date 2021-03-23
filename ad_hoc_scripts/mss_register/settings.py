@@ -11,7 +11,7 @@ if APP_CONFIG == 'development':
     BASE_PATH = 'D:\\BGC_ARCHIVE_\\'
     DEBUG = True
 else:
-    BASE_PATH = '.'
+    BASE_PATH = ''
     DEBUG = False
 
 

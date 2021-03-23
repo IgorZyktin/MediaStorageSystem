@@ -6,10 +6,10 @@ import json
 import os
 from shutil import copyfile
 
-from common import utils_filesystem
+from ad_hoc_scripts.common import utils_filesystem
 from mss.utils import utils_identity
-from mss_register import settings
-from mss_register.media_type import UnregisteredMedia
+from ad_hoc_scripts.mss_register import settings
+from ad_hoc_scripts.mss_register.media_type import UnregisteredMedia
 
 
 def main():

@@ -111,24 +111,26 @@ def relocate_by_uuid(uuid: str, source_theme_path: str,
         file.write(uuid + '\n')
 
 
-def get_existing_uuids(root_path: str, filesystem: Filesystem) -> Set[str]:
+def get_existing_uuids(*root_paths: str, filesystem: Filesystem) -> Set[str]:
     """Get all existing UUIDs."""
-    themes = filesystem.list_folders(root_path)
     found_uuids = set()
 
-    for theme in themes:
-        path = filesystem.join(root_path, theme, 'used_uuids.csv')
-        content = filesystem.read_file(path)
+    for root_path in root_paths:
+        themes = filesystem.list_folders(root_path)
 
-        if content:
-            uuids = [x.strip() for x in content.split('\n')]
-            found_uuids.update(uuids)
+        for theme in themes:
+            path = filesystem.join(root_path, theme, 'used_uuids.csv')
+            content = filesystem.read_file(path)
+
+            if content:
+                uuids = [x.strip() for x in content.split('\n')]
+                found_uuids.update(uuids)
 
     return found_uuids
 
 
 def iterate_on_filenames_of_ext(path: str,
-                                extensions: Collection[str] = ('json',)
+                                extensions: Collection[str]
                                 ) -> Generator[Tuple[str, str], None, None]:
     """Iterate on all folders and yield paths and filenames of given ext.
     """
@@ -136,10 +138,11 @@ def iterate_on_filenames_of_ext(path: str,
 
     for folder, _, files in os.walk(path):
         for filename in files:
+            filename = filename.lower()
             name, ext = os.path.splitext(filename)
 
             if ext and ext in supported_extensions:
-                yield folder, filename.lower()
+                yield folder, filename
 
 
 def get_path_ending(path: str, pivot: str) -> str:

@@ -31,7 +31,7 @@ def empty_query_dict():
 def bad_query_dict():
     return {
         'and_': [constants.NEVER_FIND_THIS],
-        'or_': [],
+        'or_': ['cats'],
         'not_': [],
         'include': [],
         'exclude': [],

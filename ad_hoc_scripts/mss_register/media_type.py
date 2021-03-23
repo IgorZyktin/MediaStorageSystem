@@ -5,9 +5,9 @@
 from datetime import datetime
 from typing import Dict, Any
 
-from common import utils_filesystem
+from ad_hoc_scripts.common import utils_filesystem
 from mss.utils.utils_scripts import get_path_ending, drop_filename_from_path
-from mss_register import analyze
+from ad_hoc_scripts.mss_register import analyze
 
 # FIXME
 total = 0
@@ -57,13 +57,20 @@ class UnregisteredMedia:
         total += 1
 
         # TODO ----------------------------------------------------------------
-        series = 'farm'
-        sub_series = ''
-        ordering = 0
-        group_name = ''
+        series = 'bgc'
+        sub_series = 'reika live stage book'
+        ordering = total
+        group_name = 'reika live stage book'
         group_members = []
         comment = """""".strip()
-        tags = ['farm']
+        tags = [
+            'bubblegum crisis',
+            'magazine',
+            'artbook',
+            'reika',
+            'vision',
+            'kenichi sonoda',
+        ]
         author = ''
         # TODO ----------------------------------------------------------------
 

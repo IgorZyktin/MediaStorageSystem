@@ -151,7 +151,7 @@ def show_help(directory: str):
 
 
 @app.errorhandler(404)
-def page_not_found(e):
+def page_not_found(exc):
     """Return not found page."""
     context = {
         'directory': constants.ALL_THEMES,

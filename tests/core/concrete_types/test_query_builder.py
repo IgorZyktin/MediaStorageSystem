@@ -10,18 +10,18 @@ def test_query_builder_1(query_builder):
     directory = constants.ALL_THEMES
     query = query_builder.from_query(text, directory)
     assert query.as_dict() == {
-        'and_': ['cats'],
-        'or_': ['dogs'],
+        'and_': [],
+        'or_': ['cats', 'dogs'],
         'not_': [],
         'include': [],
         'exclude': [],
         'flags': [],
     }
-    assert str(query) == 'AND cats OR dogs'
+    assert str(query) == 'OR cats OR dogs'
 
 
 def test_query_builder_2(query_builder):
-    text = 'cats OR dogs AND turtle NOT frog AND IMAGE INCLUDE test'
+    text = 'AND cats OR dogs AND turtle NOT frog AND IMAGE INCLUDE test'
     directory = constants.ALL_THEMES
     query = query_builder.from_query(text, directory)
     assert query.as_dict() == {
@@ -65,7 +65,7 @@ def test_query_builder_wrong_1(query_builder, bad_query_dict):
     directory = constants.ALL_THEMES
     query = query_builder.from_query(text, directory)
     assert query.as_dict() == bad_query_dict
-    assert str(query) == 'AND ' + constants.NEVER_FIND_THIS
+    assert str(query) == 'AND ' + constants.NEVER_FIND_THIS + ' OR cats'
 
 
 def test_query_builder_empty(query_builder, empty_query_dict):
@@ -77,7 +77,7 @@ def test_query_builder_empty(query_builder, empty_query_dict):
 
 
 def test_query_builder_flags(query_builder, empty_query_dict):
-    text = 'some AND other NOT DEMAND NOT DESC'
+    text = 'AND some AND other NOT DEMAND NOT DESC'
     directory = constants.ALL_THEMES
     query = query_builder.from_query(text, directory)
     assert query.as_dict() == {
