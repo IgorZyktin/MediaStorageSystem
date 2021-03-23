@@ -11,12 +11,12 @@ class Paginator:
     """
 
     def __init__(self, sequence: Sequence, current_page: int,
-                 items_per_page: int, max_pages_in_block: int = 5) -> None:
+                 items_per_page: int, pages_in_block: int = 15) -> None:
         """Initialize instance."""
         assert items_per_page
         self._sequence = sequence
         self._current_page = max(current_page, 1)
-        self._max_pages_in_block = max_pages_in_block
+        self._pages_in_block = pages_in_block
 
         self.total_items = len(sequence)
         self.items_per_page = items_per_page
@@ -25,6 +25,15 @@ class Paginator:
     def __len__(self) -> int:
         """Return total amount of items in the sequence."""
         return self.total_items
+
+    def __iter__(self):
+        """Iterate over current page."""
+        stop = self.items_per_page * self._current_page
+        if self._current_page == 1:
+            start = 0
+        else:
+            start = stop - self.items_per_page
+        return iter(self._sequence[start:stop])
 
     @property
     def has_previous(self) -> bool:
@@ -67,29 +76,20 @@ class Paginator:
             f'has only {self.num_pages} pages'
         )
 
-    def __iter__(self):
-        """Iterate over current page."""
-        stop = self.items_per_page * self._current_page
-        if self._current_page == 1:
-            start = 0
-        else:
-            start = stop - self.items_per_page
-        return iter(self._sequence[start:stop])
+    @property
+    def is_fitting(self) -> bool:
+        """Return True if all pages can be displayed at once."""
+        return self.num_pages < self._pages_in_block - 2
 
     def iterate_over_pages(self) \
             -> Generator[Dict[str, Union[int, bool]], None, None]:
-        """Iterate over all page numbers.
+        """Iterate over all page numbers."""
+        if self.is_fitting:
+            # [1][2][3][4][5]
+            return self._iterate_short()
 
-        First element - is this page is dummy page without number?
-        Second element - is this page is current page?
-        Third element - page number
-        """
-        if self.num_pages >= (self._max_pages_in_block * 3 + 2):
-            # [1][2][3][...][55][56][57][...][108]
-            return self._iterate_long()
-
-        # [1] [2] [3] [4] [5]
-        return self._iterate_short()
+        # [...][55][56][57][...]
+        return self._iterate_long()
 
     def _iterate_short(self) \
             -> Generator[Dict[str, Union[int, bool]], None, None]:
@@ -116,21 +116,22 @@ class Paginator:
                      'is_current': x == self._current_page,
                      'number': x} for x in _gen]
 
-        gen = range(1, self._max_pages_in_block + 1)
-        head = _generate(gen)
+        position = self.current_page
 
-        middle = self.num_pages // 2
-        left = middle - self._max_pages_in_block // 2
-        right = left + self._max_pages_in_block
-        gen = range(left, right)
-        body = _generate(gen)
+        if position + self._pages_in_block // 2 < self.num_pages:
+            left = max(position - self._pages_in_block // 2, 1)
+            right = min(left + self._pages_in_block - 1, self.num_pages)
+        else:
+            right = min(position + self._pages_in_block // 2, self.num_pages)
+            left = max(right - self._pages_in_block + 1, 1)
 
-        gen = range(self.num_pages - self._max_pages_in_block + 1,
-                    self.num_pages + 1)
-        tail = _generate(gen)
+        gen = range(left, right + 1)
+        pages = _generate(gen)
 
-        yield from head
-        yield {'is_dummy': True, 'is_current': False, 'number': -1}
-        yield from body
-        yield {'is_dummy': True, 'is_current': False, 'number': -1}
-        yield from tail
+        if self.current_page > self._pages_in_block // 2 + 1:
+            yield {'is_dummy': True, 'is_current': False, 'number': -1}
+
+        yield from pages
+
+        if self.current_page + self._pages_in_block // 2 < self.num_pages:
+            yield {'is_dummy': True, 'is_current': False, 'number': -1}

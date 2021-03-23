@@ -11,11 +11,30 @@ from mss.mss_browser.class_paginator import Paginator
 
 @pytest.fixture
 def paginator():
-    return Paginator(
-        sequence=ascii_uppercase,
-        current_page=1,
-        items_per_page=3,
-    )
+    return Paginator(sequence=ascii_uppercase,
+                     current_page=1,
+                     items_per_page=3)
+
+
+@pytest.fixture
+def paginator_big():
+    return Paginator(sequence=(ascii_uppercase * 40)[0:1000],
+                     current_page=1,
+                     items_per_page=10,
+                     pages_in_block=5)
+
+
+def _get_pages(paginator_inst):
+    pages = []
+    for page in paginator_inst.iterate_over_pages():
+        if page['is_dummy']:
+            pages.append('...')
+        elif page['is_current']:
+            pages.append('[' + str(page['number']) + ']')
+        else:
+            pages.append(str(page['number']))
+
+    return pages
 
 
 def test_paginator_creation(paginator):
@@ -66,46 +85,6 @@ def test_pagination_short():
     ]
 
 
-def test_pagination_long_1():
-    paginator = Paginator(sequence=ascii_uppercase,
-                          current_page=1,
-                          items_per_page=3,
-                          max_pages_in_block=2)
-    assert list(paginator) == ['A', 'B', 'C']
-    pages = [x['number'] for x in paginator.iterate_over_pages()]
-    assert pages == [1, 2, -1, 3, 4, -1, 8, 9]
-
-
-def test_pagination_long_2():
-    paginator = Paginator(sequence=ascii_uppercase,
-                          current_page=1,
-                          items_per_page=3,
-                          max_pages_in_block=3)
-    assert list(paginator) == ['A', 'B', 'C']
-    pages = [x['number'] for x in paginator.iterate_over_pages()]
-    assert pages == [1, 2, 3, 4, 5, 6, 7, 8, 9]
-
-
-def test_pagination_long_3():
-    paginator = Paginator(sequence=ascii_uppercase,
-                          current_page=1,
-                          items_per_page=2,
-                          max_pages_in_block=3)
-    assert list(paginator) == ['A', 'B']
-    pages = [x['number'] for x in paginator.iterate_over_pages()]
-    assert pages == [1, 2, 3, -1, 5, 6, 7, -1, 11, 12, 13]
-
-
-def test_pagination_long_4():
-    paginator = Paginator(sequence=ascii_uppercase * 40,
-                          current_page=1,
-                          items_per_page=10,
-                          max_pages_in_block=4)
-    assert len(list(paginator)) == 10
-    pages = [x['number'] for x in paginator.iterate_over_pages()]
-    assert pages == [1, 2, 3, 4, -1, 50, 51, 52, 53, -1, 101, 102, 103, 104]
-
-
 def test_pagination_iter():
     paginator = Paginator(sequence=ascii_uppercase,
                           current_page=9,
@@ -124,3 +103,87 @@ def test_pagination_iter():
 
     paginator.current_page = 1
     assert list(paginator) == ['A', 'B', 'C']
+
+
+def test_pagination_long_1(paginator_big):
+    paginator_big.current_page = 1
+    pages = _get_pages(paginator_big)
+    assert pages == ['[1]', '2', '3', '4', '5', '...']
+
+
+def test_pagination_long_2(paginator_big):
+    paginator_big.current_page = 2
+    pages = _get_pages(paginator_big)
+    assert pages == ['1', '[2]', '3', '4', '5', '...']
+
+
+def test_pagination_long_3(paginator_big):
+    paginator_big.current_page = 3
+    pages = _get_pages(paginator_big)
+    assert pages == ['1', '2', '[3]', '4', '5', '...']
+
+
+def test_pagination_long_4(paginator_big):
+    paginator_big.current_page = 4
+    pages = _get_pages(paginator_big)
+    assert pages == ['...', '2', '3', '[4]', '5', '6', '...']
+
+
+def test_pagination_long_5(paginator_big):
+    paginator_big.current_page = 5
+    pages = _get_pages(paginator_big)
+    assert pages == ['...', '3', '4', '[5]', '6', '7', '...']
+
+
+def test_pagination_long_6(paginator_big):
+    paginator_big.current_page = 6
+    pages = _get_pages(paginator_big)
+    assert pages == ['...', '4', '5', '[6]', '7', '8', '...']
+
+
+def test_pagination_long_7(paginator_big):
+    paginator_big.current_page = 7
+    pages = _get_pages(paginator_big)
+    assert pages == ['...', '5', '6', '[7]', '8', '9', '...']
+
+
+def test_pagination_long_8(paginator_big):
+    paginator_big.current_page = 8
+    pages = _get_pages(paginator_big)
+    assert pages == ['...', '6', '7', '[8]', '9', '10', '...']
+
+
+def test_pagination_long_95(paginator_big):
+    paginator_big.current_page = 95
+    pages = _get_pages(paginator_big)
+    assert pages == ['...', '93', '94', '[95]', '96', '97', '...']
+
+
+def test_pagination_long_96(paginator_big):
+    paginator_big.current_page = 96
+    pages = _get_pages(paginator_big)
+    assert pages == ['...', '94', '95', '[96]', '97', '98', '...']
+
+
+def test_pagination_long_97(paginator_big):
+    paginator_big.current_page = 97
+    pages = _get_pages(paginator_big)
+    assert pages == ['...', '95', '96', '[97]', '98', '99', '...']
+
+
+def test_pagination_long_98(paginator_big):
+    paginator_big.current_page = 98
+    pages = _get_pages(paginator_big)
+    assert pages == ['...', '96', '97', '[98]', '99', '100']
+
+
+def test_pagination_long_99(paginator_big):
+    paginator_big.current_page = 99
+    pages = _get_pages(paginator_big)
+    assert pages == ['...', '96', '97', '98', '[99]', '100']
+
+
+def test_pagination_long_100(paginator_big):
+    paginator_big.current_page = 100
+    pages = _get_pages(paginator_big)
+    assert pages == ['...', '96', '97', '98', '99', '[100]']
