@@ -4,7 +4,7 @@
 """
 import json
 
-from mss.core.helper_types.class_filesystem import Filesystem
+from mss.core.class_filesystem import Filesystem
 from mss.utils.utils_scripts import (
     ask, greet, perc, ask_list, relocate_by_uuid,
 )

@@ -5,7 +5,7 @@
 from typing import Dict, Optional, Iterator
 
 from mss import constants
-from mss.core.simple_types.class_theme import Theme
+from mss.core.class_theme import Theme
 
 
 def theme_sorter(theme: Theme) -> str:

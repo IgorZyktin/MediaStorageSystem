@@ -6,8 +6,8 @@
 import pytest
 
 from mss import constants
-from mss.core.simple_types.class_theme import Theme
-from mss.core.simple_types.class_theme_repository import ThemeRepository
+from mss.core.class_theme import Theme
+from mss.core.class_theme_repository import ThemeRepository
 
 
 def test_theme_repository_creation():

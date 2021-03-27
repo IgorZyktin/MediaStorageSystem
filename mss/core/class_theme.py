@@ -5,9 +5,9 @@
 from dataclasses import dataclass
 from typing import Set
 
-from mss.core.simple_types.class_synonyms import Synonyms
-from mss.core.simple_types.class_tags_on_demand import TagsOnDemand
-from mss.core.simple_types.class_theme_statistics import ThemeStatistics
+from mss.core.class_synonyms import Synonyms
+from mss.core.class_tags_on_demand import TagsOnDemand
+from mss.core.class_theme_statistics import ThemeStatistics
 
 
 @dataclass

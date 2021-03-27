@@ -9,20 +9,20 @@ from flask import (
     redirect, url_for,
 )
 
-import mss.core.utils_core
+import mss.utils.utils_core
 from mss import constants
-from mss.core import utils_core, configuration, simple_types, concrete_types
-from mss.core.file_handling import update_repositories
-from mss.core.helper_types.class_filesystem import Filesystem
+from mss import core
+from mss.utils.file_handling import update_repositories
+from mss.core.class_filesystem import Filesystem
 from mss.mss_browser import utils_browser
 from mss.mss_browser.class_paginator import Paginator
-from mss.utils import utils_text
+from mss.utils import utils_text, utils_core, configuration
 
 filesystem = Filesystem()
 config = configuration.get_config(filesystem)
-query_builder = concrete_types.QueryBuilder(target_type=simple_types.Query)
-repository = concrete_types.Repository()
-theme_repository = simple_types.ThemeRepository()
+query_builder = core.QueryBuilder(target_type=core.Query)
+repository = core.Repository()
+theme_repository = core.ThemeRepository()
 update_repositories(theme_repository, repository, config.root_path, filesystem)
 
 app = Flask(__name__)
@@ -73,7 +73,7 @@ def index_all(directory: str):
     query = query_builder.from_query(query_text, directory)
 
     if query:
-        chosen_metarecords = mss.core.utils_core.select_records(
+        chosen_metarecords = mss.utils.utils_core.select_records(
             theme=current_theme,
             repository=repository,
             query=query,

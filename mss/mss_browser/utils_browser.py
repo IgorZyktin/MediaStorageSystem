@@ -6,9 +6,7 @@ import re
 
 from werkzeug.utils import redirect
 
-from mss import constants
-from mss.core.abstract_types.class_abstract_meta import AbstractMeta
-from mss.core.simple_types.class_theme import Theme
+from mss import constants, core
 from mss.utils.utils_text import sep_digits
 
 CORRECT_UUID_LENGTH = 36
@@ -41,14 +39,14 @@ def is_correct_uuid(uuid: str) -> bool:
     return UUID4_PATTERN.match(uuid.upper()) is not None
 
 
-def get_placeholder(current_theme: Theme) -> str:
+def get_placeholder(current_theme: core.Theme) -> str:
     """Return specific placeholder if we're not in default theme."""
     if current_theme.directory != constants.ALL_THEMES:
         return f'Search on theme "{current_theme.name}"'
     return ''
 
 
-def get_group_name(record: AbstractMeta) -> str:
+def get_group_name(record: core.Meta) -> str:
     """Return specific group name if we have one."""
     if record.group_name:
         return f'This file is from group "{record.group_name}"'

@@ -4,6 +4,12 @@
 """
 import pytest
 
+from mss import constants
+from mss.core import (
+    QueryBuilder, Query, ThemeStatistics, Synonyms,
+    TagsOnDemand, Theme
+)
+
 
 @pytest.fixture
 def valid_metarecord_dict():
@@ -50,37 +56,103 @@ def valid_metarecord_dict():
 
 
 @pytest.fixture
-def valid_empty_metarecord():
+def query_builder():
+    inst = QueryBuilder(Query)
+    return inst
+
+
+@pytest.fixture
+def empty_query_dict():
     return {
-        'author': '',
-        'author_url': '',
-        'bytes_in_file': 0,
-        'comment': '',
-        'group_members': [],
-        'group_name': '',
-        'height': 0,
-        'media_type': '',
-        'next_record': '',
-        'ordering': 0,
-        'origin_url': '',
-        'original_extension': '',
-        'original_filename': '',
-        'original_name': '',
-        'path_to_content': '',
-        'path_to_preview': '',
-        'path_to_thumbnail': '',
-        'previous_record': '',
-        'registered_by_nickname': '',
-        'registered_by_username': '',
-        'registered_on': '',
-        'resolution': 0,
-        'seconds': 0,
-        'series': '',
-        'signature': '',
-        'signature_type': '',
-        'sub_series': '',
-        'tags': [],
-        'uuid': '',
-        'directory': '',
-        'width': 0,
+        'and_': [],
+        'or_': [],
+        'not_': [],
+        'include': [],
+        'exclude': [],
+        'flags': [],
     }
+
+
+@pytest.fixture
+def bad_query_dict():
+    return {
+        'and_': [constants.NEVER_FIND_THIS],
+        'or_': ['cats'],
+        'not_': [],
+        'include': [],
+        'exclude': [],
+        'flags': [],
+    }
+
+
+@pytest.fixture
+def statistics():
+    inst = ThemeStatistics()
+    inst.add_item('2021-10-01', 25, ['alpha', 'beta', 'gamma'])
+    inst.add_item('2021-06-14', 250, ['alpha', 'cat', 'dog', 'fish'])
+    inst.add_item('2021-02-28', 780, ['beta', 'home', 'ball', 'trust'])
+    return inst
+
+
+@pytest.fixture
+def synonyms():
+    inst = Synonyms([['a', 'b'], ['c', 'd']])
+    return inst
+
+
+@pytest.fixture
+def tags_on_demand():
+    inst = TagsOnDemand(['a', 'b', 'c', 'd'])
+    return inst
+
+
+@pytest.fixture
+def theme(statistics, synonyms, tags_on_demand):
+    inst = Theme(
+        name='Testing theme',
+        directory='test_dir',
+        synonyms=synonyms,
+        tags_on_demand=tags_on_demand,
+        statistics=statistics,
+        used_uuids={'a', 'b', 'c'},
+    )
+    return inst
+
+
+@pytest.fixture
+def theme_another(statistics, synonyms, tags_on_demand):
+    inst = Theme(
+        name='Another theme',
+        directory='test_another',
+        synonyms=synonyms,
+        tags_on_demand=tags_on_demand,
+        statistics=statistics,
+        used_uuids={'a', 'b', 'c'},
+    )
+    return inst
+
+
+@pytest.fixture
+def query():
+    inst = Query(
+        and_=frozenset(['and_this', 'and_that']),
+        or_=frozenset(['or_this', 'or_that']),
+        not_=frozenset(['not_this']),
+        include=frozenset(['only this']),
+        exclude=frozenset(['except_this']),
+        flags=frozenset(),
+    )
+    return inst
+
+
+@pytest.fixture
+def empty_query():
+    inst = Query(
+        and_=frozenset(),
+        or_=frozenset(),
+        not_=frozenset(['not_this']),
+        include=frozenset(['only this']),
+        exclude=frozenset(['except_this']),
+        flags=frozenset(),
+    )
+    return inst

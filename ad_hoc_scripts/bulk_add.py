@@ -9,7 +9,7 @@ from datetime import datetime
 from ad_hoc_scripts.mss_register.media_type import UnregisteredMedia
 from mss import constants
 from mss.core.concrete_types import Meta
-from mss.core.helper_types.class_filesystem import Filesystem
+from mss.core.class_filesystem import Filesystem
 from mss.core.simple_types import Serializer
 from mss.utils.utils_identity import get_new_uuid
 from mss.utils.utils_scripts import greet, iterate_on_filenames_of_ext, \
@@ -41,7 +41,7 @@ def main():
     uuids = get_existing_uuids(SOURCE_ROOT,
                                TARGET_ROOT,
                                REFERENCE_ROOT,
-                               filesystem=filesystem)
+                               fs=filesystem)
     print(f'Found {len(uuids)} uuids')
     metas = get_metas(source_directory, uuids,
                       filesystem, ORDERING)

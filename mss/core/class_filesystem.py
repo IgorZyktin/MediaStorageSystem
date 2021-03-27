@@ -7,6 +7,9 @@ import shutil
 from pathlib import Path
 from typing import List, Generator, Tuple
 
+import ujson
+import yaml
+
 
 class Filesystem:
     """Special class that works with filesystem.
@@ -24,6 +27,26 @@ class Filesystem:
         """Write textual file to the disk."""
         with open(path, mode='w', encoding='utf-8') as file:
             file.write(content)
+
+    @staticmethod
+    def read_json(path: str) -> dict:
+        """Read json file from the disk."""
+        with open(path, mode='r', encoding='utf-8') as file:
+            content = ujson.load(file)
+        return content
+
+    @staticmethod
+    def write_json(path: str, content: dict) -> None:
+        """Write json file to the disk."""
+        with open(path, mode='w', encoding='utf-8') as file:
+            ujson.dump(content, file, indent=4, ensure_ascii=False)
+
+    @staticmethod
+    def read_yaml(path: str) -> dict:
+        """Read yaml file from the disk."""
+        with open(path, mode='r', encoding='utf-8') as file:
+            content = yaml.load(file, Loader=yaml.SafeLoader)
+        return content
 
     @staticmethod
     def join(*args) -> str:

@@ -2,30 +2,8 @@
 
 """Tests.
 """
-import pytest
 
-from mss.core.abstract_types.class_abstract_meta import AbstractMeta
-from mss.core.concrete_types.class_meta import Meta
-
-
-@pytest.fixture
-def invalid_metarecord():
-    return {
-        'uuid': '1'
-    }
-
-
-@pytest.fixture
-def invalid_metarecord_field_diff():
-    return list(AbstractMeta.__annotations__.keys())[1:]
-
-
-def test_metarecord_creation_failed_kwargs(invalid_metarecord,
-                                           invalid_metarecord_field_diff):
-    msg = ('Meta instance has unmatched attributes: '
-           + ', '.join(invalid_metarecord_field_diff))
-    with pytest.raises(AttributeError, match=msg):
-        Meta(**invalid_metarecord)
+from mss.core import Meta
 
 
 def test_metarecord_creation_correct(valid_metarecord_dict):

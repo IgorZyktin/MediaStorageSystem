@@ -4,7 +4,7 @@
 """
 import json
 
-from mss.core.helper_types.class_filesystem import Filesystem
+from mss.core.class_filesystem import Filesystem
 
 
 def extract_records_from_single_json_to_a_group(root_path: str, theme: str,

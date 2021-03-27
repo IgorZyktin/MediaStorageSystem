@@ -5,19 +5,16 @@
 from collections import defaultdict
 from typing import Dict, Optional, Set, ItemsView, KeysView, ValuesView
 
-from mss.core.abstract_types.class_abstract_meta import AbstractMeta
-from mss.core.abstract_types.class_abstract_repository import (
-    AbstractRepository
-)
+from mss.core.class_meta import Meta
 
 
-class Repository(AbstractRepository):
+class Repository:
     """Storage for metarecords.
     """
 
     def __init__(self) -> None:
         """Initialize instance."""
-        self._storage_of_records: Dict[str, AbstractMeta] = {}
+        self._storage_of_records: Dict[str, Meta] = {}
         self._uuid_by_tag: Dict[str, Set[str]] = defaultdict(set)
         self._extended_tags_for_records: Dict[str, Set[str]] = {}
 
@@ -36,12 +33,12 @@ class Repository(AbstractRepository):
         """
         return len(self._storage_of_records)
 
-    def __iter__(self) -> ItemsView[str, AbstractMeta]:
+    def __iter__(self) -> ItemsView[str, Meta]:
         """Iterate on records.
         """
         return iter(self.all_items())
 
-    def add_record(self, new_record: AbstractMeta,
+    def add_record(self, new_record: Meta,
                    extended_tags: Optional[Set[str]] = None) -> None:
         """Add record into repository.
 
@@ -62,12 +59,12 @@ class Repository(AbstractRepository):
         for tag in extended_tags:
             self._uuid_by_tag[tag].add(new_record.uuid)
 
-    def get_record(self, uuid: str) -> Optional[AbstractMeta]:
+    def get_record(self, uuid: str) -> Optional[Meta]:
         """Return record or None if not present.
         """
         return self._storage_of_records.get(uuid)
 
-    def delete_record(self, uuid: str) -> Optional[AbstractMeta]:
+    def delete_record(self, uuid: str) -> Optional[Meta]:
         """Return instance if present and delete it from storage.
         """
         instance = self._storage_of_records.pop(uuid, None)
@@ -88,12 +85,12 @@ class Repository(AbstractRepository):
         """
         return self._storage_of_records.keys()
 
-    def all_records(self) -> ValuesView[AbstractMeta]:
+    def all_records(self) -> ValuesView[Meta]:
         """Return records in the storage.
         """
         return self._storage_of_records.values()
 
-    def all_items(self) -> ItemsView[str, AbstractMeta]:
+    def all_items(self) -> ItemsView[str, Meta]:
         """Return all uuid+record from the storage.
         """
         return self._storage_of_records.items()

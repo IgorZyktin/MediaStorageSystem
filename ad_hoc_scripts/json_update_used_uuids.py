@@ -4,7 +4,7 @@
 """
 import json
 
-from mss.core.helper_types.class_filesystem import Filesystem
+from mss.core.class_filesystem import Filesystem
 
 
 def update_all_used_uuids(root_path: str):

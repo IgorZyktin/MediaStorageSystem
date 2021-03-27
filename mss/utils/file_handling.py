@@ -2,28 +2,17 @@
 
 """Work with actual files using Filesystem class.
 """
-import json
 import operator
 from functools import reduce, partial
 from itertools import chain
 from typing import List, Optional
 
-import yaml
-
-from mss.core.concrete_types.class_meta import Meta
-from mss.core.concrete_types.class_repository import Repository
-from mss.core.helper_types.class_filesystem import Filesystem
-from mss.core.helper_types.class_search_enhancer import SearchEnhancer
-from mss.core.simple_types.class_serializer import Serializer
-from mss.core.simple_types.class_synonyms import Synonyms
-from mss.core.simple_types.class_tags_on_demand import TagsOnDemand
-from mss.core.simple_types.class_theme import Theme
-from mss.core.simple_types.class_theme_repository import ThemeRepository
-from mss.core.simple_types.class_theme_statistics import ThemeStatistics
+from mss import core
 from mss.utils.utils_scripts import perc
 
 
-def load_all_themes(path: str, filesystem: Filesystem) -> List[Theme]:
+def load_all_themes(path: str,
+                    filesystem: core.Filesystem) -> List[core.Theme]:
     """Instantiate and return all available themes."""
     path = filesystem.absolute(path)
     names = filesystem.list_folders(path)
@@ -37,13 +26,13 @@ def load_all_themes(path: str, filesystem: Filesystem) -> List[Theme]:
     return themes
 
 
-def make_default_theme(themes: List[Theme]) -> Theme:
+def make_default_theme(themes: List[core.Theme]) -> core.Theme:
     """Make combined theme called "All themes"."""
     assert themes
     _sum = partial(reduce, operator.add)
     all_uuids = set(chain.from_iterable(x.used_uuids for x in themes))
 
-    return Theme(
+    return core.Theme(
         name='All themes',
         directory='all_themes',
         synonyms=_sum(x.synonyms for x in themes),
@@ -54,49 +43,47 @@ def make_default_theme(themes: List[Theme]) -> Theme:
 
 
 def load_single_theme(path: str, directory_name: str,
-                      filesystem: Filesystem) -> Optional[Theme]:
+                      fs: core.Filesystem) -> Optional[core.Theme]:
     """Create instance for single theme."""
-    theme_name = filesystem.join(path, directory_name, 'theme.yaml')
-    uuids_name = filesystem.join(path, directory_name, 'used_uuids.csv')
+    theme_name = fs.join(path, directory_name, 'theme.yaml')
+    uuids_name = fs.join(path, directory_name, 'used_uuids.csv')
 
     try:
-        with open(theme_name, mode='r', encoding='utf-8') as file:
-            theme_content = yaml.load(file, Loader=yaml.SafeLoader)
+        theme_content = fs.read_yaml(theme_name)
     except FileNotFoundError:
         return None
 
-    used_uuids_content = filesystem.read_file(uuids_name)
+    used_uuids_content = fs.read_file(uuids_name)
 
-    theme = Theme(
+    theme = core.Theme(
         name=theme_content['name'],
         directory=directory_name,
-        synonyms=Synonyms.from_dict(
+        synonyms=core.Synonyms.from_dict(
             theme_content.get('synonyms', {})
         ),
-        tags_on_demand=TagsOnDemand.from_dict(
+        tags_on_demand=core.TagsOnDemand.from_dict(
             theme_content.get('tags_on_demand', {})
         ),
-        statistics=ThemeStatistics(),
+        statistics=core.ThemeStatistics(),
         used_uuids={x.strip() for x in used_uuids_content.split('\n')},
     )
 
     return theme
 
 
-def update_one_theme(root: str, theme: Theme, repository: Repository,
-                     filesystem: Filesystem) -> None:
+def update_one_theme(root: str, theme: core.Theme, repository: core.Repository,
+                     filesystem: core.Filesystem) -> None:
     """"""
     path = filesystem.join(root, theme.directory, 'metainfo')
-    serializer = Serializer(target_type=Meta)
-    enhancer = SearchEnhancer(synonyms=theme.synonyms)
+    enhancer = core.SearchEnhancer(synonyms=theme.synonyms)
 
     print('Updating:', theme.name)
     for filename in perc(filesystem.list_files(path)):
         full_path = filesystem.join(path, filename)
-        content = filesystem.read_file(full_path)
-        records = json.loads(content)
-        for record in records.values():
-            instance: Meta = serializer.from_source(**record)
+        content = filesystem.read_json(full_path)
+
+        for record in content.values():
+            instance = core.Meta(**record)
             tags = enhancer.get_extended_tags(instance)
             repository.add_record(instance, tags)
             theme.statistics.add_item(
@@ -107,9 +94,9 @@ def update_one_theme(root: str, theme: Theme, repository: Repository,
             instance.directory = theme.directory
 
 
-def update_repositories(theme_repository: ThemeRepository,
-                        repository: Repository,
-                        root_path: str, filesystem: Filesystem) -> None:
+def update_repositories(theme_repository: core.ThemeRepository,
+                        repository: core.Repository,
+                        root_path: str, filesystem: core.Filesystem) -> None:
     """Put all meta info into repositories."""
     themes = load_all_themes(root_path, filesystem)
 

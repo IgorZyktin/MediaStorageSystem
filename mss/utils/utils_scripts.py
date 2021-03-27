@@ -7,7 +7,7 @@ import os
 from typing import List, Iterable, Generator, Set, Collection, Tuple
 
 from mss import constants
-from mss.core.helper_types.class_filesystem import Filesystem
+from mss import core
 
 
 def greet(description: str) -> None:
@@ -59,7 +59,8 @@ def perc(iterable: Iterable) -> Generator:
 
 
 def relocate_by_uuid(uuid: str, source_theme_path: str,
-                     target_theme_path: str, filesystem: Filesystem) -> None:
+                     target_theme_path: str,
+                     filesystem: core.Filesystem) -> None:
     """Relocate whole tree of resources by its UUID."""
     meta_path = filesystem.join(source_theme_path, 'metainfo', f'{uuid}.json')
     content = filesystem.read_file(meta_path)
@@ -69,9 +70,9 @@ def relocate_by_uuid(uuid: str, source_theme_path: str,
     path_to_preview = record['path_to_preview']
     path_to_thumbnail = record['path_to_thumbnail']
 
-    dir_content = filesystem.only_dir(path_to_content)
-    dir_preview = filesystem.only_dir(path_to_preview)
-    dir_thumbnail = filesystem.only_dir(path_to_thumbnail)
+    dir_content = filesystem.cut_tail(path_to_content)
+    dir_preview = filesystem.cut_tail(path_to_preview)
+    dir_thumbnail = filesystem.cut_tail(path_to_thumbnail)
 
     target_content = filesystem.join(target_theme_path, dir_content)
     target_preview = filesystem.join(target_theme_path, dir_preview)
@@ -111,16 +112,16 @@ def relocate_by_uuid(uuid: str, source_theme_path: str,
         file.write(uuid + '\n')
 
 
-def get_existing_uuids(*root_paths: str, filesystem: Filesystem) -> Set[str]:
+def get_existing_uuids(*root_paths: str, fs: core.Filesystem) -> Set[str]:
     """Get all existing UUIDs."""
     found_uuids = set()
 
     for root_path in root_paths:
-        themes = filesystem.list_folders(root_path)
+        themes = fs.list_folders(root_path)
 
         for theme in themes:
-            path = filesystem.join(root_path, theme, 'used_uuids.csv')
-            content = filesystem.read_file(path)
+            path = fs.join(root_path, theme, 'used_uuids.csv')
+            content = fs.read_file(path)
 
             if content:
                 uuids = [x.strip() for x in content.split('\n')]

@@ -7,18 +7,13 @@ from itertools import chain
 from typing import List
 
 from mss import constants
-from mss.core import simple_types
-from mss.core.abstract_types.class_abstract_meta import AbstractMeta
-from mss.core.abstract_types.class_abstract_repository import (
-    AbstractRepository
-)
-from mss.core.simple_types.class_theme import Theme
+from mss import core
 
 
-def select_random_records(theme: Theme,
-                          repository: AbstractRepository,
-                          query: simple_types.Query,
-                          amount: int) -> List[AbstractMeta]:
+def select_random_records(theme: core.Theme,
+                          repository: core.Repository,
+                          query: core.Query,
+                          amount: int) -> List[core.Meta]:
     """Return X random records from repository."""
     # FIXME
     all_known_records = list(repository.all_records())
@@ -59,9 +54,9 @@ def select_random_records(theme: Theme,
     return chosen_records
 
 
-def select_records(theme: simple_types.Theme,
-                   repository: AbstractRepository,
-                   query: simple_types.Query) -> List[AbstractMeta]:
+def select_records(theme: core.Theme,
+                   repository: core.Repository,
+                   query: core.Query) -> List[core.Meta]:
     """Return all records, that match to a given query."""
     target_uuids = set()
 

@@ -4,7 +4,7 @@
 """
 import json
 
-from mss.core.helper_types.class_filesystem import Filesystem
+from mss.core.class_filesystem import Filesystem
 
 
 def make_each_json_nested_with_uuid(root_path: str, theme: str):
