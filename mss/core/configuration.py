@@ -2,9 +2,11 @@
 
 """Tools to work with configuration.
 """
-import configparser
 from argparse import Namespace
 
+import yaml
+
+from mss import constants
 from mss.core.helper_types.class_filesystem import Filesystem
 
 
@@ -25,28 +27,17 @@ class Config:
         self.debug = debug
 
 
-def load_raw_user_config(path: str) -> Namespace:
+def load_raw_user_config(filesystem: Filesystem, path: str) -> Namespace:
     """Load specific user settings from file."""
-    config = configparser.ConfigParser()
-    config.read(path)
-
-    resulting_config = {}
-    for key, value in config['browser'].items():
-        if value.lower() == 'yes':
-            resulting_config[key] = True
-        elif value.lower() == 'no':
-            resulting_config[key] = False
-        elif value.isdigit():
-            resulting_config[key] = int(value)
-        else:
-            resulting_config[key] = value
-
-    return Namespace(**resulting_config)
+    text = filesystem.read_file(path)
+    config = yaml.safe_load(text)
+    return Namespace(**config)
 
 
 def get_config(filesystem: Filesystem) -> Config:
     """Create config instance."""
-    user_config = load_raw_user_config('config.ini')
+    config_path = filesystem.join(*constants.CONFIG_PATH_COMPONENTS)
+    user_config = load_raw_user_config(filesystem, config_path)
 
     inst = Config()
     inst.host = user_config.host
@@ -57,6 +48,7 @@ def get_config(filesystem: Filesystem) -> Config:
     inst.debug = user_config.debug
 
     if user_config.inject_code:
-        inst.injection = filesystem.read_file('injection.html')
+        injection_path = filesystem.join(*constants.INJECTION_PATH_COMPONENTS)
+        inst.injection = filesystem.read_file(injection_path)
 
     return inst

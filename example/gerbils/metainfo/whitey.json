@@ -1,0 +1,82 @@
+{
+    "79a7ae47-9bfe-40c2-8238-0107351e37ed": {
+        "uuid": "79a7ae47-9bfe-40c2-8238-0107351e37ed",
+        "original_filename": "animal-1238239.jpg",
+        "original_name": "animal-1238239",
+        "original_extension": "jpg",
+        "series": "gerbils",
+        "sub_series": "",
+        "ordering": 1,
+        "next_record": "de604aee-bd4c-475d-b2fa-6a03b561d4b7",
+        "previous_record": "",
+        "group_name": "whitey",
+        "group_members": [
+            "79a7ae47-9bfe-40c2-8238-0107351e37ed",
+            "de604aee-bd4c-475d-b2fa-6a03b561d4b7"
+        ],
+        "width": 2804,
+        "height": 2076,
+        "resolution": 5.82,
+        "media_type": "static_image",
+        "bytes_in_file": 745793,
+        "seconds": 0,
+        "registered_on": "2021-03-23",
+        "registered_by_username": "",
+        "registered_by_nickname": "",
+        "author": "",
+        "author_url": "",
+        "origin_url": "https://pixabay.com/",
+        "comment": "",
+        "signature": "",
+        "signature_type": "",
+        "tags": [
+            "gerbil",
+            "mice",
+            "rodent",
+            "white background"
+        ],
+        "path_to_content": "images/animal-1238239___79a7ae47-9bfe-40c2-8238-0107351e37ed.jpg",
+        "path_to_preview": "previews/images/animal-1238239___79a7ae47-9bfe-40c2-8238-0107351e37ed.jpg",
+        "path_to_thumbnail": "thumbnails/images/animal-1238239___79a7ae47-9bfe-40c2-8238-0107351e37ed.jpg"
+    },
+    "de604aee-bd4c-475d-b2fa-6a03b561d4b7": {
+        "uuid": "de604aee-bd4c-475d-b2fa-6a03b561d4b7",
+        "original_filename": "animal-1238237.jpg",
+        "original_name": "animal-1238237",
+        "original_extension": "jpg",
+        "series": "gerbils",
+        "sub_series": "",
+        "next_record": "",
+        "previous_record": "79a7ae47-9bfe-40c2-8238-0107351e37ed",
+        "ordering": 2,
+        "group_name": "whitey",
+        "group_members": [
+            "79a7ae47-9bfe-40c2-8238-0107351e37ed",
+            "de604aee-bd4c-475d-b2fa-6a03b561d4b7"
+        ],
+        "width": 2728,
+        "height": 1992,
+        "resolution": 5.43,
+        "media_type": "static_image",
+        "bytes_in_file": 635310,
+        "seconds": 0,
+        "registered_on": "2021-03-23",
+        "registered_by_username": "",
+        "registered_by_nickname": "",
+        "author": "",
+        "author_url": "",
+        "origin_url": "https://pixabay.com/",
+        "comment": "",
+        "signature": "",
+        "signature_type": "",
+        "tags": [
+            "gerbil",
+            "mice",
+            "rodent",
+            "white background"
+        ],
+        "path_to_content": "images/animal-1238237___de604aee-bd4c-475d-b2fa-6a03b561d4b7.jpg",
+        "path_to_preview": "previews/images/animal-1238237___de604aee-bd4c-475d-b2fa-6a03b561d4b7.jpg",
+        "path_to_thumbnail": "thumbnails/images/animal-1238237___de604aee-bd4c-475d-b2fa-6a03b561d4b7.jpg"
+    }
+}

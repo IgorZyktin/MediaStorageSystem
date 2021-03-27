@@ -44,3 +44,15 @@
         </tr>
     {% endif %}
 {% endmacro %}
+
+
+{% macro if_not_empty_key(label, meta, key, directory) %}
+    {% if meta[key] %}
+        <tr>
+            <td>{{ label }}</td>
+            <td>
+                <a href="/index/{{ directory }}/search?q={{ meta[key] }}">{{ meta[key] }}</a>
+            </td>
+        </tr>
+    {% endif %}
+{% endmacro %}

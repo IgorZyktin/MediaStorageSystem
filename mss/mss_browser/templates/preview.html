@@ -1,5 +1,6 @@
 {% extends "index.html" %}
 {% from "macros.html" import if_not_empty %}
+{% from "macros.html" import if_not_empty_key %}
 
 
 {% block content %}
@@ -52,8 +53,8 @@
                     <th colspan="2">Information</th>
                 </tr>
                 {{ if_not_empty('Original filename', meta.original_filename) }}
-                {{ if_not_empty('Series', meta.series) }}
-                {{ if_not_empty('Sub series', meta.sub_series) }}
+                {{ if_not_empty_key('Series', meta, 'series', directory) }}
+                {{ if_not_empty_key('Sub series', meta, 'sub_series', directory) }}
                 {{ if_not_empty('Ordering', meta.ordering) }}
 
                 {% if meta.comment %}
@@ -91,14 +92,7 @@
                     <th colspan="2">Tags</th>
                 </tr>
 
-                {% if meta.group_name %}
-                    <td>
-                        Group
-                    </td>
-                    <td>
-                        <a href="/index/{{ directory }}/search?q={{ meta.group_name }}">{{ meta.group_name }}</a>
-                    </td>
-                {% endif %}
+                {{ if_not_empty_key('Group', meta, 'group_name', directory) }}
 
                 <tr>
                     <td colspan="2">

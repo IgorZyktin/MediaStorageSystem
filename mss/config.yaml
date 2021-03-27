@@ -1,0 +1,7 @@
+title: MediaStorageSystem
+host: "127.0.0.1"
+port: 8080
+items_per_page: 50
+root_path: "./example"
+inject_code: false
+debug: true

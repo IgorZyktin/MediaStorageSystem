@@ -94,16 +94,17 @@ def update_one_theme(root: str, theme: Theme, repository: Repository,
     for filename in perc(filesystem.list_files(path)):
         full_path = filesystem.join(path, filename)
         content = filesystem.read_file(full_path)
-        record = json.loads(content)
-        instance: Meta = serializer.from_source(**record)
-        tags = enhancer.get_extended_tags(instance)
-        repository.add_record(instance, tags)
-        theme.statistics.add_item(
-            item_date=instance.registered_on,
-            item_size=instance.bytes_in_file,
-            item_tags=instance.tags,
-        )
-        instance.directory = theme.directory
+        records = json.loads(content)
+        for record in records.values():
+            instance: Meta = serializer.from_source(**record)
+            tags = enhancer.get_extended_tags(instance)
+            repository.add_record(instance, tags)
+            theme.statistics.add_item(
+                item_date=instance.registered_on,
+                item_size=instance.bytes_in_file,
+                item_tags=instance.tags,
+            )
+            instance.directory = theme.directory
 
 
 def update_repositories(theme_repository: ThemeRepository,
