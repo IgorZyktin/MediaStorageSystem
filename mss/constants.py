@@ -3,7 +3,7 @@
 """Constant values.
 """
 
-__version__ = '2021.03.22'
+__version__ = '2021.03.27'
 
 # image sizes
 RES_TINY = 'TINY'

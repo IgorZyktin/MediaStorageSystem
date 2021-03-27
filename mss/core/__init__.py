@@ -1,3 +1,8 @@
+# -*- coding: utf-8 -*-
+
+"""Imports for simplified access.
+"""
+
 from mss.core.class_filesystem import Filesystem
 from mss.core.class_meta import Meta
 from mss.core.class_query import Query

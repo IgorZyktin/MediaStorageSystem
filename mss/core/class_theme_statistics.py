@@ -9,6 +9,7 @@ from mss.utils.utils_collections import arrange_by_alphabet
 from mss.utils.utils_text import sep_digits, byte_count_to_text
 
 
+# pylint: disable=R0902
 class ThemeStatistics:
     """General metainfo on specific theme.
     """
@@ -37,9 +38,7 @@ class ThemeStatistics:
 
     def __add__(self, other) -> 'ThemeStatistics':
         """Sum two statistics together."""
-        cls = type(self)
-        assert isinstance(other, cls), f'Incompatible type: {type(other)}'
-        instance = cls()
+        instance = type(self)()
         instance.min_date = min(self.min_date or other.min_date,
                                 other.min_date or self.min_date)
         instance.max_date = max(self.max_date or other.max_date,
@@ -49,8 +48,8 @@ class ThemeStatistics:
         instance.tags = self.tags + other.tags
         return instance
 
-    def add_item(self, item_date: str, item_size: int,
-                 item_tags: Collection[str]) -> None:
+    def add(self, item_date: str, item_size: int,
+            item_tags: Collection[str]) -> None:
         """Add information about single item."""
         self.total_items += 1
         self.total_size += item_size

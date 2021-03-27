@@ -43,17 +43,17 @@ def make_default_theme(themes: List[core.Theme]) -> core.Theme:
 
 
 def load_single_theme(path: str, directory_name: str,
-                      fs: core.Filesystem) -> Optional[core.Theme]:
+                      filesystem: core.Filesystem) -> Optional[core.Theme]:
     """Create instance for single theme."""
-    theme_name = fs.join(path, directory_name, 'theme.yaml')
-    uuids_name = fs.join(path, directory_name, 'used_uuids.csv')
+    theme_name = filesystem.join(path, directory_name, 'theme.yaml')
+    uuids_name = filesystem.join(path, directory_name, 'used_uuids.csv')
 
     try:
-        theme_content = fs.read_yaml(theme_name)
+        theme_content = filesystem.read_yaml(theme_name)
     except FileNotFoundError:
         return None
 
-    used_uuids_content = fs.read_file(uuids_name)
+    used_uuids_content = filesystem.read_file(uuids_name)
 
     theme = core.Theme(
         name=theme_content['name'],
@@ -73,7 +73,7 @@ def load_single_theme(path: str, directory_name: str,
 
 def update_one_theme(root: str, theme: core.Theme, repository: core.Repository,
                      filesystem: core.Filesystem) -> None:
-    """"""
+    """Update contents of a single theme."""
     path = filesystem.join(root, theme.directory, 'metainfo')
     enhancer = core.SearchEnhancer(synonyms=theme.synonyms)
 
@@ -83,15 +83,12 @@ def update_one_theme(root: str, theme: core.Theme, repository: core.Repository,
         content = filesystem.read_json(full_path)
 
         for record in content.values():
-            instance = core.Meta(**record)
-            tags = enhancer.get_extended_tags(instance)
-            repository.add_record(instance, tags)
-            theme.statistics.add_item(
-                item_date=instance.registered_on,
-                item_size=instance.bytes_in_file,
-                item_tags=instance.tags,
-            )
-            instance.directory = theme.directory
+            instance = core.Meta(directory=theme.directory, **record)
+            tags = enhancer.get_extended_tags_with_synonyms(instance)
+            repository.add(instance, tags)
+            theme.statistics.add(item_date=instance.registered_on,
+                                 item_size=instance.bytes_in_file,
+                                 item_tags=instance.tags)
 
 
 def update_repositories(theme_repository: core.ThemeRepository,

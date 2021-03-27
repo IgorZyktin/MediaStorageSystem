@@ -3,6 +3,7 @@
 """Small helper functions for mss_browser.
 """
 import re
+from typing import Dict, Union
 
 from werkzeug.utils import redirect
 
@@ -58,3 +59,22 @@ def get_note_on_search(total: int, duration: float) -> str:
     _total = sep_digits(total)
     _duration = '{:0.4f}'.format(duration)
     return f'Found {_total} records in {_duration} seconds'
+
+
+def get_config(filesystem: core.Filesystem) -> Dict[str, Union[bool, int, str]]:
+    """Load specific user settings from file."""
+    path = filesystem.join(*constants.CONFIG_PATH_COMPONENTS)
+    config = filesystem.read_yaml(path)
+    config['root_path'] = filesystem.absolute(config['root_path'])
+    injection_code = ''
+
+    if config['inject_code']:
+        injection_path = filesystem.join(*constants.INJECTION_PATH_COMPONENTS)
+        try:
+            injection_code = filesystem.read_file(injection_path)
+        except FileNotFoundError:
+            print(f'Unable to read: {injection_path}')
+
+    config['injection'] = injection_code
+
+    return config

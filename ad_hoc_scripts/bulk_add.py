@@ -41,7 +41,7 @@ def main():
     uuids = get_existing_uuids(SOURCE_ROOT,
                                TARGET_ROOT,
                                REFERENCE_ROOT,
-                               fs=filesystem)
+                               filesystem=filesystem)
     print(f'Found {len(uuids)} uuids')
     metas = get_metas(source_directory, uuids,
                       filesystem, ORDERING)

@@ -6,8 +6,7 @@ import random
 from itertools import chain
 from typing import List
 
-from mss import constants
-from mss import core
+from mss import constants, core
 
 
 def select_random_records(theme: core.Theme,
@@ -15,35 +14,24 @@ def select_random_records(theme: core.Theme,
                           query: core.Query,
                           amount: int) -> List[core.Meta]:
     """Return X random records from repository."""
-    # FIXME
-    all_known_records = list(repository.all_records())
-
-    if theme.directory != constants.ALL_THEMES:
-        all_known_records = [
-            x for x in all_known_records
-            if x.directory == theme.directory
-        ]
-
-    avoid_tags = set(theme.tags_on_demand)
     valid_records = []
-    for record in all_known_records:
-        tags = repository.get_extended_tags(record.uuid)
-        if tags & avoid_tags:
+    avoid_tags = set(theme.tags_on_demand)
+
+    for record in repository.all_records():
+        if theme.directory != constants.ALL_THEMES \
+                and theme.directory != record.directory and not query.include:
+            continue
+
+        if query.include and record.directory not in query.include:
+            continue
+
+        if record.directory in query.exclude:
+            continue
+
+        if repository.get_extended_tags(record.uuid) & avoid_tags:
             continue
 
         valid_records.append(record)
-
-    if query.include:
-        valid_records = [
-            x for x in valid_records
-            if x.directory in query.include
-        ]
-
-    if query.exclude:
-        valid_records = [
-            x for x in valid_records
-            if x.directory not in query.exclude
-        ]
 
     # note that size of the repository in some cases might be smaller
     # than amount and random.sample will throw and exception

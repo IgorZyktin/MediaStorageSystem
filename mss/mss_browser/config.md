@@ -1,7 +1,7 @@
 # Browser configuration
 
 # NGINX config
-```
+```nginx
 server {
     listen 80;
     root /home/pi/root;

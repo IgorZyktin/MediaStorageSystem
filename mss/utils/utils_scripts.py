@@ -4,10 +4,9 @@
 """
 import json
 import os
-from typing import List, Iterable, Generator, Set, Collection, Tuple
+from typing import List, Iterable, Generator, Set
 
-from mss import constants
-from mss import core
+from mss import constants, core
 
 
 def greet(description: str) -> None:
@@ -28,7 +27,7 @@ def ask(description: str, confirm: bool = False) -> str:
                 if conf == '1':
                     return value
 
-                elif conf == '0':
+                if conf == '0':
                     break
 
         return value
@@ -58,6 +57,7 @@ def perc(iterable: Iterable) -> Generator:
     print()
 
 
+# pylint: disable=R0914
 def relocate_by_uuid(uuid: str, source_theme_path: str,
                      target_theme_path: str,
                      filesystem: core.Filesystem) -> None:
@@ -112,16 +112,17 @@ def relocate_by_uuid(uuid: str, source_theme_path: str,
         file.write(uuid + '\n')
 
 
-def get_existing_uuids(*root_paths: str, fs: core.Filesystem) -> Set[str]:
+def get_existing_uuids(*root_paths: str,
+                       filesystem: core.Filesystem) -> Set[str]:
     """Get all existing UUIDs."""
     found_uuids = set()
 
     for root_path in root_paths:
-        themes = fs.list_folders(root_path)
+        themes = filesystem.list_folders(root_path)
 
         for theme in themes:
-            path = fs.join(root_path, theme, 'used_uuids.csv')
-            content = fs.read_file(path)
+            path = filesystem.join(root_path, theme, 'used_uuids.csv')
+            content = filesystem.read_file(path)
 
             if content:
                 uuids = [x.strip() for x in content.split('\n')]
@@ -130,23 +131,8 @@ def get_existing_uuids(*root_paths: str, fs: core.Filesystem) -> Set[str]:
     return found_uuids
 
 
-def iterate_on_filenames_of_ext(path: str,
-                                extensions: Collection[str]
-                                ) -> Generator[Tuple[str, str], None, None]:
-    """Iterate on all folders and yield paths and filenames of given ext.
-    """
-    supported_extensions = set(extensions)
-
-    for folder, _, files in os.walk(path):
-        for filename in files:
-            filename = filename.lower()
-            name, ext = os.path.splitext(filename)
-
-            if ext and ext in supported_extensions:
-                yield folder, filename
-
-
 def get_path_ending(path: str, pivot: str) -> str:
+    """Blah"""
     parts = path.split(os.sep)
     for i, element in enumerate(parts):
         if element == pivot:

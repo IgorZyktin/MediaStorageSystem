@@ -5,10 +5,10 @@
 from typing import Dict, Optional, Iterator
 
 from mss import constants
-from mss import core
+from mss.core.class_theme import Theme
 
 
-def theme_sorter(theme: core.Theme) -> str:
+def theme_sorter(theme: Theme) -> str:
     """Sort themes by directory."""
     if theme.directory == constants.ALL_THEMES:
         return ''
@@ -21,19 +21,19 @@ class ThemeRepository:
 
     def __init__(self) -> None:
         """Initialize instance."""
-        self._storage: Dict[str, core.Theme] = {}
+        self._storage: Dict[str, Theme] = {}
 
     def __repr__(self) -> str:
         """Return textual representation."""
         return f'{type(self).__name__}()'
 
-    def __iter__(self) -> Iterator[core.Theme]:
+    def __iter__(self) -> Iterator[Theme]:
         """Iterate on themes in the storage."""
         themes = list(self._storage.values())
         themes.sort(key=theme_sorter)
         return iter(themes)
 
-    def add(self, theme: core.Theme) -> None:
+    def add(self, theme: Theme) -> None:
         """Add theme to the storage."""
         if theme.directory not in self._storage:
             self._storage[theme.directory] = theme
@@ -43,6 +43,6 @@ class ThemeRepository:
         raise KeyError(f'Directory {theme.directory} is '
                        f'already taken for theme {existing}')
 
-    def get(self, directory: str) -> Optional[core.Theme]:
+    def get(self, directory: str) -> Optional[Theme]:
         """Return theme by directory."""
         return self._storage.get(directory)

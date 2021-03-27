@@ -5,19 +5,20 @@
 from typing import Set
 
 from mss import constants
-from mss import core
+from mss.core.class_synonyms import Synonyms
+from mss.core.class_meta import Meta
 
 
 class SearchEnhancer:
     """Class for search enhancement.
     """
 
-    def __init__(self, synonyms: core.Synonyms) -> None:
+    def __init__(self, synonyms: Synonyms) -> None:
         """Initialize instance."""
         self._synonyms = synonyms
 
     @staticmethod
-    def get_extended_tags(record: core.Meta) -> Set[str]:
+    def get_extended_tags(record: Meta) -> Set[str]:
         """Get base tags with additional words for search."""
         return {
             *(tag.lower() for tag in record.tags),
@@ -32,7 +33,7 @@ class SearchEnhancer:
             get_media_type_tag(record.media_type),
         }
 
-    def get_extended_tags_with_synonyms(self, record: core.Meta) -> Set[str]:
+    def get_extended_tags_with_synonyms(self, record: Meta) -> Set[str]:
         """Get extended + synonyms for search."""
         base_tags = self.get_extended_tags(record)
         additional_tags = set()

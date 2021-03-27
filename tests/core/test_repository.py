@@ -22,7 +22,7 @@ def test_create_repository():
 def test_add_record(valid_metarecord):
     inst = Repository()
     assert len(inst) == 0
-    inst.add_record(valid_metarecord)
+    inst.add(valid_metarecord)
 
     assert len(inst) == 1
     assert str(inst) == 'Repository<len=1>'
@@ -31,25 +31,25 @@ def test_add_record(valid_metarecord):
 
 def test_add_record_twice(valid_metarecord):
     inst = Repository()
-    inst.add_record(valid_metarecord)
+    inst.add(valid_metarecord)
 
     msg = "Record Meta<uuid='008a2494-a6a4-4d63-886d-9e050f7a0d4a', " \
           "'original_filename.jpg'> is already in repository"
 
     with pytest.raises(ValueError, match=msg):
-        inst.add_record(valid_metarecord)
+        inst.add(valid_metarecord)
 
 
 def test_get_record(valid_metarecord):
     inst = Repository()
-    inst.add_record(valid_metarecord)
+    inst.add(valid_metarecord)
     returned = inst.get_record(valid_metarecord.uuid)
     assert returned is valid_metarecord
 
 
 def test_delete_record(valid_metarecord):
     inst = Repository()
-    inst.add_record(valid_metarecord, {'something'})
+    inst.add(valid_metarecord, {'something'})
 
     assert valid_metarecord.uuid in inst
 
@@ -67,32 +67,32 @@ def test_delete_record(valid_metarecord):
 
 def test_iter(valid_metarecord):
     inst = Repository()
-    inst.add_record(valid_metarecord)
+    inst.add(valid_metarecord)
     assert list(iter(inst)) == [(valid_metarecord.uuid, valid_metarecord)]
 
 
 def test_all_uuids(valid_metarecord):
     inst = Repository()
-    inst.add_record(valid_metarecord)
+    inst.add(valid_metarecord)
     assert list(inst.all_uuids()) == [valid_metarecord.uuid]
 
 
 def test_all_records(valid_metarecord):
     inst = Repository()
-    inst.add_record(valid_metarecord)
+    inst.add(valid_metarecord)
     assert list(inst.all_records()) == [valid_metarecord]
 
 
 def test_all_items(valid_metarecord):
     inst = Repository()
-    inst.add_record(valid_metarecord)
+    inst.add(valid_metarecord)
     assert list(inst.all_items()) == [
         (valid_metarecord.uuid, valid_metarecord)]
 
 
 def test_clear(valid_metarecord):
     inst = Repository()
-    inst.add_record(valid_metarecord)
+    inst.add(valid_metarecord)
     assert inst.get_extended_tags(valid_metarecord.uuid)
     assert inst.get_uuids_by_tag(valid_metarecord.tags[0])
     assert len(inst)

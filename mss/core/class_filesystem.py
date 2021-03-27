@@ -7,8 +7,8 @@ import shutil
 from pathlib import Path
 from typing import List, Generator, Tuple
 
-import ujson
 import yaml
+import ujson
 
 
 class Filesystem:
@@ -60,18 +60,23 @@ class Filesystem:
         return os.path.join(*parts[:-1])
 
     @staticmethod
-    def list_files(path: str) -> List[str]:
+    def listdir(path: str) -> List[str]:
+        """Enlist all entries in given directory."""
+        return os.listdir(path)
+
+    @classmethod
+    def list_files(cls, path: str) -> List[str]:
         """Enlist all files in given directory."""
         return [
-            x for x in os.listdir(path)
+            x for x in cls.listdir(path)
             if os.path.isfile(os.path.join(path, x))
         ]
 
-    @staticmethod
-    def list_folders(path: str) -> List[str]:
+    @classmethod
+    def list_folders(cls, path: str) -> List[str]:
         """Enlist all folders in given directory."""
         return [
-            x for x in os.listdir(path)
+            x for x in cls.listdir(path)
             if os.path.isdir(os.path.join(path, x))
         ]
 

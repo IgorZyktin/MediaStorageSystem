@@ -88,9 +88,9 @@ def bad_query_dict():
 @pytest.fixture
 def statistics():
     inst = ThemeStatistics()
-    inst.add_item('2021-10-01', 25, ['alpha', 'beta', 'gamma'])
-    inst.add_item('2021-06-14', 250, ['alpha', 'cat', 'dog', 'fish'])
-    inst.add_item('2021-02-28', 780, ['beta', 'home', 'ball', 'trust'])
+    inst.add('2021-10-01', 25, ['alpha', 'beta', 'gamma'])
+    inst.add('2021-06-14', 250, ['alpha', 'cat', 'dog', 'fish'])
+    inst.add('2021-02-28', 780, ['beta', 'home', 'ball', 'trust'])
     return inst
 
 

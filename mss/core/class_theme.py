@@ -5,7 +5,9 @@
 from dataclasses import dataclass
 from typing import Set
 
-from mss import core
+from mss.core.class_synonyms import Synonyms
+from mss.core.class_tags_on_demand import TagsOnDemand
+from mss.core.class_theme_statistics import ThemeStatistics
 
 
 @dataclass
@@ -14,9 +16,9 @@ class Theme:
     """
     name: str
     directory: str
-    synonyms: core.Synonyms
-    tags_on_demand: core.TagsOnDemand
-    statistics: core.ThemeStatistics
+    synonyms: Synonyms
+    tags_on_demand: TagsOnDemand
+    statistics: ThemeStatistics
     used_uuids: Set[str]
 
     def __repr__(self) -> str:

@@ -28,13 +28,10 @@ class TagsOnDemand:
     def __add__(self, other) -> 'TagsOnDemand':
         """Sym two tags holders together."""
         cls = type(self)
-        assert isinstance(other, cls), f'Incompatible type: {type(other)}'
         return cls(frozenset(self) | frozenset(other))
 
     def __eq__(self, other) -> bool:
         """Return True if other has same tags."""
-        cls = type(self)
-        assert isinstance(other, cls), f'Incompatible type: {type(other)}'
         return frozenset(self) == frozenset(other)
 
     def __bool__(self) -> bool:

@@ -9,20 +9,18 @@ from flask import (
     redirect, url_for,
 )
 
-import mss.utils.utils_core
-from mss import constants
-from mss import core
-from mss.utils.file_handling import update_repositories
+from mss import constants, core
 from mss.mss_browser import utils_browser
 from mss.mss_browser.class_paginator import Paginator
-from mss.utils import utils_text, utils_core, configuration
+from mss.utils import utils_text, utils_core
+from mss.utils.file_handling import update_repositories
 
-filesystem = core.Filesystem()
-config = configuration.get_config(filesystem)
+fs = core.Filesystem()
+config = utils_browser.get_config(fs)
 query_builder = core.QueryBuilder(target_type=core.Query)
 repository = core.Repository()
 theme_repository = core.ThemeRepository()
-update_repositories(theme_repository, repository, config.root_path, filesystem)
+update_repositories(theme_repository, repository, config['root_path'], fs)
 
 app = Flask(__name__)
 
@@ -31,9 +29,9 @@ app = Flask(__name__)
 def common_names():
     """Populate context with common names."""
     return {
-        'title': config.title,
+        'title': config['title'],
         'note': '',
-        'injection': config.injection,
+        'injection': config['injection'],
         'rewrite_query_for_paging': utils_browser.rewrite_query_for_paging,
         'byte_count_to_text': utils_text.byte_count_to_text,
     }
@@ -46,7 +44,7 @@ def serve_content(filename: str):
     Contents of the main storage are served through this function.
     It's not about static css or js files.
     """
-    return send_from_directory(config.root_path, filename, conditional=True)
+    return send_from_directory(config['root_path'], filename, conditional=True)
 
 
 @app.route('/')
@@ -72,7 +70,7 @@ def index_all(directory: str):
     query = query_builder.from_query(query_text, directory)
 
     if query:
-        chosen_metarecords = mss.utils.utils_core.select_records(
+        chosen_metarecords = utils_core.select_records(
             theme=current_theme,
             repository=repository,
             query=query,
@@ -82,13 +80,13 @@ def index_all(directory: str):
             theme=current_theme,
             repository=repository,
             query=query,
-            amount=config.items_per_page,
+            amount=config['items_per_page'],
         )
 
     paginator = Paginator(
         sequence=chosen_metarecords,
         current_page=current_page,
-        items_per_page=config.items_per_page,
+        items_per_page=config['items_per_page'],
     )
 
     note = utils_browser.get_note_on_search(len(paginator),
@@ -152,6 +150,7 @@ def show_help(directory: str):
 @app.errorhandler(404)
 def page_not_found(exc):
     """Return not found page."""
+    print(exc)
     context = {
         'directory': constants.ALL_THEMES,
     }
@@ -160,4 +159,4 @@ def page_not_found(exc):
 
 if __name__ == '__main__':
     print(constants.START_MESSAGE)
-    app.run(host=config.host, port=config.port, debug=config.debug)
+    app.run(host=config['host'], port=config['port'], debug=config['debug'])
