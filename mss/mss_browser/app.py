@@ -13,12 +13,11 @@ import mss.utils.utils_core
 from mss import constants
 from mss import core
 from mss.utils.file_handling import update_repositories
-from mss.core.class_filesystem import Filesystem
 from mss.mss_browser import utils_browser
 from mss.mss_browser.class_paginator import Paginator
 from mss.utils import utils_text, utils_core, configuration
 
-filesystem = Filesystem()
+filesystem = core.Filesystem()
 config = configuration.get_config(filesystem)
 query_builder = core.QueryBuilder(target_type=core.Query)
 repository = core.Repository()

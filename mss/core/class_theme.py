@@ -5,9 +5,7 @@
 from dataclasses import dataclass
 from typing import Set
 
-from mss.core.class_synonyms import Synonyms
-from mss.core.class_tags_on_demand import TagsOnDemand
-from mss.core.class_theme_statistics import ThemeStatistics
+from mss import core
 
 
 @dataclass
@@ -16,9 +14,9 @@ class Theme:
     """
     name: str
     directory: str
-    synonyms: Synonyms
-    tags_on_demand: TagsOnDemand
-    statistics: ThemeStatistics
+    synonyms: core.Synonyms
+    tags_on_demand: core.TagsOnDemand
+    statistics: core.ThemeStatistics
     used_uuids: Set[str]
 
     def __repr__(self) -> str:
@@ -27,6 +25,4 @@ class Theme:
 
     def __lt__(self, other) -> bool:
         """Return True if we are less than other."""
-        assert isinstance(other, type(self)), f'Incompatible type: ' \
-                                              f'{type(other)}'
         return self.name < other.name
