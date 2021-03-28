@@ -7,7 +7,8 @@ import json
 from mss.core.class_filesystem import Filesystem
 
 
-def extract_records_from_single_json_to_a_group(root_path: str, theme: str,
+def extract_records_from_single_json_to_a_group(root_path: str,
+                                                theme: str,
                                                 group_name: str):
     """Extract data from a single json into a group one.
 
@@ -32,7 +33,7 @@ def extract_records_from_single_json_to_a_group(root_path: str, theme: str,
     path = fs.join(root_path, theme, 'metainfo')
     names_to_delete = []
     new_group_file_content = {}
-    new_name = group_name.lower() + '.json'
+    new_name = group_name.lower().replace(' ', '_') + '.json'
 
     for directory, filename, _, ext in fs.iter_ext(path):
         if ext != '.json':
@@ -71,19 +72,19 @@ def extract_records_from_single_json_to_a_group(root_path: str, theme: str,
 
     for path in names_to_delete:
         fs.delete_file(path)
-        print(f'Delete file: {path}')
+        print(f'Deleted file: {path}')
+    else:
+        print()
 
     if new_group_file_content:
-        new_text = json.dumps(new_group_file_content,
-                              ensure_ascii=False, indent=4)
         new_path = fs.join(root_path, theme, 'metainfo', new_name)
-        fs.write_file(new_path, new_text)
-        print(f'Created file: {new_name}')
+        fs.write_json(new_path, new_group_file_content)
+        print(f'Created file: {new_path}')
 
 
 if __name__ == '__main__':
     extract_records_from_single_json_to_a_group(
-        root_path='D:\\PycharmProjects\\MediaStorageSystem\\example',
-        theme='gerbils',
-        group_name='whitey',
+        root_path='D:\\BGC_ARCHIVE\\',
+        theme='science_fiction',
+        group_name='philip dick comics biography',
     )

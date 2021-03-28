@@ -8,9 +8,9 @@ import shutil
 from typing import Set
 
 from ad_hoc_scripts.common import utils_filesystem
-from ad_hoc_scripts.mss_register_remote import settings, interaction
-from ad_hoc_scripts.mss_register_remote import analyze, network
-from ad_hoc_scripts.mss_register_remote import get_basic_description
+from ad_hoc_scripts.old.mss_register_remote import settings, interaction
+from ad_hoc_scripts.old.mss_register_remote import analyze, network
+from ad_hoc_scripts.old.mss_register_remote import get_basic_description
 
 
 def main():

@@ -80,6 +80,9 @@ class QueryBuilder(Generic[QueryType]):
 
         parts = self.split_request_into_parts(query_text)
 
+        if current_directory != constants.ALL_THEMES:
+            sets['include'].add(current_directory)
+
         for operator, word in group_to_size(parts, 2, default='?'):
             if operator not in constants.OPERATORS \
                     or word in constants.OPERATORS:

@@ -122,6 +122,10 @@ def get_existing_uuids(*root_paths: str,
 
         for theme in themes:
             path = filesystem.join(root_path, theme, 'used_uuids.csv')
+
+            if not os.path.exists(path):
+                continue
+
             content = filesystem.read_file(path)
 
             if content:

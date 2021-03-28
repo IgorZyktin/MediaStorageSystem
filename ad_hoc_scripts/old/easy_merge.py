@@ -4,7 +4,7 @@ from datetime import datetime
 
 from PIL import Image
 
-from ad_hoc_scripts.mss_register import settings
+from ad_hoc_scripts.old.mss_register import settings
 
 FOLDER = 'D:\\BGC_ARCHIVE_TMP\\GENERATED\\images\\fanart\\'
 SOURCE = 'D:\\BGC_ARCHIVE_TMP\\GENERATED\\'

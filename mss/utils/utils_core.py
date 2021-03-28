@@ -14,6 +14,9 @@ def select_random_records(theme: core.Theme,
                           query: core.Query,
                           amount: int) -> List[core.Meta]:
     """Return X random records from repository."""
+    # TODO - This is not appropriate.
+    #  Must be rewritten into hashmap based solution.
+
     valid_records = []
     avoid_tags = set(theme.tags_on_demand)
 
@@ -46,6 +49,8 @@ def select_records(theme: core.Theme,
                    repository: core.Repository,
                    query: core.Query) -> List[core.Meta]:
     """Return all records, that match to a given query."""
+    # TODO - This is not appropriate.
+    #  Must be rewritten into hashmap based solution.
     target_uuids = set()
 
     if query:

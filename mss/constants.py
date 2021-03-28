@@ -87,3 +87,9 @@ PREVIEW_SIZE = (1024, 1024)
 
 CONFIG_PATH_COMPONENTS = ('.', 'mss', 'config.yaml')
 INJECTION_PATH_COMPONENTS = ('.', 'mss', 'injection.html')
+
+SUPPORTED_EXTENSIONS = {
+    '.jpg',
+    '.jpeg',
+    '.png',
+}

@@ -7,7 +7,7 @@ from typing import Dict, Any
 
 from ad_hoc_scripts.common import utils_filesystem
 from mss.utils.utils_scripts import get_path_ending, drop_filename_from_path
-from ad_hoc_scripts.mss_register import analyze
+from ad_hoc_scripts.old.mss_register import analyze
 
 # FIXME
 total = 0

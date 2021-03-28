@@ -8,8 +8,8 @@ from shutil import copyfile
 
 from ad_hoc_scripts.common import utils_filesystem
 from mss.utils import utils_identity
-from ad_hoc_scripts.mss_register import settings
-from ad_hoc_scripts.mss_register.media_type import UnregisteredMedia
+from ad_hoc_scripts.old.mss_register import settings
+from ad_hoc_scripts.old.mss_register.media_type import UnregisteredMedia
 
 
 def main():

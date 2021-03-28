@@ -5,7 +5,7 @@
 from typing import List, Set
 
 from mss.utils import utils_identity
-from ad_hoc_scripts.mss_register_remote import metageneration
+from ad_hoc_scripts.old.mss_register_remote import metageneration
 
 
 def ask(description: str, strict: bool = False) -> str:

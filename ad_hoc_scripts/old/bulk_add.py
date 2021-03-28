@@ -6,7 +6,7 @@ import json
 import os
 from datetime import datetime
 
-from ad_hoc_scripts.mss_register.media_type import UnregisteredMedia
+from ad_hoc_scripts.old.mss_register.media_type import UnregisteredMedia
 from mss import constants
 from mss.core.concrete_types import Meta
 from mss.core.class_filesystem import Filesystem
@@ -38,10 +38,7 @@ def main():
     filesystem.ensure_folder_exists(source_directory)
     filesystem.ensure_folder_exists(target_directory)
 
-    uuids = get_existing_uuids(SOURCE_ROOT,
-                               TARGET_ROOT,
-                               REFERENCE_ROOT,
-                               filesystem=filesystem)
+
     print(f'Found {len(uuids)} uuids')
     metas = get_metas(source_directory, uuids,
                       filesystem, ORDERING)
