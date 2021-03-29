@@ -15,12 +15,18 @@ from mss.mss_browser.class_paginator import Paginator
 from mss.utils import utils_text, utils_core
 from mss.utils.file_handling import update_repositories
 
-fs = core.Filesystem()
-config = utils_browser.get_config(fs)
+filesystem = core.Filesystem()
+config = utils_browser.get_config(filesystem)
 query_builder = core.QueryBuilder(target_type=core.Query)
 repository = core.Repository()
-theme_repository = core.ThemeRepository()
-update_repositories(theme_repository, repository, config['root_path'], fs)
+themes_repository = core.ThemesRepository()
+
+update_repositories(
+    themes_repository=themes_repository,
+    repository=repository,
+    root_path=config['root_path'],
+    filesystem=filesystem,
+)
 
 app = Flask(__name__)
 
@@ -66,7 +72,7 @@ def index_all(directory: str):
     start = time.perf_counter()
     query_text = request.args.get('q', '')
     current_page = int(request.args.get('page', 1))
-    current_theme = theme_repository.get(directory) or abort(404)
+    current_theme = themes_repository.get(directory) or abort(404)
     query = query_builder.from_query(query_text, directory)
 
     if query:
@@ -106,7 +112,7 @@ def preview(directory: str, uuid: str):
     """Show description for a single record."""
     _ = utils_browser.is_correct_uuid(uuid) or abort(404)
     meta = repository.get_record(uuid) or abort(404)
-    current_theme = theme_repository.get(directory) or abort(404)
+    current_theme = themes_repository.get(directory) or abort(404)
     query_text = request.args.get('q', '')
 
     context = {
@@ -122,13 +128,13 @@ def preview(directory: str, uuid: str):
 @app.route('/tags/<directory>/')
 def show_tags(directory: str):
     """Enlist all available tags with their frequencies."""
-    current_theme = theme_repository.get(directory) or abort(404)
+    current_theme = themes_repository.get(directory) or abort(404)
 
     context = {
         'directory': directory,
         'current_theme': current_theme,
         'statistics': current_theme.statistics,
-        'theme_repository': theme_repository,
+        'theme_repository': themes_repository,
         'placeholder': utils_browser.get_placeholder(current_theme),
     }
     return render_template('tags.html', **context)
@@ -137,7 +143,7 @@ def show_tags(directory: str):
 @app.route('/help/<directory>/')
 def show_help(directory: str):
     """Show help page."""
-    current_theme = theme_repository.get(directory) or abort(404)
+    current_theme = themes_repository.get(directory) or abort(404)
 
     context = {
         'note': f'Current version: {constants.__version__}',

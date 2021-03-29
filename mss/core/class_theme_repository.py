@@ -15,13 +15,14 @@ def theme_sorter(theme: Theme) -> str:
     return theme.directory
 
 
-class ThemeRepository:
+class ThemesRepository:
     """Storage for themes.
     """
 
     def __init__(self) -> None:
         """Initialize instance."""
-        self._storage: Dict[str, Theme] = {}
+        self._storage_by_directory: Dict[str, Theme] = {}
+        self._storage_by_name: Dict[str, Theme] = {}
 
     def __repr__(self) -> str:
         """Return textual representation."""
@@ -29,20 +30,34 @@ class ThemeRepository:
 
     def __iter__(self) -> Iterator[Theme]:
         """Iterate on themes in the storage."""
-        themes = list(self._storage.values())
+        themes = list(self._storage_by_directory.values())
         themes.sort(key=theme_sorter)
         return iter(themes)
 
     def add(self, theme: Theme) -> None:
         """Add theme to the storage."""
-        if theme.directory not in self._storage:
-            self._storage[theme.directory] = theme
+        new_directory = theme.directory not in self._storage_by_directory
+        new_name = theme.name not in self._storage_by_name
+
+        if new_directory and new_name:
+            self._storage_by_directory[theme.directory] = theme
+            self._storage_by_name[theme.name] = theme
             return
 
-        existing = self._storage[theme.directory]
-        raise KeyError(f'Directory {theme.directory} is '
+        if not new_directory:
+            existing = self._storage_by_directory[theme.directory]
+            raise KeyError(f'Directory {theme.directory} is '
+                           f'already taken for theme {existing}')
+
+        existing = self._storage_by_name[theme.name]
+        raise KeyError(f'Name {theme.name} is '
                        f'already taken for theme {existing}')
 
-    def get(self, directory: str) -> Optional[Theme]:
+    def get(self, key: str) -> Optional[Theme]:
         """Return theme by directory."""
-        return self._storage.get(directory)
+        by_directory = self._storage_by_directory.get(key)
+
+        if by_directory is not None:
+            return by_directory
+
+        return self._storage_by_name.get(key)

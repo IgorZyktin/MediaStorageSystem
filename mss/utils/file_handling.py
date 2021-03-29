@@ -11,15 +11,30 @@ from mss import core
 from mss.utils.utils_scripts import perc
 
 
+def update_repositories(themes_repository: core.ThemesRepository,
+                        repository: core.Repository,
+                        root_path: str,
+                        filesystem: core.Filesystem) -> None:
+    """Put all meta info into repositories."""
+    themes = load_all_themes(root_path, filesystem)
+
+    for theme in themes:
+        update_one_theme(root_path, theme, repository, filesystem)
+        themes_repository.add(theme)
+
+    default = make_default_theme(themes)
+    themes_repository.add(default)
+
+
 def load_all_themes(path: str,
                     filesystem: core.Filesystem) -> List[core.Theme]:
     """Instantiate and return all available themes."""
     path = filesystem.absolute(path)
-    names = filesystem.list_folders(path)
     themes = []
 
-    for directory_name in names:
+    for directory_name in filesystem.list_folders(path):
         theme = load_single_theme(path, directory_name, filesystem)
+
         if theme is not None:
             themes.append(theme)
 
@@ -89,17 +104,3 @@ def update_one_theme(root: str, theme: core.Theme, repository: core.Repository,
             theme.statistics.add(item_date=instance.registered_on,
                                  item_size=instance.bytes_in_file,
                                  item_tags=instance.tags)
-
-
-def update_repositories(theme_repository: core.ThemeRepository,
-                        repository: core.Repository,
-                        root_path: str, filesystem: core.Filesystem) -> None:
-    """Put all meta info into repositories."""
-    themes = load_all_themes(root_path, filesystem)
-
-    for _theme in themes:
-        update_one_theme(root_path, _theme, repository, filesystem)
-        theme_repository.add(_theme)
-
-    default = make_default_theme(themes)
-    theme_repository.add(default)

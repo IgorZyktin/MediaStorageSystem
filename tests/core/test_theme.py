@@ -5,7 +5,7 @@
 
 
 def test_theme_repr(theme):
-    assert str(theme) == "Theme<directory='test_dir'>"
+    assert str(theme) == "Theme<name='Testing theme', directory='test_dir'>"
 
 
 def test_theme_sorting(theme, theme_another):
