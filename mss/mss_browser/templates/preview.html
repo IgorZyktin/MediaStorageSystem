@@ -66,8 +66,7 @@
 
                 <tr style="text-align: center">
                     <td>
-                        <a href="/content/{{ meta.directory }}/metainfo/{{ meta.uuid }}.json">
-                            Raw metadata</a>
+                        <a href="{{ url_for('serve_raw_metadata', uuid=meta.uuid) }}">Raw metadata</a>
                     </td>
                     <td>
                         <a onclick="copy('{{ meta.uuid }}')">Copy UUID</a>

@@ -2,11 +2,13 @@
 
 """Main file.
 """
+import json
 import time
+from dataclasses import asdict
 
 from flask import (
     Flask, render_template, request, send_from_directory, abort,
-    redirect, url_for,
+    redirect, url_for, Response
 )
 
 from mss import constants, core
@@ -51,6 +53,13 @@ def serve_content(filename: str):
     It's not about static css or js files.
     """
     return send_from_directory(config['root_path'], filename, conditional=True)
+
+
+@app.route('/metadata/<uuid>')
+def serve_raw_metadata(uuid: str):
+    """Send exact metarecord contents."""
+    meta = repository.get_record(uuid) or abort(404)
+    return json.dumps(asdict(meta), ensure_ascii=False, indent=4)
 
 
 @app.route('/')
