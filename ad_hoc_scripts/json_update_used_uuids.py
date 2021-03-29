@@ -30,10 +30,10 @@ def update_all_used_uuids(root_path: str):
             csv_path = fs.join(root_path, theme, 'used_uuids.csv')
             text = '\n'.join(uuids)
             fs.write_file(csv_path, text)
-            print(f'Wrote: {csv_path}')
+            print(f'Wrote: {csv_path}, {len(uuids)} entries')
 
 
 if __name__ == '__main__':
     update_all_used_uuids(
-        root_path='D:\\PycharmProjects\\MediaStorageSystem\\example',
+        root_path='D:\\BGC_ARCHIVE\\',
     )

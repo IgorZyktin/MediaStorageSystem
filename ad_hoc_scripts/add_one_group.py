@@ -2,56 +2,62 @@
 
 """Non user friendly script.
 """
-import json
 from dataclasses import asdict
+from datetime import datetime
 
+from colorama import init, Fore
+
+from ad_hoc_scripts.analyze import get_analyze_tool
+from ad_hoc_scripts.utils import sort_json_records_inplace, \
+    tie_json_records_inplace
 from mss import constants
 from mss.core import Meta
 from mss.core.class_filesystem import Filesystem
 from mss.utils.utils_identity import get_new_uuid
+from mss.utils.utils_scripts import get_existing_uuids
+
+init(autoreset=True)
 
 
-def add_one_group(source_path: str, target_path: str, reference_path: str,
-                  theme: str, record: dict):
+def add_one_group(source_root_path: str, target_root_path: str,
+                  reference_root_path: str, theme_directory: str,
+                  base_keys: dict) -> None:
     """Add bunch of files from source dir as a single group.
     """
     fs = Filesystem()
-    # uuids = get_existing_uuids(source_path,
-    #                            target_path,
-    #                            reference_path, filesystem=fs)
     uuids = {'abc'}
+    uuids = get_existing_uuids(source_root_path,
+                               target_root_path,
+                               reference_root_path, filesystem=fs)
     print(f'Found {len(uuids)} uuids')
 
-    source_theme = fs.join(source_path, theme)
-    target_theme = fs.join(source_path, theme)
+    source_theme_dir = fs.join(source_root_path, theme_directory)
+    target_theme_dir = fs.join(target_root_path, theme_directory)
 
-    files_to_delete = []
-    meta_content = {}
-    group_name = record['group_name']
-    meta_filename = group_name.lower().replace(' ', '_') + '.json'
-
+    files = []
     ordering = 0
-    for directory, filename, name, ext in fs.iter_ext(source_theme):
+
+    for directory, filename, name, ext in fs.iter_ext(source_theme_dir):
         if ext not in constants.SUPPORTED_EXTENSIONS:
             continue
 
         uuid = get_new_uuid(uuids)
         new_filename = f'{name}___{uuid}{ext}'
+        source_file_path = fs.join(directory, filename)
+        common_path = directory[len(source_theme_dir) + 1:]
 
-        original_path = fs.join(directory, filename)
+        new_content_dir = common_path
+        new_content_path = fs.join(new_content_dir, new_filename)
 
-        base_path = directory[len(source_theme):]
+        new_preview_dir = fs.join('previews', common_path)
+        new_preview_path = fs.join(new_preview_dir, new_filename)
 
-        new_content_path = fs.join(base_path,
-                                   new_filename).replace('\\', '/')
+        new_thumbnail_dir = fs.join('thumbnails', common_path)
+        new_thumbnail_path = fs.join(new_thumbnail_dir, new_filename)
 
-        new_preview_path = fs.join('previews',
-                                   base_path,
-                                   new_filename).replace('\\', '/')
-
-        new_thumbnail_path = fs.join('thumbnails',
-                                     base_path,
-                                     new_filename).replace('\\', '/')
+        fs.ensure_folder_exists(fs.join(target_theme_dir, new_content_dir))
+        fs.ensure_folder_exists(fs.join(target_theme_dir, new_preview_dir))
+        fs.ensure_folder_exists(fs.join(target_theme_dir, new_thumbnail_dir))
 
         ordering += 1
 
@@ -66,66 +72,98 @@ def add_one_group(source_path: str, target_path: str, reference_path: str,
             path_to_thumbnail=new_thumbnail_path,
 
             ordering=ordering,
-            **record,
+            **base_keys,
         )
         content = asdict(meta)
         content.pop('directory', None)
-        print(source_theme)
-        print(directory, name, json.dumps(content, indent=4))
-        break
+        tool = get_analyze_tool(content['original_extension'])
 
-    #     full_path = fs.join(directory, filename)
-    #
-    #     text = fs.read_file(full_path)
-    #     content = json.loads(text)
-    #     group_file = len(content) > 1
-    #     has_matches = False
-    #
-    #     for uuid, sub_content in content.copy().items():
-    #         if sub_content['group_name'] == group_name:
-    #             has_matches = True
-    #             meta_content[uuid] = sub_content
-    #             del content[uuid]
-    #
-    #     if has_matches and group_file:
-    #         if content:
-    #             # extracted content from group file
-    #             new_text = json.dumps(content, ensure_ascii=False, indent=4)
-    #             fs.write_file(full_path, new_text)
-    #             print(f'Wrote altered group file: {filename}')
-    #
-    #         else:
-    #             # extracted content from group file and nothing left inside
-    #             names_to_delete.append(full_path)
-    #
-    #     elif has_matches and not group_file:
-    #         # extracted content from single file
-    #         names_to_delete.append(full_path)
-    #
-    # for path in names_to_delete:
-    #     fs.delete_file(path)
-    #     print(f'Deleted file: {path}')
-    # else:
-    #     print()
-    #
-    # if meta_content:
-    #     new_path = fs.join(root_path, theme, 'metainfo', meta_filename)
-    #     fs.write_json(new_path, meta_content)
-    #     print(f'Created file: {new_path}')
+        if tool is None:
+            print(Fore.RED + 'FAIL!')
+            print(content)
+            return
+
+        _, image, parameters = tool(source_file_path)
+        content.update(parameters)
+        content['registered_on'] = str(datetime.now().date())
+        content['original_extension'] = content['original_extension'].lstrip(
+            '.')
+
+        files.append((image, source_file_path, content))
+
+        # if len(files) > 5:
+        #     break
+
+    records = [x[2] for x in files]
+    sort_json_records_inplace(records)
+    tie_json_records_inplace(records)
+
+    meta_content = {}
+    group_name = base_keys['group_name']
+    meta_filename = group_name.lower().replace(' ', '_') + '.json'
+
+    for image, source_file_path, content in files:
+        meta_content[content['uuid']] = content
+
+        thumbnail_path = fs.join(target_theme_dir,
+                                 content['path_to_thumbnail'])
+        print('thumbnail --->', thumbnail_path)
+        new = image.copy()
+        new.thumbnail(constants.THUMBNAIL_SIZE)
+        new.save(thumbnail_path)
+        content['path_to_thumbnail'] = content['path_to_thumbnail'] \
+            .replace('\\', '/')
+
+        preview_path = fs.join(target_theme_dir,
+                               content['path_to_preview'])
+        print('preview --->', preview_path)
+        new = image.copy()
+        new.thumbnail(constants.PREVIEW_SIZE)
+        new.save(preview_path)
+        content['path_to_preview'] = content['path_to_preview'] \
+            .replace('\\', '/')
+
+        content_path = fs.join(target_theme_dir,
+                               content['path_to_content'])
+        print('content --->', content_path)
+        fs.copy_file(source_file_path, content_path)
+        content['path_to_content'] = content['path_to_content'] \
+            .replace('\\', '/')
+
+        fs.delete_file(source_file_path)
+        print(Fore.RED + f'Deleted file: {source_file_path}')
+        print()
+
+    fs.ensure_folder_exists(fs.join(target_theme_dir, 'metainfo'))
+    meta_path = fs.join(target_theme_dir, 'metainfo', meta_filename)
+    fs.write_json(meta_path, meta_content)
+
+    uuids = sorted(meta_content.keys())
+    csv_path = fs.join(target_theme_dir, 'used_uuids.csv')
+
+    with open(csv_path, mode='a', encoding='utf-8') as file:
+        for uuid in uuids:
+            file.write(uuid + '\n')
 
 
 if __name__ == '__main__':
     add_one_group(
-        source_path='D:\\BGC_ARCHIVE_SOURCE\\',
-        target_path='D:\\BGC_ARCHIVE_TARGET\\',
-        reference_path='D:\\BGC_ARCHIVE\\',
-        theme='bubblegum_crisis',
-        record={
-            'series': 'bgc',
-            'sub_series': 'comics',
-            'group_name': 'grand mal 01',
-            'author': 'Adam Warren',
-            'author_url': 'https://www.deviantart.com/adamwarren',
-            'origin_url': 'http://rutracker.org/forum/viewtopic.php?t=5225496',
+        source_root_path='D:\\BGC_ARCHIVE_SOURCE\\',
+        target_root_path='D:\\BGC_ARCHIVE_TARGET\\',
+        reference_root_path='D:\\BGC_ARCHIVE\\',
+        theme_directory='bubblegum_crisis',
+        base_keys={
+            'series': 'ad police',
+            'sub_series': 'dead end city',
+            'group_name': 'dead end city',
+            'author': 'Tony Takezaki',
+            'author_url': 'http://www.osk.3web.ne.jp/~tonitake/',
+            'origin_url': '',
+            'tags': [
+                'artwork',
+                'manga',
+                'Tony Takezaki',
+                'ad police',
+            ]
         },
     )

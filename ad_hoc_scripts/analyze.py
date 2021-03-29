@@ -8,10 +8,10 @@ from typing import Optional, Callable, Tuple
 from PIL import Image
 
 
-def analyze_static_image(media) -> Tuple[str, Image.Image, dict]:
+def analyze_static_image(path: str) -> Tuple[str, Image.Image, dict]:
     """Get parameters of a static image (no gif).
     """
-    image: Image.Image = Image.open(media.path)
+    image: Image.Image = Image.open(path)
 
     width, height = image.size
 
@@ -20,7 +20,7 @@ def analyze_static_image(media) -> Tuple[str, Image.Image, dict]:
         'height': height,
         'resolution': round(width * height / 1_000_000, 2),
         'media_type': 'static_image',
-        'bytes_in_file': os.path.getsize(media.path),
+        'bytes_in_file': os.path.getsize(path),
         'seconds': 0,
     }
 
@@ -31,8 +31,8 @@ def get_analyze_tool(ext: str) -> Optional[Callable]:
     """Return callable that can analyze this kind of files.
     """
     return {
-        'jpg': analyze_static_image,
-        'jpeg': analyze_static_image,
-        'bmp': analyze_static_image,
-        'png': analyze_static_image,
+        '.jpg': analyze_static_image,
+        '.jpeg': analyze_static_image,
+        '.bmp': analyze_static_image,
+        '.png': analyze_static_image,
     }.get(ext.lower())

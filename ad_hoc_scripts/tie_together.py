@@ -2,7 +2,10 @@
 
 """Non user friendly script.
 """
-
+from ad_hoc_scripts.utils import (
+    sort_json_records_inplace,
+    tie_json_records_inplace,
+)
 from mss.core.class_filesystem import Filesystem
 
 
@@ -10,7 +13,7 @@ def tie_together(root_path: str, theme: str, group_name: str):
     """Find records with same group id and mark them as group."""
     fs = Filesystem()
     path = fs.join(root_path, theme, 'metainfo')
-    targets = []
+    records = []
 
     for folder, filename, name, ext in fs.iter_ext(path):
         if ext != '.json':
@@ -21,37 +24,19 @@ def tie_together(root_path: str, theme: str, group_name: str):
 
         for uuid, record in content.items():
             if record['group_name'] == group_name:
-                targets.append((
-                    full_path,
-                    uuid,
-                    record
-                ))
+                record['_full_path'] = full_path
+                records.append(record)
 
-    targets.sort(key=lambda x: x[2]['ordering'])
-    uuids = [x[2]['uuid'] for x in targets]
+    sort_json_records_inplace(records)
+    tie_json_records_inplace(records)
 
-    for i in range(len(targets)):
-        path, uuid, content = targets[i]
-        assert content['uuid'] == uuids[i]
+    for record in records:
+        uuid = record['uuid']
+        path = record.pop('_full_path')
 
-        content['group_members'] = uuids
-
-        if i == 0:
-            content['previous_record'] = ''
-            content['next_record'] = uuids[1]
-
-        elif i == len(targets) - 1:
-            content['previous_record'] = uuids[-2]
-            content['next_record'] = ''
-
-        else:
-            content['previous_record'] = uuids[i - 1]
-            content['next_record'] = uuids[i + 1]
-
-    for path, uuid, content in targets:
-        old_content = fs.read_json(path)
-        old_content[uuid] = content
-        fs.write_json(path, old_content)
+        old_record = fs.read_json(path)
+        old_record[uuid] = record
+        fs.write_json(path, old_record)
         print(f'Modified: {path}')
 
 
