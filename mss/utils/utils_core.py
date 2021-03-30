@@ -4,7 +4,7 @@
 """
 import random
 from itertools import chain
-from typing import List
+from typing import List, Tuple
 
 from mss import constants, core
 
@@ -47,11 +47,12 @@ def select_random_records(theme: core.Theme,
 
 def select_records(theme: core.Theme,
                    repository: core.Repository,
-                   query: core.Query) -> List[core.Meta]:
+                   query: core.Query) -> Tuple[List[core.Meta], int]:
     """Return all records, that match to a given query."""
     # TODO - This is not appropriate.
     #  Must be rewritten into hashmap based solution.
     target_uuids = set()
+    hidden = 0
 
     if query:
         for tag in chain(query.and_, query.or_):
@@ -75,6 +76,7 @@ def select_records(theme: core.Theme,
         tags = repository.get_extended_tags(meta.uuid)
 
         if tags & avoid_tags:
+            hidden += 1
             continue
 
         # condition for and - all words must be present
@@ -107,4 +109,4 @@ def select_records(theme: core.Theme,
 
     chosen_records.sort(reverse=constants.FLAG_DESC in query.flags)
 
-    return chosen_records
+    return chosen_records, hidden

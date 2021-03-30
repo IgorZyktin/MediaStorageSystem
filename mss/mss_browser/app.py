@@ -2,13 +2,12 @@
 
 """Main file.
 """
-import json
 import time
 from dataclasses import asdict
 
 from flask import (
-    Flask, render_template, request, send_from_directory, abort,
-    redirect, url_for, Response
+    Flask, render_template, request, send_from_directory,
+    abort, redirect, url_for,
 )
 
 from mss import constants, core
@@ -59,7 +58,7 @@ def serve_content(filename: str):
 def serve_raw_metadata(uuid: str):
     """Send exact metarecord contents."""
     meta = repository.get_record(uuid) or abort(404)
-    return json.dumps(asdict(meta), ensure_ascii=False, indent=4)
+    return asdict(meta)
 
 
 @app.route('/')
@@ -83,9 +82,10 @@ def index_all(directory: str):
     current_page = int(request.args.get('page', 1))
     current_theme = themes_repository.get(directory) or abort(404)
     query = query_builder.from_query(query_text, directory)
+    hidden = 0
 
     if query:
-        chosen_metarecords = utils_core.select_records(
+        chosen_metarecords, hidden = utils_core.select_records(
             theme=current_theme,
             repository=repository,
             query=query,
@@ -105,7 +105,8 @@ def index_all(directory: str):
     )
 
     note = utils_browser.get_note_on_search(len(paginator),
-                                            time.perf_counter() - start)
+                                            time.perf_counter() - start,
+                                            hidden)
     context = {
         'paginator': paginator,
         'query': query_text,

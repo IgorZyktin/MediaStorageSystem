@@ -54,14 +54,21 @@ def get_group_name(record: core.Meta) -> str:
     return ''
 
 
-def get_note_on_search(total: int, duration: float) -> str:
+def get_note_on_search(total: int, duration: float, hidden: int = 0) -> str:
     """Return description of search duration."""
     _total = sep_digits(total)
     _duration = '{:0.4f}'.format(duration)
-    return f'Found {_total} records in {_duration} seconds'
+
+    note = f'Found {_total} records in {_duration} seconds'
+
+    if hidden:
+        note += f' ({hidden} hidden)'
+
+    return note
 
 
-def get_config(filesystem: core.Filesystem) -> Dict[str, Union[bool, int, str]]:
+def get_config(filesystem: core.Filesystem)\
+        -> Dict[str, Union[bool, int, str]]:
     """Load specific user settings from file."""
     path = filesystem.join(*constants.CONFIG_PATH_COMPONENTS)
     config = filesystem.read_yaml(path)

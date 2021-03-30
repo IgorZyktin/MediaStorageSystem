@@ -44,5 +44,5 @@ if __name__ == '__main__':
     tie_together(
         root_path='D:\\BGC_ARCHIVE\\',
         theme='bubblegum_crisis',
-        group_name='gregor kari nene hardsuit',
+        group_name='grand mal 2',
     )
