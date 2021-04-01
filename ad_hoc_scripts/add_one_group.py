@@ -151,19 +151,18 @@ if __name__ == '__main__':
         source_root_path='D:\\BGC_ARCHIVE_SOURCE\\',
         target_root_path='D:\\BGC_ARCHIVE_TARGET\\',
         reference_root_path='D:\\BGC_ARCHIVE\\',
-        theme_directory='bubblegum_crisis',
+        theme_directory='blade_runner',
         base_keys={
-            'series': 'ad police',
-            'sub_series': 'dead end city',
-            'group_name': 'dead end city',
-            'author': 'Tony Takezaki',
-            'author_url': 'http://www.osk.3web.ne.jp/~tonitake/',
+            'series': 'blade runner 2019',
+            'sub_series': 'comic 02',
+            'group_name': 'blade runner 2019 02',
+            'author': '',
+            'author_url': '',
             'origin_url': '',
             'tags': [
-                'artwork',
-                'manga',
-                'Tony Takezaki',
-                'ad police',
+                "comics",
+                "blade runner",
+                "blade runner 2019",
             ]
         },
     )
