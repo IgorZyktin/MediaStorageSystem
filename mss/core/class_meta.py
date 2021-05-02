@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 
-"""Metarecord implementation.
-"""
+"""Metarecord implementation."""
 from dataclasses import dataclass, field
 from typing import List
 
@@ -9,8 +8,7 @@ from typing import List
 # pylint: disable=R0902
 @dataclass
 class Meta:
-    """Metarecord implementation.
-    """
+    """Metarecord implementation."""
     uuid: str = ''
     directory: str = ''  # theme directory
 
@@ -72,4 +70,9 @@ class Meta:
 
     def get_ordering(self) -> tuple:
         """Return something that we can sort on."""
-        return self.series, self.sub_series, self.ordering
+        return (
+            self.series,
+            self.sub_series,
+            self.group_name,
+            self.ordering,
+        )

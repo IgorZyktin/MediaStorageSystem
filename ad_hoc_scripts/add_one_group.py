@@ -134,6 +134,8 @@ def add_one_group(source_root_path: str, target_root_path: str,
         print(Fore.RED + f'Deleted file: {source_file_path}')
         print()
 
+        image.close()
+
     fs.ensure_folder_exists(fs.join(target_theme_dir, 'metainfo'))
     meta_path = fs.join(target_theme_dir, 'metainfo', meta_filename)
     fs.write_json(meta_path, meta_content)
@@ -151,18 +153,18 @@ if __name__ == '__main__':
         source_root_path='D:\\BGC_ARCHIVE_SOURCE\\',
         target_root_path='D:\\BGC_ARCHIVE_TARGET\\',
         reference_root_path='D:\\BGC_ARCHIVE\\',
-        theme_directory='blade_runner',
+        theme_directory='anime',
         base_keys={
-            'series': 'blade runner 2019',
-            'sub_series': 'comic 02',
-            'group_name': 'blade runner 2019 02',
+            'series': 'megazone 23',
+            'sub_series': 'artbook',
+            'group_name': 'b-club special megazone 23',
             'author': '',
             'author_url': '',
             'origin_url': '',
             'tags': [
-                "comics",
-                "blade runner",
-                "blade runner 2019",
+                'artbook',
+                'megazone 23',
+                'b-club special megazone 23',
             ]
         },
     )
