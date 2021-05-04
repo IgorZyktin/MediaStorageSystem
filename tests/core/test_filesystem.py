@@ -20,6 +20,7 @@ def filesystem():
 @lru_cache
 def get_local_folder():
     path = os.path.abspath(os.getcwd())
+    tried = [path]
 
     for _ in range(10):
         files = os.listdir(path)
@@ -27,8 +28,9 @@ def get_local_folder():
             return os.path.abspath(path)
 
         path = os.path.join(path, '..')
+        tried.append(path)
 
-    raise FileNotFoundError('Unable to find root folder')
+    raise FileNotFoundError(f'Unable to find root folder (tried {tried})')
 
 
 def test_join(filesystem):

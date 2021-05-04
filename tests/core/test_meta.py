@@ -3,7 +3,7 @@
 """Tests.
 """
 
-from mss.core import Meta
+from mss.core import Meta, core_utils
 
 
 def test_metarecord_creation_correct(valid_metarecord_dict):
@@ -15,7 +15,7 @@ def test_metarecord_creation_correct(valid_metarecord_dict):
 
 def test_metarecord_repr(valid_metarecord_dict):
     instance = Meta(**valid_metarecord_dict)
-    assert str(instance) == "Meta<uuid='008a2494-a6a4-4d63-886d-" \
+    assert str(instance) == "Meta<'008a2494-a6a4-4d63-886d-" \
                             "9e050f7a0d4a', 'original_filename.jpg'>"
 
 
@@ -30,5 +30,5 @@ def test_meta_ordering(valid_metarecord_dict):
                                                      sub_series='a',
                                                      ordering=1)})
     metas = [meta_1, meta_2, meta_3]
-    metas.sort()
+    metas.sort(key=core_utils.meta_sorter)
     assert metas == [meta_3, meta_2, meta_1]

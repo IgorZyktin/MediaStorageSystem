@@ -40,7 +40,7 @@ def select_random_records(theme: core.Theme,
     # than amount and random.sample will throw and exception
     adequate_amount = min(amount, len(valid_records))
     chosen_records = random.sample(valid_records, adequate_amount)
-    chosen_records.sort()
+    chosen_records.sort(key=core.core_utils.meta_sorter)
 
     return chosen_records
 
@@ -107,6 +107,7 @@ def select_records(theme: core.Theme,
             if x.directory not in query.exclude
         ]
 
-    chosen_records.sort(reverse=constants.FLAG_DESC in query.flags)
+    chosen_records.sort(key=core.core_utils.meta_sorter,
+                        reverse=constants.FLAG_DESC in query.flags)
 
     return chosen_records, hidden

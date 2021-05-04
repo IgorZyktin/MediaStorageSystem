@@ -33,7 +33,7 @@ def test_add_record_twice(valid_metarecord):
     inst = Repository()
     inst.add(valid_metarecord)
 
-    msg = "Record Meta<uuid='008a2494-a6a4-4d63-886d-9e050f7a0d4a', " \
+    msg = "Record Meta<'008a2494-a6a4-4d63-886d-9e050f7a0d4a', " \
           "'original_filename.jpg'> is already in repository"
 
     with pytest.raises(ValueError, match=msg):

@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
-"""Metarecord implementation."""
+"""Metarecord implementation.
+"""
 from dataclasses import dataclass, field
 from typing import List
 
@@ -8,9 +9,10 @@ from typing import List
 # pylint: disable=R0902
 @dataclass
 class Meta:
-    """Metarecord implementation."""
+    """Metarecord implementation.
+    """
     uuid: str = ''
-    directory: str = ''  # theme directory
+    directory: str = ''
 
     # content locations
     path_to_content: str = ''
@@ -58,21 +60,9 @@ class Meta:
     tags: List[str] = field(default_factory=list)
 
     def __repr__(self) -> str:
-        """Return textual representation."""
+        """Return textual representation.
+        """
         return (
             f'{type(self).__name__}'
-            f'<uuid={self.uuid!r}, {self.original_filename!r}>'
-        )
-
-    def __lt__(self, other) -> bool:
-        """Return True if we are less than other."""
-        return self.get_ordering() < other.get_ordering()
-
-    def get_ordering(self) -> tuple:
-        """Return something that we can sort on."""
-        return (
-            self.series,
-            self.sub_series,
-            self.group_name,
-            self.ordering,
+            f'<{self.uuid!r}, {self.original_filename!r}>'
         )
