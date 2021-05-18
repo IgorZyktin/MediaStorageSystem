@@ -5,7 +5,7 @@
 import random
 
 from mss import core, constants
-from mss.core.class_search_enhancer import (
+from _demo.search.class_search_enhancer import (
     get_duration_tag,
     get_image_size_tag,
 )

@@ -5,7 +5,7 @@
 import operator
 from functools import partial, reduce
 
-from mss.core.class_synonyms import Synonyms
+from _demo.extension_entities.class_synonyms import Synonyms
 
 
 def test_synonyms_creation(synonyms):

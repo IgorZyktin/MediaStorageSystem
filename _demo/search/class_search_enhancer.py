@@ -5,7 +5,7 @@
 from typing import Set
 
 from mss import constants
-from mss.core.class_synonyms import Synonyms
+from _demo.extension_entities.class_synonyms import Synonyms
 from mss.core.class_meta import Meta
 
 

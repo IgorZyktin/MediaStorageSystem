@@ -5,7 +5,7 @@
 import operator
 from functools import partial, reduce
 
-from mss.core.class_tags_on_demand import TagsOnDemand
+from _demo.extension_entities.class_tags_on_demand import TagsOnDemand
 
 
 def test_tags_on_demand_creation(tags_on_demand):

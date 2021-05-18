@@ -5,9 +5,9 @@
 from dataclasses import dataclass
 from typing import Set
 
-from mss.core.class_synonyms import Synonyms
-from mss.core.class_tags_on_demand import TagsOnDemand
-from mss.core.class_theme_statistics import ThemeStatistics
+from _demo.extension_entities.class_synonyms import Synonyms
+from _demo.extension_entities.class_tags_on_demand import TagsOnDemand
+from _demo.extension_entities.class_statistics import ThemeStatistics
 
 
 @dataclass

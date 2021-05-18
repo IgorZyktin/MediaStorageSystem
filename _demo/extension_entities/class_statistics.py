@@ -10,7 +10,7 @@ from mss.utils.utils_text import sep_digits, byte_count_to_text
 
 
 # pylint: disable=R0902
-class ThemeStatistics:
+class Statistics:
     """General metainfo on specific theme.
     """
 
